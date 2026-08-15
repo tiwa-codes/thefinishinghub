@@ -20,6 +20,16 @@ const NAV_LABELS: NavLabel[] = [
   "Doors & Joinery",
 ];
 
+// Only Furniture has a real page so far; the rest stay "#" until their
+// category pages exist.
+const NAV_HREFS: Record<NavLabel, string> = {
+  Furniture: "/furniture",
+  "Tiles & Finishes": "#",
+  Lighting: "#",
+  Bath: "#",
+  "Doors & Joinery": "#",
+};
+
 const MEGA_MENUS: Record<NavLabel, string[]> = {
   Furniture: ["Living", "Dining", "Bedroom", "Workspace", "Bespoke"],
   "Tiles & Finishes": ["Floor Tiles", "Wall Tiles", "Marble", "Mosaic", "Wall Panels"],
@@ -90,7 +100,7 @@ export function SiteNav() {
             {NAV_LABELS.map((label) => (
               <Link
                 key={label}
-                href="#"
+                href={NAV_HREFS[label]}
                 onMouseEnter={() => setOpenMenu(label)}
                 className="flex h-[84px] items-center gap-[5px] whitespace-nowrap text-sm font-medium text-cream no-underline hover:text-gold-bright"
               >
@@ -120,7 +130,7 @@ export function SiteNav() {
               </svg>
             </Link>
             <Link
-              href="#showroom"
+              href="/#showroom"
               className="whitespace-nowrap rounded-[2px] bg-gold px-5 py-3 text-[13px] font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
             >
               Visit the Showroom
@@ -180,7 +190,7 @@ export function SiteNav() {
               {NAV_LABELS.map((label) => (
                 <Link
                   key={label}
-                  href="#"
+                  href={NAV_HREFS[label]}
                   onClick={() => setMobileOpen(false)}
                   className="border-b border-cream/10 py-3.5 text-sm font-medium text-cream no-underline"
                 >
@@ -189,7 +199,7 @@ export function SiteNav() {
               ))}
             </div>
             <Link
-              href="#showroom"
+              href="/#showroom"
               onClick={() => setMobileOpen(false)}
               className="mt-6 block rounded-[2px] bg-gold px-5 py-3 text-center text-[13px] font-semibold tracking-wide text-forest no-underline"
             >
