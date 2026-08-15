@@ -12,15 +12,13 @@ export type TopLevelCategory = CategoryNode & {
   subcategories: CategoryNode[];
 };
 
-// Only categories with a real page built get a real href; everything
-// else stays "#" until that page exists.
-const BUILT_CATEGORY_HREFS: Record<string, string> = {
-  furniture: "/furniture",
+// Subcategory listing pages don't follow a predictable slug->path rule
+// the way top-level categories do (nesting varies, "furniture-" prefixes
+// get dropped for readability), so — unlike top-level — built ones are
+// listed explicitly here. Anything not listed stays "#" until it exists.
+const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
+  "furniture-living": "/furniture/living",
 };
-
-function hrefForSlug(slug: string): string {
-  return BUILT_CATEGORY_HREFS[slug] ?? "#";
-}
 
 type CategoryRow = {
   id: string;
@@ -55,7 +53,10 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
     id: cat.id,
     slug: cat.slug,
     name: cat.name,
-    href: hrefForSlug(cat.slug),
+    // Every top-level category gets a real, predictable path — even one
+    // that 404s (no page built yet) is reachable and fixable later; "#"
+    // is a permanent dead end a user can't tell apart from a bug.
+    href: `/${cat.slug}`,
     subcategories: rows
       .filter((row) => row.parent_id === cat.id)
       .sort((a, b) => a.display_order - b.display_order)
@@ -63,7 +64,7 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
         id: sub.id,
         slug: sub.slug,
         name: sub.name,
-        href: hrefForSlug(sub.slug),
+        href: BUILT_SUBCATEGORY_HREFS[sub.slug] ?? "#",
       })),
   }));
 });

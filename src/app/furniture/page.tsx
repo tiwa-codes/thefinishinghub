@@ -22,6 +22,13 @@ const SUBCATEGORY_IMAGES: Record<string, string> = {
   "furniture-workspace": "/images/room-workspace.webp",
 };
 
+// Same "built pages get a real href, everything else stays #" rule as
+// lib/categories.ts's BUILT_SUBCATEGORY_HREFS — kept in sync by hand
+// since these tiles are fetched by a separate query on this page.
+const SUBCATEGORY_HREFS: Record<string, string> = {
+  "furniture-living": "/furniture/living",
+};
+
 type CategoryRow = { id: string; slug: string; name: string; display_order: number };
 
 type ProductQueryRow = {
@@ -52,7 +59,7 @@ export default async function FurniturePage() {
   const subcategories: SubcategoryTile[] = (subcategoryRows ?? []).map((cat) => ({
     slug: cat.slug,
     name: cat.name,
-    href: "#", // Listing pages don't exist yet
+    href: SUBCATEGORY_HREFS[cat.slug] ?? "#",
     imageSrc: SUBCATEGORY_IMAGES[cat.slug],
   }));
 

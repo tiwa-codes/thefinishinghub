@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(lsof -ti:3000 -sTCP:LISTEN)",
-      "Bash(xargs -r kill)"
+      "Bash(xargs -r kill)",
+      "Bash(npx tsc *)"
     ]
   }
 }
