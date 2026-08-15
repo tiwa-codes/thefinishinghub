@@ -12,7 +12,7 @@ import { formatNaira } from "@/lib/format";
 export const revalidate = 3600;
 
 // categories has no image column yet — this maps the subcategories we do
-// have real photography for. Bespoke intentionally has none (no image row
+// have real photography for. Office intentionally has none (no image row
 // possible for a category the way products have product_images; falls
 // back to the placeholder block, same as a product with no photo yet).
 const SUBCATEGORY_IMAGES: Record<string, string> = {

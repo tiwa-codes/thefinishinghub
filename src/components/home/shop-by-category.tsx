@@ -43,7 +43,7 @@ export function ShopByCategory() {
               Furniture &amp; Furnishings
             </div>
             <div className="mt-1.5 text-[13px] tracking-wide text-gold-bright">
-              Sofas · Beds · Dining · Office · Bespoke
+              Sofas · Beds · Dining · Office
             </div>
           </div>
         </Link>

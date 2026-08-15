@@ -31,7 +31,7 @@ const NAV_HREFS: Record<NavLabel, string> = {
 };
 
 const MEGA_MENUS: Record<NavLabel, string[]> = {
-  Furniture: ["Living", "Dining", "Bedroom", "Workspace", "Bespoke"],
+  Furniture: ["Living", "Dining", "Bedroom", "Workspace", "Office"],
   "Tiles & Finishes": ["Floor Tiles", "Wall Tiles", "Marble", "Mosaic", "Wall Panels"],
   Lighting: ["Chandeliers", "Pendants", "Wall & Ceiling", "Home Automation"],
   Bath: ["Basins", "Baths", "Showers", "Taps", "Accessories"],

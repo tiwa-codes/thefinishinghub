@@ -9,7 +9,7 @@ const SUBCATEGORIES: SubcategoryTile[] = [
   { slug: "furniture-dining", name: "Dining", href: "#", imageSrc: "/images/room-dining.webp" },
   { slug: "furniture-bedroom", name: "Bedroom", href: "#", imageSrc: "/images/bed-luxe-palm-mural.webp" },
   { slug: "furniture-workspace", name: "Workspace", href: "#", imageSrc: "/images/room-workspace.webp" },
-  { slug: "furniture-bespoke", name: "Bespoke", href: "#" },
+  { slug: "furniture-office", name: "Office", href: "#" },
 ];
 
 const PRODUCTS: FeaturedProduct[] = [
@@ -49,8 +49,13 @@ describe("FurnitureCategoryView", () => {
     // featured products' category label.
     expect(screen.getAllByText("Bedroom").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Workspace")).toBeInTheDocument();
-    expect(screen.getByText("Bespoke")).toBeInTheDocument();
-    expect(screen.getByText("[ bespoke ]")).toBeInTheDocument();
+    expect(screen.getByText("Office")).toBeInTheDocument();
+    expect(screen.getByText("[ office ]")).toBeInTheDocument();
+  });
+
+  it("never renders a Bespoke subcategory — deleted for conceptually tying the site to the Bajgio Lagos workshop", () => {
+    render(<FurnitureCategoryView subcategories={SUBCATEGORIES} products={PRODUCTS} />);
+    expect(screen.queryByText("Bespoke")).toBeNull();
   });
 
   it("renders exactly as many featured product cards as it's given — no padded/fake products", () => {

@@ -22,7 +22,6 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "Interior Design", href: "#" },
       { label: "Projects", href: "#" },
-      { label: "Bespoke", href: "#" },
       { label: "About", href: "#" },
     ],
   },
