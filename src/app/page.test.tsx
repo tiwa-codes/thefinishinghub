@@ -1,7 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import Home from "@/app/page";
 import { CartProvider } from "@/lib/cart-context";
+
+// NewArrivalsSection is an async Server Component that queries Supabase —
+// RTL/jsdom's plain client renderer can't await a Promise-returning
+// component (that's RSC-runtime machinery Next.js provides, not something
+// @testing-library/react reproduces), so it's stubbed out here. Its
+// presentational half (NewArrivalsGrid) has its own unit test with fixture
+// data instead.
+vi.mock("@/components/home/new-arrivals-section", () => ({
+  NewArrivalsSection: () => <section>New arrivals (stubbed in tests)</section>,
+}));
 
 function renderHome() {
   return render(

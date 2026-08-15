@@ -30,48 +30,6 @@ export const CATEGORIES: Category[] = [
   },
 ];
 
-export type Product = {
-  category: string;
-  name: string;
-  spec: string;
-  price: string;
-  placeholderLabel: string;
-  image?: string;
-};
-
-export const NEW_ARRIVALS: Product[] = [
-  {
-    category: "Bedroom",
-    name: "Kano Upholstered Storage Bed",
-    spec: "Faux leather, gas-lift storage",
-    price: "From ₦540,000",
-    placeholderLabel: "[ bed ]",
-    image: "/images/bed-taupe.jpg",
-  },
-  {
-    category: "Bedroom",
-    name: "Asaba Wingback Bed",
-    spec: "Channel-tufted headboard",
-    price: "From ₦610,000",
-    placeholderLabel: "[ bed ]",
-    image: "/images/bed-grey-wing.jpg",
-  },
-  {
-    category: "Lighting",
-    name: "Gudu Brass Pendant",
-    spec: "Aged brass, dimmable",
-    price: "₦145,000",
-    placeholderLabel: "[ pendant ]",
-  },
-  {
-    category: "Tiles",
-    name: "Carrara Porcelain, 60×120",
-    spec: "Matt, per m²",
-    price: "₦18,500",
-    placeholderLabel: "[ tile ]",
-  },
-];
-
 export type Project = {
   name: string;
   meta: string;
