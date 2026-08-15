@@ -1,16 +1,24 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, within } from "@testing-library/react";
 import Home from "@/app/page";
 import { CartProvider } from "@/lib/cart-context";
 
-// NewArrivalsSection is an async Server Component that queries Supabase —
-// RTL/jsdom's plain client renderer can't await a Promise-returning
-// component (that's RSC-runtime machinery Next.js provides, not something
-// @testing-library/react reproduces), so it's stubbed out here. Its
-// presentational half (NewArrivalsGrid) has its own unit test with fixture
-// data instead.
+// NewArrivalsSection, SiteNavSection, and SiteFooterSection are all async
+// Server Components that query Supabase — RTL/jsdom's plain client
+// renderer can't await a Promise-returning component (that's RSC-runtime
+// machinery Next.js provides, not something @testing-library/react
+// reproduces), so they're stubbed out here. Their real content is covered
+// by dedicated tests instead: new-arrivals-grid.test.tsx,
+// site-nav.test.tsx, site-footer.test.tsx (all rendering the real
+// presentational component with fixture props).
 vi.mock("@/components/home/new-arrivals-section", () => ({
   NewArrivalsSection: () => <section>New arrivals (stubbed in tests)</section>,
+}));
+vi.mock("@/components/site-nav-section", () => ({
+  SiteNavSection: () => <div>Nav (stubbed in tests)</div>,
+}));
+vi.mock("@/components/site-footer-section", () => ({
+  SiteFooterSection: () => <footer>Footer (stubbed in tests)</footer>,
 }));
 
 function renderHome() {
@@ -45,27 +53,11 @@ describe("Home page", () => {
     expect(scoped.getByText(/9am–6pm/)).toBeInTheDocument();
   });
 
-  it("mentions Bajgio only inside the footer, not in the body of the page", () => {
+  it("renders a footer landmark", () => {
+    // Real Bajgio-placement coverage (footer-only, not elsewhere on the
+    // page) lives in site-footer.test.tsx against the real component —
+    // SiteFooterSection is stubbed here, so this is just structural.
     const { container } = renderHome();
-    const footer = container.querySelector("footer");
-    expect(footer).not.toBeNull();
-
-    const bodyWithoutFooter = container.cloneNode(true) as HTMLElement;
-    bodyWithoutFooter.querySelector("footer")?.remove();
-    expect(bodyWithoutFooter.textContent).not.toMatch(/Bajgio/);
-    expect(footer?.textContent).toMatch(/Bajgio/);
-  });
-
-  it("does not add Interior Design as a 6th entry in the primary category nav", () => {
-    renderHome();
-    const categoryHeadings = screen.getAllByText(
-      /Furniture & Furnishings|Tiles & Wall Finishes|Tiles & Finishes|Lighting|Sanitaryware|Bath|Doors/,
-    );
-    expect(categoryHeadings.length).toBeGreaterThan(0);
-
-    const primaryNav = screen.getByRole("navigation", {
-      name: "Product categories",
-    });
-    expect(within(primaryNav).queryByText(/Interior Design/)).toBeNull();
+    expect(container.querySelector("footer")).not.toBeNull();
   });
 });

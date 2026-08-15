@@ -1,22 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { publicAssetExists } from "@/lib/public-asset";
+import type { CategoryNode } from "@/lib/categories";
 
 type FooterLink = { label: string; href: string };
 type FooterColumn = { title: string; links: FooterLink[] };
 
-const FOOTER_COLUMNS: FooterColumn[] = [
-  {
-    title: "Shop",
-    links: [
-      { label: "Furniture", href: "#" },
-      { label: "Tiles & Finishes", href: "#" },
-      { label: "Lighting", href: "#" },
-      { label: "Bath", href: "#" },
-      { label: "Doors & Joinery", href: "#" },
-      { label: "New arrivals", href: "#" },
-    ],
-  },
+// Studio/Help/Trade are genuinely static — not derived from any table.
+const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Studio",
     links: [
@@ -45,7 +36,22 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   },
 ];
 
-export function SiteFooter() {
+export function SiteFooter({
+  shopCategories,
+}: {
+  shopCategories: CategoryNode[];
+}) {
+  const footerColumns: FooterColumn[] = [
+    {
+      title: "Shop",
+      links: [
+        ...shopCategories.map((cat) => ({ label: cat.name, href: cat.href })),
+        { label: "New arrivals", href: "#" },
+      ],
+    },
+    ...STATIC_FOOTER_COLUMNS,
+  ];
+
   return (
     <footer className="bg-forest text-[#cdd5cc]">
       <div className="mx-auto max-w-[1440px] px-5 pt-12 lg:px-10 lg:pt-[72px]">
@@ -75,7 +81,7 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {FOOTER_COLUMNS.map((col) => (
+          {footerColumns.map((col) => (
             <div key={col.title}>
               <div className="mb-[18px] text-xs uppercase tracking-[0.14em] text-gold">
                 {col.title}

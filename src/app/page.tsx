@@ -1,5 +1,5 @@
-import { SiteNav } from "@/components/site-nav";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteNavSection } from "@/components/site-nav-section";
+import { SiteFooterSection } from "@/components/site-footer-section";
 import { Hero } from "@/components/home/hero";
 import { ShopByRoom } from "@/components/home/shop-by-room";
 import { ShopByCategory } from "@/components/home/shop-by-category";
@@ -21,7 +21,7 @@ export const revalidate = 3600;
 export default function Home() {
   return (
     <div className="bg-cream font-sans text-ink antialiased">
-      <SiteNav />
+      <SiteNavSection />
       <Hero />
       <ShopByRoom />
       <ShopByCategory />
@@ -32,7 +32,7 @@ export default function Home() {
       <ProjectsGallery />
       <VisitShowroom />
       <Newsletter />
-      <SiteFooter />
+      <SiteFooterSection />
     </div>
   );
 }

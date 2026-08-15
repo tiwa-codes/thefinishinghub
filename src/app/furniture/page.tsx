@@ -1,5 +1,5 @@
-import { SiteNav } from "@/components/site-nav";
-import { SiteFooter } from "@/components/site-footer";
+import { SiteNavSection } from "@/components/site-nav-section";
+import { SiteFooterSection } from "@/components/site-footer-section";
 import { FurnitureCategoryView } from "@/components/category/furniture-category-view";
 import type { SubcategoryTile } from "@/components/category/subcategory-tiles";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
@@ -98,9 +98,9 @@ export default async function FurniturePage() {
 
   return (
     <div className="bg-cream font-sans text-ink antialiased">
-      <SiteNav />
+      <SiteNavSection />
       <FurnitureCategoryView subcategories={subcategories} products={products} />
-      <SiteFooter />
+      <SiteFooterSection />
     </div>
   );
 }

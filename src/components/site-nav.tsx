@@ -4,47 +4,17 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
+import type { TopLevelCategory } from "@/lib/categories";
 
-type NavLabel =
-  | "Furniture"
-  | "Tiles & Finishes"
-  | "Lighting"
-  | "Bath"
-  | "Doors & Joinery";
-
-const NAV_LABELS: NavLabel[] = [
-  "Furniture",
-  "Tiles & Finishes",
-  "Lighting",
-  "Bath",
-  "Doors & Joinery",
-];
-
-// Only Furniture has a real page so far; the rest stay "#" until their
-// category pages exist.
-const NAV_HREFS: Record<NavLabel, string> = {
-  Furniture: "/furniture",
-  "Tiles & Finishes": "#",
-  Lighting: "#",
-  Bath: "#",
-  "Doors & Joinery": "#",
-};
-
-const MEGA_MENUS: Record<NavLabel, string[]> = {
-  Furniture: ["Living", "Dining", "Bedroom", "Workspace", "Office"],
-  "Tiles & Finishes": ["Floor Tiles", "Wall Tiles", "Marble", "Mosaic", "Wall Panels"],
-  Lighting: ["Chandeliers", "Pendants", "Wall & Ceiling", "Home Automation"],
-  Bath: ["Basins", "Baths", "Showers", "Taps", "Accessories"],
-  "Doors & Joinery": ["Interior Doors", "Security Doors", "Windows", "Custom Joinery"],
-};
-
-export function SiteNav() {
+export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
   const { count } = useCart();
-  const [openMenu, setOpenMenu] = useState<NavLabel | null>(null);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const openCategory = categories.find((cat) => cat.slug === openSlug) ?? null;
+
   return (
-    <div onMouseLeave={() => setOpenMenu(null)}>
+    <div onMouseLeave={() => setOpenSlug(null)}>
       {/* Utility bar */}
       <div className="bg-deep-forest text-[#cfd8cf]">
         <div className="mx-auto flex h-8 max-w-[1440px] items-center justify-between gap-6 px-5 text-xs tracking-wide lg:px-10">
@@ -97,15 +67,19 @@ export function SiteNav() {
             aria-label="Product categories"
             className="hidden h-full items-center gap-[22px] lg:flex lg:justify-self-center"
           >
-            {NAV_LABELS.map((label) => (
+            {categories.map((cat) => (
               <Link
-                key={label}
-                href={NAV_HREFS[label]}
-                onMouseEnter={() => setOpenMenu(label)}
+                key={cat.id}
+                href={cat.href}
+                onMouseEnter={() =>
+                  setOpenSlug(cat.subcategories.length > 0 ? cat.slug : null)
+                }
                 className="flex h-[84px] items-center gap-[5px] whitespace-nowrap text-sm font-medium text-cream no-underline hover:text-gold-bright"
               >
-                <span>{label}</span>
-                <span className="text-[8px] opacity-70">&#9660;</span>
+                <span>{cat.name}</span>
+                {cat.subcategories.length > 0 && (
+                  <span className="text-[8px] opacity-70">&#9660;</span>
+                )}
               </Link>
             ))}
           </nav>
@@ -162,20 +136,20 @@ export function SiteNav() {
         </div>
 
         {/* Desktop mega-menu */}
-        {openMenu && (
+        {openCategory && openCategory.subcategories.length > 0 && (
           <div className="hidden border-t border-gold/25 bg-forest lg:block">
             <div className="mx-auto max-w-[1440px] px-10 pb-[34px] pt-[26px]">
               <div className="mb-[18px] font-serif text-[13px] uppercase tracking-[0.16em] text-gold">
-                {openMenu}
+                {openCategory.name}
               </div>
               <div className="grid grid-cols-5 gap-x-10 gap-y-3">
-                {MEGA_MENUS[openMenu].map((sub) => (
+                {openCategory.subcategories.map((sub) => (
                   <Link
-                    key={sub}
-                    href="#"
+                    key={sub.id}
+                    href={sub.href}
                     className="py-1 text-sm text-[#e6ede6] no-underline hover:text-gold-bright"
                   >
-                    {sub}
+                    {sub.name}
                   </Link>
                 ))}
               </div>
@@ -187,14 +161,14 @@ export function SiteNav() {
         {mobileOpen && (
           <div className="border-t border-gold/25 bg-forest px-5 py-6 lg:hidden">
             <div className="flex flex-col">
-              {NAV_LABELS.map((label) => (
+              {categories.map((cat) => (
                 <Link
-                  key={label}
-                  href={NAV_HREFS[label]}
+                  key={cat.id}
+                  href={cat.href}
                   onClick={() => setMobileOpen(false)}
                   className="border-b border-cream/10 py-3.5 text-sm font-medium text-cream no-underline"
                 >
-                  {label}
+                  {cat.name}
                 </Link>
               ))}
             </div>
