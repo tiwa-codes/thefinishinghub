@@ -4,6 +4,7 @@ import { PlaceholderBlock } from "@/components/placeholder-block";
 
 export type FeaturedProduct = {
   id: string;
+  slug: string;
   name: string;
   categoryLabel: string;
   priceLabel: string;
@@ -18,8 +19,8 @@ export function FeaturedProductsGrid({
   products,
 }: {
   title: string;
-  viewAllHref: string;
-  viewAllLabel: string;
+  viewAllHref?: string;
+  viewAllLabel?: string;
   products: FeaturedProduct[];
 }) {
   return (
@@ -28,12 +29,14 @@ export function FeaturedProductsGrid({
         <h2 className="font-serif text-xl font-normal text-ink lg:text-[28px]">
           {title}
         </h2>
-        <Link
-          href={viewAllHref}
-          className="border-b border-gold pb-[3px] text-[13px] font-medium text-forest no-underline"
-        >
-          {viewAllLabel}
-        </Link>
+        {viewAllHref && viewAllLabel && (
+          <Link
+            href={viewAllHref}
+            className="border-b border-gold pb-[3px] text-[13px] font-medium text-forest no-underline"
+          >
+            {viewAllLabel}
+          </Link>
+        )}
       </div>
 
       {products.length === 0 ? (
@@ -45,7 +48,7 @@ export function FeaturedProductsGrid({
           {products.map((product) => (
             <Link
               key={product.id}
-              href="#"
+              href={`/products/${product.slug}`}
               className="block text-inherit no-underline"
             >
               <div className="relative mb-4 h-[220px] overflow-hidden bg-[#e2dccf] lg:h-[260px]">

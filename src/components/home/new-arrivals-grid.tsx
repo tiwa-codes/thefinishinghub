@@ -5,6 +5,7 @@ import { PlaceholderBlock } from "@/components/placeholder-block";
 
 export type NewArrivalProductCard = {
   id: string;
+  slug: string;
   variantId: string;
   categoryLabel: string;
   name: string;
@@ -29,7 +30,7 @@ export function NewArrivalsGrid({
           key={product.id}
           className="block overflow-hidden rounded-[3px] bg-cream"
         >
-          <Link href="#" className="block no-underline">
+          <Link href={`/products/${product.slug}`} className="block no-underline">
             <div className="relative h-[260px] overflow-hidden bg-[#e2dccf]">
               {product.imageUrl ? (
                 <Image

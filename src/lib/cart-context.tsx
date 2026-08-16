@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/client";
 type CartContextValue = {
   count: number;
   ready: boolean;
-  add: (variantId: string) => Promise<void>;
+  add: (variantId: string, quantity?: number) => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -69,7 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const add = useCallback(
-    async (variantId: string) => {
+    async (variantId: string, quantity: number = 1) => {
       if (!userId) return;
       const supabase = createClient();
 
@@ -82,7 +82,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // quantity+1, losing an increment).
       const { error } = await supabase.rpc("add_to_cart", {
         p_variant_id: variantId,
-        p_quantity: 1,
+        p_quantity: quantity,
       });
 
       if (error) {
@@ -90,7 +90,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setCount((c) => c + 1);
+      setCount((c) => c + quantity);
     },
     [userId],
   );

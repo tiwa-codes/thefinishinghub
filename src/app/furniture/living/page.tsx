@@ -13,6 +13,7 @@ type CategoryRow = { id: string; name: string };
 
 type ProductQueryRow = {
   id: string;
+  slug: string;
   name: string;
   is_showroom_display: boolean;
   product_variants: { id: string; price_kobo: number; is_default: boolean }[];
@@ -34,6 +35,7 @@ export default async function LivingRoomFurniturePage() {
     .select(
       `
       id,
+      slug,
       name,
       is_showroom_display,
       product_variants!inner ( id, price_kobo, is_default ),
@@ -55,6 +57,7 @@ export default async function LivingRoomFurniturePage() {
 
     return {
       id: row.id,
+      slug: row.slug,
       variantId: variant?.id ?? "",
       name: row.name,
       priceLabel: variant ? formatNaira(variant.price_kobo) : "",

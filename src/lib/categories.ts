@@ -16,9 +16,16 @@ export type TopLevelCategory = CategoryNode & {
 // the way top-level categories do (nesting varies, "furniture-" prefixes
 // get dropped for readability), so — unlike top-level — built ones are
 // listed explicitly here. Anything not listed stays "#" until it exists.
-const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
+// Exported so every place that needs a subcategory link (nav, /furniture's
+// tiles, product breadcrumbs) reads the same single source instead of
+// keeping its own copy that can drift out of sync.
+export const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
   "furniture-living": "/furniture/living",
 };
+
+export function hrefForSubcategorySlug(slug: string): string {
+  return BUILT_SUBCATEGORY_HREFS[slug] ?? "#";
+}
 
 type CategoryRow = {
   id: string;
@@ -64,7 +71,7 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
         id: sub.id,
         slug: sub.slug,
         name: sub.name,
-        href: BUILT_SUBCATEGORY_HREFS[sub.slug] ?? "#",
+        href: hrefForSubcategorySlug(sub.slug),
       })),
   }));
 });

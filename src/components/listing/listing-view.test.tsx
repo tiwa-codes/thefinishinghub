@@ -13,6 +13,7 @@ const BREADCRUMB = [
 function makeProducts(count: number): ListingProduct[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `product-${i}`,
+    slug: `test-sofa-${i}`,
     variantId: `variant-${i}`,
     name: `Test Sofa ${i}`,
     priceLabel: `₦${(i + 1) * 100000}`,

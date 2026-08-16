@@ -7,6 +7,7 @@ import { NewArrivalsGrid, type NewArrivalProductCard } from "./new-arrivals-grid
 const FIXTURE: NewArrivalProductCard[] = [
   {
     id: "product-1",
+    slug: "kano-upholstered-storage-bed",
     variantId: "variant-1",
     categoryLabel: "Bedroom",
     name: "Kano Upholstered Storage Bed",
@@ -17,6 +18,7 @@ const FIXTURE: NewArrivalProductCard[] = [
   },
   {
     id: "product-2",
+    slug: "gudu-brass-pendant",
     variantId: "variant-2",
     categoryLabel: "Lighting",
     name: "Gudu Brass Pendant",

@@ -15,6 +15,7 @@ const SUBCATEGORIES: SubcategoryTile[] = [
 const PRODUCTS: FeaturedProduct[] = [
   {
     id: "product-1",
+    slug: "kano-upholstered-storage-bed",
     name: "Kano Upholstered Storage Bed",
     categoryLabel: "Bedroom",
     priceLabel: "₦540,000",
@@ -23,6 +24,7 @@ const PRODUCTS: FeaturedProduct[] = [
   },
   {
     id: "product-2",
+    slug: "asaba-wingback-bed",
     name: "Asaba Wingback Bed",
     categoryLabel: "Bedroom",
     priceLabel: "₦610,000",

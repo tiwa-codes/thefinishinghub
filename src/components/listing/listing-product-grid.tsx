@@ -8,6 +8,7 @@ import { PlaceholderBlock } from "@/components/placeholder-block";
 
 export type ListingProduct = {
   id: string;
+  slug: string;
   variantId: string;
   name: string;
   priceLabel: string;
@@ -46,7 +47,7 @@ export function ListingProductGrid({
       <div className="grid grid-cols-1 gap-x-6 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
         {shown.map((product) => (
           <div key={product.id} className="relative">
-            <Link href="#" className="block text-inherit no-underline">
+            <Link href={`/products/${product.slug}`} className="block text-inherit no-underline">
               <div className="relative mb-3.5 h-[220px] overflow-hidden bg-[#e2dccf] lg:h-[300px]">
                 {product.imageUrl ? (
                   <Image

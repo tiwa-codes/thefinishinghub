@@ -5,6 +5,7 @@ import { NewArrivalsGrid, type NewArrivalProductCard } from "./new-arrivals-grid
 
 type ProductQueryRow = {
   id: string;
+  slug: string;
   name: string;
   short_description: string | null;
   categories: { name: string } | null;
@@ -23,6 +24,7 @@ export async function NewArrivalsSection() {
     .select(
       `
       id,
+      slug,
       name,
       short_description,
       categories ( name ),
@@ -49,6 +51,7 @@ export async function NewArrivalsSection() {
 
     return {
       id: row.id,
+      slug: row.slug,
       variantId: variant?.id ?? "",
       categoryLabel: row.categories?.name ?? "",
       name: row.name,

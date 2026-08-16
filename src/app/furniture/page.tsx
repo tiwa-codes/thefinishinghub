@@ -5,6 +5,7 @@ import type { SubcategoryTile } from "@/components/category/subcategory-tiles";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
 import { createPublicClient } from "@/lib/supabase/public";
 import { formatNaira } from "@/lib/format";
+import { hrefForSubcategorySlug } from "@/lib/categories";
 
 // ISR, same reasoning as the homepage (see lib/supabase/public.ts): this
 // client never touches cookies(), so the route stays eligible for static
@@ -22,17 +23,11 @@ const SUBCATEGORY_IMAGES: Record<string, string> = {
   "furniture-workspace": "/images/room-workspace.webp",
 };
 
-// Same "built pages get a real href, everything else stays #" rule as
-// lib/categories.ts's BUILT_SUBCATEGORY_HREFS — kept in sync by hand
-// since these tiles are fetched by a separate query on this page.
-const SUBCATEGORY_HREFS: Record<string, string> = {
-  "furniture-living": "/furniture/living",
-};
-
 type CategoryRow = { id: string; slug: string; name: string; display_order: number };
 
 type ProductQueryRow = {
   id: string;
+  slug: string;
   name: string;
   categories: { name: string } | null;
   product_variants: { id: string; price_kobo: number; is_default: boolean }[];
@@ -59,7 +54,7 @@ export default async function FurniturePage() {
   const subcategories: SubcategoryTile[] = (subcategoryRows ?? []).map((cat) => ({
     slug: cat.slug,
     name: cat.name,
-    href: SUBCATEGORY_HREFS[cat.slug] ?? "#",
+    href: hrefForSubcategorySlug(cat.slug),
     imageSrc: SUBCATEGORY_IMAGES[cat.slug],
   }));
 
@@ -73,6 +68,7 @@ export default async function FurniturePage() {
     .select(
       `
       id,
+      slug,
       name,
       categories ( name ),
       product_variants!inner ( id, price_kobo, is_default ),
@@ -95,6 +91,7 @@ export default async function FurniturePage() {
 
     return {
       id: row.id,
+      slug: row.slug,
       name: row.name,
       categoryLabel: row.categories?.name ?? "",
       priceLabel: variant ? formatNaira(variant.price_kobo) : "",
