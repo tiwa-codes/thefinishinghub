@@ -31,7 +31,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
               Account
             </Link>
             <span className="opacity-40">·</span>
-            <Link href="#" className="hover:text-gold-bright">
+            <Link href="/cart" className="hover:text-gold-bright">
               Cart · {count}
             </Link>
           </div>

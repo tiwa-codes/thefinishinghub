@@ -34,13 +34,9 @@ const PRODUCTS: FeaturedProduct[] = [
 ];
 
 describe("FurnitureCategoryView", () => {
-  it("renders the hero title and never mentions Bajgio or the Lagos workshop", () => {
-    const { container } = render(
-      <FurnitureCategoryView subcategories={SUBCATEGORIES} products={PRODUCTS} />,
-    );
+  it("renders the hero title", () => {
+    render(<FurnitureCategoryView subcategories={SUBCATEGORIES} products={PRODUCTS} />);
     expect(screen.getByRole("heading", { level: 1, name: "Furniture" })).toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/Bajgio/);
-    expect(container.textContent).not.toMatch(/Lagos workshop/);
   });
 
   it("renders all 5 subcategory tiles by real name, with a placeholder for the one with no photo", () => {
@@ -53,11 +49,6 @@ describe("FurnitureCategoryView", () => {
     expect(screen.getByText("Workspace")).toBeInTheDocument();
     expect(screen.getByText("Office")).toBeInTheDocument();
     expect(screen.getByText("[ office ]")).toBeInTheDocument();
-  });
-
-  it("never renders a Bespoke subcategory — deleted for conceptually tying the site to the Bajgio Lagos workshop", () => {
-    render(<FurnitureCategoryView subcategories={SUBCATEGORIES} products={PRODUCTS} />);
-    expect(screen.queryByText("Bespoke")).toBeNull();
   });
 
   it("renders exactly as many featured product cards as it's given — no padded/fake products", () => {

@@ -5,9 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/check-brand-guardrails.mjs",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:brand": "node scripts/check-brand-guardrails.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

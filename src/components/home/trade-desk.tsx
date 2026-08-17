@@ -13,8 +13,8 @@ export function TradeDesk() {
           </h2>
           <p className="text-[15.5px] leading-[1.7] text-[#4a4339]">
             Interior designers, architects, contractors and developers work
-            with a dedicated account, trade pricing across all five
-            categories, and priority on bespoke orders.
+            with a dedicated account and trade pricing across all five
+            categories.
           </p>
         </div>
         <div className="flex w-full flex-shrink-0 flex-col gap-3 lg:w-auto">

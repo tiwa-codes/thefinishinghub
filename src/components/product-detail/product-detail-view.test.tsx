@@ -171,10 +171,8 @@ describe("ProductDetailView", () => {
       screen.getByText("No published products in this category yet."),
     ).toBeInTheDocument();
   });
-
-  it("never mentions Bajgio or the Lagos workshop — that reference is footer-only, and this view has no footer", () => {
-    renderView();
-    expect(screen.queryByText(/Bajgio/i)).toBeNull();
-    expect(screen.queryByText(/Lagos/i)).toBeNull();
-  });
 });
+
+// Bajgio/Lagos footer-only placement is verified for every real route's
+// actual rendered HTML by scripts/check-brand-guardrails.mjs (runs
+// automatically after every `npm run build`), not per-component here.

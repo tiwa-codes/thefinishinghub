@@ -6,25 +6,32 @@ export const rpcMock = vi.fn(async () => ({ data: null, error: null }));
 
 export function makeQueryStub(result: { data: unknown; error: unknown }) {
   const stub: {
-    select: () => typeof stub;
-    eq: () => typeof stub;
-    order: () => typeof stub;
-    limit: () => typeof stub;
-    update: () => typeof stub;
-    returns: () => typeof stub;
-    insert: () => Promise<typeof result>;
-    maybeSingle: () => Promise<typeof result>;
+    select: (...args: unknown[]) => typeof stub;
+    eq: (...args: unknown[]) => typeof stub;
+    order: (...args: unknown[]) => typeof stub;
+    limit: (...args: unknown[]) => typeof stub;
+    update: (...args: unknown[]) => typeof stub;
+    delete: (...args: unknown[]) => typeof stub;
+    returns: (...args: unknown[]) => typeof stub;
+    insert: (...args: unknown[]) => Promise<typeof result>;
+    maybeSingle: (...args: unknown[]) => Promise<typeof result>;
     then: (resolve: (value: typeof result) => void) => void;
   } = {
-    select: () => stub,
-    eq: () => stub,
-    order: () => stub,
-    limit: () => stub,
-    update: () => stub,
-    returns: () => stub,
-    insert: () => Promise.resolve(result),
-    maybeSingle: () => Promise.resolve(result),
+    select: vi.fn(() => stub),
+    eq: vi.fn(() => stub),
+    order: vi.fn(() => stub),
+    limit: vi.fn(() => stub),
+    update: vi.fn(() => stub),
+    delete: vi.fn(() => stub),
+    returns: vi.fn(() => stub),
+    insert: vi.fn(() => Promise.resolve(result)),
+    maybeSingle: vi.fn(() => Promise.resolve(result)),
     then: (resolve) => resolve(result),
   };
   return stub;
 }
+
+// Shared with vitest.setup.ts's global client mock — lets any test assert
+// which table a mutation targeted (e.g. cart-context's setItemQuantity/
+// removeItem going through "cart_items"), same way rpcMock covers add().
+export const fromMock = vi.fn(() => makeQueryStub({ data: [], error: null }));

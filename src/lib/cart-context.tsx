@@ -14,6 +14,16 @@ type CartContextValue = {
   count: number;
   ready: boolean;
   add: (variantId: string, quantity?: number) => Promise<void>;
+  // Cart page quantity stepper/remove: unlike add() (atomic upsert via
+  // RPC, since concurrent "add" clicks can race), these operate on a
+  // single row the client already has loaded, so a direct update/delete
+  // is safe — RLS ("auth.uid() = user_id") scopes it to the owner either
+  // way. The caller already knows the before/after quantity from its own
+  // local state, so it passes the count delta directly instead of this
+  // context re-reading the row first (that read-then-write shape is
+  // exactly what add_to_cart's RPC was introduced to avoid).
+  setItemQuantity: (cartItemId: string, quantity: number, delta: number) => Promise<void>;
+  removeItem: (cartItemId: string, quantity: number) => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -95,8 +105,43 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [userId],
   );
 
+  const setItemQuantity = useCallback(
+    async (cartItemId: string, quantity: number, delta: number) => {
+      if (!userId) return;
+      const supabase = createClient();
+      const { error } = await supabase
+        .from("cart_items")
+        .update({ quantity })
+        .eq("id", cartItemId);
+
+      if (error) {
+        console.error("Failed to update cart item quantity:", error.message);
+        return;
+      }
+
+      setCount((c) => c + delta);
+    },
+    [userId],
+  );
+
+  const removeItem = useCallback(
+    async (cartItemId: string, quantity: number) => {
+      if (!userId) return;
+      const supabase = createClient();
+      const { error } = await supabase.from("cart_items").delete().eq("id", cartItemId);
+
+      if (error) {
+        console.error("Failed to remove cart item:", error.message);
+        return;
+      }
+
+      setCount((c) => c - quantity);
+    },
+    [userId],
+  );
+
   return (
-    <CartContext.Provider value={{ count, ready, add }}>
+    <CartContext.Provider value={{ count, ready, add, setItemQuantity, removeItem }}>
       {children}
     </CartContext.Provider>
   );

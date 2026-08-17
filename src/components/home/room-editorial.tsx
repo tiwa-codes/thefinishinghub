@@ -32,8 +32,7 @@ export function RoomEditorial() {
           <p className="mb-7 text-[15.5px] leading-[1.7] text-[#c6cfc4]">
             We stock furniture, tiles, lighting, sanitaryware and doors from
             one showroom — so the porcelain, the pendant and the joinery are
-            chosen in the same room, against the same light. Bespoke pieces
-            are made to order.
+            chosen in the same room, against the same light.
           </p>
           <Link
             href="#"

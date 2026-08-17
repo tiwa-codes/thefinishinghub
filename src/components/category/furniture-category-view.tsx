@@ -14,7 +14,7 @@ export function FurnitureCategoryView({
     <>
       <CategoryHero
         title="Furniture"
-        description="Sofas, beds, dining and office pieces — plus bespoke work made to order. Shop by the room you're building."
+        description="Sofas, beds, dining and office pieces. Shop by the room you're building."
         imageSrc="/images/editorial-full-room-scene.jpg"
         imageAlt="Furniture"
       />
@@ -30,7 +30,7 @@ export function FurnitureCategoryView({
       />
       <BookADesignerBand
         title="Book a designer for your furniture project."
-        description="Bring a plan or a photo. We'll help you specify pieces from the showroom, or design bespoke pieces made to order."
+        description="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."
       />
     </>
   );
