@@ -15,6 +15,7 @@ export default async function SanitarywareBathPage() {
       <CategoryView
         title={title}
         heroDescription="Showers, baths and fittings for a finished bathroom."
+        heroImageSrc="/images/category-sanitaryware.webp"
         heroImageAlt={title}
         subcategoriesTitle="Shop Sanitarywares by type"
         subcategories={subcategories}

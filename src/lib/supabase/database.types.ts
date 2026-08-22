@@ -80,6 +80,7 @@ export type Database = {
           display_order: number
           id: string
           name: string
+          nav_label: string | null
           parent_id: string | null
           slug: string
         }
@@ -88,6 +89,7 @@ export type Database = {
           display_order?: number
           id?: string
           name: string
+          nav_label?: string | null
           parent_id?: string | null
           slug: string
         }
@@ -96,6 +98,7 @@ export type Database = {
           display_order?: number
           id?: string
           name?: string
+          nav_label?: string | null
           parent_id?: string | null
           slug?: string
         }

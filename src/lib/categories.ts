@@ -6,6 +6,12 @@ export type CategoryNode = {
   id: string;
   slug: string;
   name: string;
+  // Short form for the primary nav row specifically — that row has no
+  // slack even at the site's widest (1440px); breadcrumbs, page
+  // headings, and the footer all keep using `name`. Falls back to
+  // `name` for anything without one set (today: every subcategory,
+  // since only the 5 top-level categories have a nav_label).
+  navLabel: string;
   href: string;
 };
 
@@ -23,6 +29,7 @@ type CategoryRow = {
   id: string;
   slug: string;
   name: string;
+  nav_label: string | null;
   parent_id: string | null;
   display_order: number;
 };
@@ -34,7 +41,7 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
   const supabase = createPublicClient();
   const { data, error } = await supabase
     .from("categories")
-    .select("id, slug, name, parent_id, display_order")
+    .select("id, slug, name, nav_label, parent_id, display_order")
     .order("display_order")
     .returns<CategoryRow[]>();
 
@@ -52,6 +59,7 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
     id: cat.id,
     slug: cat.slug,
     name: cat.name,
+    navLabel: cat.nav_label ?? cat.name,
     // Every top-level category gets a real, predictable path — even one
     // that 404s (no page built yet) is reachable and fixable later; "#"
     // is a permanent dead end a user can't tell apart from a bug.
@@ -63,6 +71,7 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
         id: sub.id,
         slug: sub.slug,
         name: sub.name,
+        navLabel: sub.nav_label ?? sub.name,
         href: hrefForSubcategorySlug(sub.slug),
       })),
   }));

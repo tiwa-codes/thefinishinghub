@@ -15,7 +15,7 @@ export default async function TilesWallFinishesPage() {
       <CategoryView
         title={title}
         heroDescription="Porcelain, stone and wall finishes for every surface in the house."
-        heroImageSrc="/images/category-tiles.jpg"
+        heroImageSrc="/images/category-tiles.avif"
         heroImageAlt={title}
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}

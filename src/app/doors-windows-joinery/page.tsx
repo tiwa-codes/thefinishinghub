@@ -17,6 +17,7 @@ export default async function DoorsWindowsJoineryPage() {
       <CategoryView
         title={title}
         heroDescription="Doors, windows and joinery finished to match the rest of the house."
+        heroImageSrc="/images/category-doors.webp"
         heroImageAlt={title}
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}

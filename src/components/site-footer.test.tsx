@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { SiteFooter } from "@/components/site-footer";
 import type { CategoryNode } from "@/lib/categories";
 
-const SHOP_CATEGORIES: CategoryNode[] = [
+const SHOP_CATEGORIES: Pick<CategoryNode, "id" | "slug" | "name" | "href">[] = [
   { id: "cat-furniture", slug: "furniture", name: "Furniture & Furnishings", href: "/furniture" },
   { id: "cat-tiles", slug: "tiles-wall-finishes", name: "Tiles & Wall Finishes", href: "#" },
 ];

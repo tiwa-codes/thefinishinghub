@@ -39,7 +39,10 @@ const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
 export function SiteFooter({
   shopCategories,
 }: {
-  shopCategories: CategoryNode[];
+  // Footer always shows the full category name — no crowding concern
+  // stacked vertically, unlike the primary nav row — so this only needs
+  // the fields it actually uses, not the nav-specific navLabel.
+  shopCategories: Pick<CategoryNode, "id" | "slug" | "name" | "href">[];
 }) {
   const footerColumns: FooterColumn[] = [
     {
