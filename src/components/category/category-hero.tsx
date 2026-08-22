@@ -36,8 +36,17 @@ export function CategoryHero({
       <div
         className="absolute inset-0"
         style={{
+          // Two layered washes, not one thin left-to-right fade: the old
+          // gradient dropped to 12% opacity by 80% width, so a busy photo
+          // (tile/bath/door showroom shots aren't calm single-subject
+          // scenes like the furniture hero) stayed at near-full contrast
+          // across most of its width and visually fought the text instead
+          // of sitting behind it. This keeps a legible-on-the-left wash
+          // for the copy, never lets the right edge drop below a
+          // moderate floor, and adds a second bottom-anchored wash so the
+          // text zone specifically sits on calmer ground.
           background:
-            "linear-gradient(90deg, rgba(7,40,24,0.78), rgba(7,40,24,0.45) 45%, rgba(7,40,24,0.12) 80%)",
+            "linear-gradient(90deg, rgba(7,40,24,0.88) 0%, rgba(7,40,24,0.6) 42%, rgba(7,40,24,0.42) 100%), linear-gradient(0deg, rgba(7,40,24,0.55) 0%, rgba(7,40,24,0) 55%)",
         }}
       />
       <div className="relative mx-auto flex h-full max-w-[1440px] flex-col justify-end px-5 pb-8 lg:px-10 lg:pb-[52px]">

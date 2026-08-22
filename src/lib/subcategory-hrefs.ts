@@ -15,6 +15,8 @@
 // resolution should import from here instead.
 export const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
   "furniture-living": "/furniture/living",
+  "furniture-dining": "/furniture/dining",
+  "furniture-bedroom": "/furniture/bedroom",
 };
 
 export function hrefForSubcategorySlug(slug: string): string {
