@@ -35,7 +35,7 @@ export function RoomEditorial() {
             chosen in the same room, against the same light.
           </p>
           <Link
-            href="#"
+            href="/#design-services"
             className="self-start border-b border-gold pb-[3px] text-sm font-medium tracking-wide text-gold-bright no-underline"
           >
             See the approach

@@ -3,7 +3,7 @@ import { PlaceholderBlock } from "@/components/placeholder-block";
 
 export function DesignServices() {
   return (
-    <section className="bg-forest text-cream">
+    <section id="design-services" className="bg-forest text-cream">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-10 px-5 py-14 lg:grid-cols-2 lg:gap-[72px] lg:px-10 lg:py-[88px]">
         <div>
           <div className="mb-4 text-xs uppercase tracking-[0.2em] text-gold-bright">
@@ -18,7 +18,7 @@ export function DesignServices() {
             everything in the showroom, and source or commission the rest.
           </p>
           <Link
-            href="#"
+            href="/#showroom"
             className="inline-block rounded-[2px] bg-gold px-7 py-3.5 text-sm font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
           >
             Start a project

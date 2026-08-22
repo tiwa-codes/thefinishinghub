@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { PlaceholderBlock } from "@/components/placeholder-block";
 
 export function CategoryHero({
   eyebrow = "Category",
@@ -10,19 +11,28 @@ export function CategoryHero({
   eyebrow?: string;
   title: string;
   description: string;
-  imageSrc: string;
+  imageSrc?: string;
   imageAlt: string;
 }) {
   return (
     <section className="relative h-[380px] overflow-hidden bg-[#0b3221] lg:h-[500px]">
-      <Image
-        src={imageSrc}
-        alt={imageAlt}
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-center"
-      />
+      {imageSrc ? (
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      ) : (
+        <PlaceholderBlock
+          label="[ photography coming soon ]"
+          tone="dark"
+          align="top"
+          className="absolute inset-0"
+        />
+      )}
       <div
         className="absolute inset-0"
         style={{

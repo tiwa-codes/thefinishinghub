@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { createPublicClient } from "@/lib/supabase/public";
+import { hrefForSubcategorySlug } from "@/lib/subcategory-hrefs";
 
 export type CategoryNode = {
   id: string;
@@ -12,20 +13,11 @@ export type TopLevelCategory = CategoryNode & {
   subcategories: CategoryNode[];
 };
 
-// Subcategory listing pages don't follow a predictable slug->path rule
-// the way top-level categories do (nesting varies, "furniture-" prefixes
-// get dropped for readability), so — unlike top-level — built ones are
-// listed explicitly here. Anything not listed stays "#" until it exists.
-// Exported so every place that needs a subcategory link (nav, /furniture's
-// tiles, product breadcrumbs) reads the same single source instead of
-// keeping its own copy that can drift out of sync.
-export const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
-  "furniture-living": "/furniture/living",
-};
-
-export function hrefForSubcategorySlug(slug: string): string {
-  return BUILT_SUBCATEGORY_HREFS[slug] ?? "#";
-}
+// Re-exported for existing consumers importing from "@/lib/categories" —
+// the actual implementation lives in lib/subcategory-hrefs.ts (kept
+// dependency-free so it's safe to import from components RTL renders
+// directly; see that file for why).
+export { BUILT_SUBCATEGORY_HREFS, hrefForSubcategorySlug } from "@/lib/subcategory-hrefs";
 
 type CategoryRow = {
   id: string;

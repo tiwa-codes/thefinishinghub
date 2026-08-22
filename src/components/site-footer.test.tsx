@@ -31,4 +31,14 @@ describe("SiteFooter", () => {
     render(<SiteFooter shopCategories={[]} />);
     expect(screen.getByText("New arrivals")).toBeInTheDocument();
   });
+
+  it("links Interior Design, Projects and Contact to their real homepage sections", () => {
+    render(<SiteFooter shopCategories={SHOP_CATEGORIES} />);
+    expect(screen.getByRole("link", { name: "Interior Design" })).toHaveAttribute(
+      "href",
+      "/#design-services",
+    );
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/#projects");
+    expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/#showroom");
+  });
 });

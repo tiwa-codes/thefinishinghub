@@ -11,8 +11,8 @@ const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Studio",
     links: [
-      { label: "Interior Design", href: "#" },
-      { label: "Projects", href: "#" },
+      { label: "Interior Design", href: "/#design-services" },
+      { label: "Projects", href: "/#projects" },
       { label: "About", href: "#" },
     ],
   },
@@ -22,7 +22,7 @@ const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Delivery", href: "#" },
       { label: "Returns", href: "#" },
       { label: "Track order", href: "#" },
-      { label: "Contact", href: "#" },
+      { label: "Contact", href: "/#showroom" },
     ],
   },
   {

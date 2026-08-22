@@ -20,7 +20,7 @@ export function ShopByCategory() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:grid-rows-[300px_300px] lg:gap-5">
         <Link
-          href="#"
+          href="/furniture"
           className="relative h-[280px] overflow-hidden rounded-[3px] bg-[#ebe5db] no-underline lg:col-span-2 lg:row-span-2 lg:h-auto"
         >
           {hasFurnitureImage ? (
@@ -53,7 +53,7 @@ export function ShopByCategory() {
           return (
             <Link
               key={cat.name}
-              href="#"
+              href={cat.href}
               className="relative h-[220px] overflow-hidden rounded-[3px] bg-[#ebe5db] no-underline lg:h-auto"
             >
               {hasImage && cat.image ? (

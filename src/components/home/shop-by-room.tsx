@@ -2,19 +2,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { PlaceholderBlock } from "@/components/placeholder-block";
 import { publicAssetExists } from "@/lib/public-asset";
+import { hrefForSubcategorySlug } from "@/lib/subcategory-hrefs";
 
 type RoomTile = {
   label: string;
+  slug: string;
   image: string;
   objectPosition: string;
   fontSize: string;
 };
 
+// href is resolved through hrefForSubcategorySlug (lib/categories.ts) —
+// the single source of truth for which subcategory listing pages
+// actually exist, same one the nav mega-menu and category pages use.
+// Only Living Room has a real listing page today; the rest stay "#"
+// until they're built, and pick up a real href automatically once they
+// are.
 const ROOMS: RoomTile[] = [
-  { label: "Living Room", image: "/images/room-living.jpg", objectPosition: "center", fontSize: "text-[30px]" },
-  { label: "Dining", image: "/images/room-dining.webp", objectPosition: "center 42%", fontSize: "text-[28px]" },
-  { label: "Workspace", image: "/images/room-workspace.webp", objectPosition: "center 38%", fontSize: "text-[28px]" },
-  { label: "Bedroom", image: "/images/bed-luxe-palm-mural.webp", objectPosition: "center", fontSize: "text-[30px]" },
+  { label: "Living Room", slug: "furniture-living", image: "/images/room-living.jpg", objectPosition: "center", fontSize: "text-[30px]" },
+  { label: "Dining", slug: "furniture-dining", image: "/images/room-dining.webp", objectPosition: "center 42%", fontSize: "text-[28px]" },
+  { label: "Workspace", slug: "furniture-workspace", image: "/images/room-workspace.webp", objectPosition: "center 38%", fontSize: "text-[28px]" },
+  { label: "Bedroom", slug: "furniture-bedroom", image: "/images/bed-luxe-palm-mural.webp", objectPosition: "center", fontSize: "text-[30px]" },
 ];
 
 export function ShopByRoom() {
@@ -35,7 +43,7 @@ export function ShopByRoom() {
           return (
             <Link
               key={room.label}
-              href="#"
+              href={hrefForSubcategorySlug(room.slug)}
               className="relative block h-[320px] overflow-hidden bg-[#e2dccf] no-underline sm:h-[400px] lg:h-[480px]"
             >
               {hasImage ? (

@@ -4,7 +4,7 @@ import { PROJECTS } from "./home-data";
 
 export function ProjectsGallery() {
   return (
-    <section className="mx-auto max-w-[1440px] px-5 pb-16 pt-3 lg:px-10 lg:pb-24">
+    <section id="projects" className="mx-auto max-w-[1440px] px-5 pb-16 pt-3 lg:px-10 lg:pb-24">
       <div className="mb-9 flex flex-wrap items-end justify-between gap-4">
         <div>
           <div className="mb-[14px] text-xs uppercase tracking-[0.2em] text-gold">

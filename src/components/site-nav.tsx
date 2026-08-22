@@ -17,12 +17,12 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
     <div onMouseLeave={() => setOpenSlug(null)}>
       {/* Utility bar */}
       <div className="bg-deep-forest text-[#cfd8cf]">
-        <div className="mx-auto flex h-8 max-w-[1440px] items-center justify-between gap-6 px-5 text-xs tracking-wide lg:px-10">
-          <span className="hidden truncate lg:block">
+        <div className="mx-auto flex h-8 max-w-[1440px] items-center justify-between gap-6 px-5 text-xs tracking-wide xl:px-10">
+          <span className="hidden truncate xl:block">
             Suites 2B–2E, AA Lukoro Plaza · Gudu District, Abuja · Mon–Sat,
             9am–6pm
           </span>
-          <div className="flex items-center gap-3 lg:gap-4">
+          <div className="flex items-center gap-3 xl:gap-4">
             <span className="hidden text-gold-bright sm:inline">
               +234 (0) 803 311 7302
             </span>
@@ -38,12 +38,24 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
         </div>
       </div>
 
-      {/* Main nav */}
+      {/* Main nav.
+          Grid is `auto 1fr auto`, not `1fr auto 1fr`: the logo and the
+          search+CTA cluster are content-sized and never compressed below
+          their own minimum — critical for the wordmark, which must not
+          shrink (see CLAUDE.md) and has no wrap/overflow protection of
+          its own. The nav links are the flexible middle column instead;
+          if the five full category names + gaps ever don't fit (their
+          combined natural width can exceed even the widest this header
+          gets, since the header is capped at max-w-[1440px]), the nav
+          scrolls horizontally rather than spilling into the logo or CTA.
+          That combination is what actually prevents overlap — moving the
+          breakpoint alone can't, since the content's natural width can
+          exceed the max-w-1440 cap regardless of viewport. */}
       <div className="sticky top-0 z-50 bg-forest text-cream">
-        <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-5 lg:grid lg:h-[84px] lg:grid-cols-[1fr_auto_1fr] lg:px-10">
+        <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-5 xl:grid xl:h-[84px] xl:grid-cols-[auto_1fr_auto] xl:gap-x-6 xl:px-10">
           <Link
             href="/"
-            className="flex flex-shrink-0 items-center gap-[15px] no-underline lg:justify-self-start"
+            className="flex flex-shrink-0 items-center gap-[15px] no-underline xl:justify-self-start"
           >
             <Image
               src="/images/tfh-monogram.png"
@@ -51,10 +63,10 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
               width={48}
               height={48}
               priority
-              className="h-9 w-auto lg:h-12"
+              className="h-9 w-auto xl:h-12"
             />
             <span className="flex flex-col leading-[1.1]">
-              <span className="whitespace-nowrap font-serif text-lg text-cream lg:text-[23px]">
+              <span className="whitespace-nowrap font-serif text-lg text-cream xl:text-[23px]">
                 The Finishing Hub
               </span>
               <span className="mt-[3px] text-[11px] uppercase tracking-[0.32em] text-gold">
@@ -65,7 +77,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
           <nav
             aria-label="Product categories"
-            className="hidden h-full items-center gap-[22px] lg:flex lg:justify-self-center"
+            className="hidden h-full min-w-0 items-center gap-[7px] overflow-x-auto xl:flex"
           >
             {categories.map((cat) => (
               <Link
@@ -74,7 +86,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
                 onMouseEnter={() =>
                   setOpenSlug(cat.subcategories.length > 0 ? cat.slug : null)
                 }
-                className="flex h-[84px] items-center gap-[5px] whitespace-nowrap text-sm font-medium text-cream no-underline hover:text-gold-bright"
+                className="flex h-[84px] flex-shrink-0 items-center gap-[5px] whitespace-nowrap text-[13px] font-medium text-cream no-underline hover:text-gold-bright"
               >
                 <span>{cat.name}</span>
                 {cat.subcategories.length > 0 && (
@@ -84,7 +96,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
             ))}
           </nav>
 
-          <div className="hidden flex-shrink-0 items-center gap-[18px] lg:flex lg:justify-self-end">
+          <div className="hidden flex-shrink-0 items-center gap-[14px] xl:flex xl:justify-self-end">
             <Link
               href="#"
               aria-label="Search"
@@ -105,7 +117,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
             </Link>
             <Link
               href="/#showroom"
-              className="whitespace-nowrap rounded-[2px] bg-gold px-5 py-3 text-[13px] font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
+              className="whitespace-nowrap rounded-[2px] bg-gold px-4 py-3 text-[13px] font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
             >
               Visit the Showroom
             </Link>
@@ -116,7 +128,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
-            className="flex flex-shrink-0 items-center justify-center text-cream lg:hidden"
+            className="flex flex-shrink-0 items-center justify-center text-cream xl:hidden"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               {mobileOpen ? (
@@ -137,7 +149,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
         {/* Desktop mega-menu */}
         {openCategory && openCategory.subcategories.length > 0 && (
-          <div className="hidden border-t border-gold/25 bg-forest lg:block">
+          <div className="hidden border-t border-gold/25 bg-forest xl:block">
             <div className="mx-auto max-w-[1440px] px-10 pb-[34px] pt-[26px]">
               <div className="mb-[18px] font-serif text-[13px] uppercase tracking-[0.16em] text-gold">
                 {openCategory.name}
@@ -159,7 +171,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
         {/* Mobile menu panel */}
         {mobileOpen && (
-          <div className="border-t border-gold/25 bg-forest px-5 py-6 lg:hidden">
+          <div className="border-t border-gold/25 bg-forest px-5 py-6 xl:hidden">
             <div className="flex flex-col">
               {categories.map((cat) => (
                 <Link
