@@ -68,11 +68,11 @@ describe("SiteNav", () => {
       a.querySelector("span")?.textContent?.trim(),
     );
     expect(links).toEqual([
-      "Furniture & Furnishings",
-      "Tiles & Wall Finishes",
-      "Lighting & Automation",
+      "Furniture",
+      "Tiles & Finishes",
+      "Lighting",
       "Sanitarywares & Bath Accessories",
-      "Doors, Windows & Joinery",
+      "Doors & Joinery",
     ]);
     expect(links).not.toContain("Interior Design");
   });
