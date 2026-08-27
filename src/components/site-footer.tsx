@@ -125,9 +125,6 @@ export function SiteFooter({
                 </span>
               )}
             </span>
-            <span className="text-[13px] text-[#7f8a7e]">
-              Furniture manufacturer · Lagos
-            </span>
           </div>
           <div className="flex items-center gap-2 text-[13px] text-[#7f8a7e]">
             <span>Secure payments by</span>

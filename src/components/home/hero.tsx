@@ -39,7 +39,7 @@ export function Hero() {
             FURNITURE · FINISHING · INTERIORS
           </div>
           <h1 className="mb-5 text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[52px] lg:leading-[1.08]">
-            Furniture, finishes, and interiors for the finished home.
+            Furniture, Finishes, and Interiors for the Finished Home.
           </h1>
           <p className="mb-8 max-w-[440px] text-[15px] leading-[1.6] text-[#d7ddd4] lg:text-[17px]">
             Five categories under one roof in Abuja. Delivered nationwide.

@@ -15,7 +15,7 @@ export default async function LightingPage() {
       <CategoryView
         title={title}
         heroDescription="Pendants, sconces and home automation for every room."
-        heroImageSrc="/images/category-lighting.jpg"
+        heroImageSrc="/images/category-lighting-pendants.jpg"
         heroImageAlt={title}
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
