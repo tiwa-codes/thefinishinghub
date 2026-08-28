@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { AddToCartButton } from "@/components/add-to-cart-button";
@@ -12,9 +12,15 @@ export type ListingProduct = {
   variantId: string;
   name: string;
   priceLabel: string;
+  requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
   inShowroom: boolean;
+  // Optional: every other listing page (subcategory, category "all")
+  // already establishes category context via the page itself, so a
+  // repeated label per card would be redundant there — only search
+  // results, which span multiple categories, pass this.
+  categoryLabel?: string;
 };
 
 const PAGE_SIZE = 8;
@@ -32,6 +38,14 @@ export function ListingProductGrid({
   emptyMessage: string;
 }) {
   const [shownCount, setShownCount] = useState(Math.min(PAGE_SIZE, products.length));
+
+  // A new filter/sort selection swaps in a whole new `products` array
+  // (via a URL navigation, re-rendering this same mounted component) —
+  // reset back to the first page rather than keeping whatever count a
+  // previous "Load more" click left behind.
+  useEffect(() => {
+    setShownCount(Math.min(PAGE_SIZE, products.length));
+  }, [products]);
 
   if (products.length === 0) {
     return (
@@ -70,16 +84,25 @@ export function ListingProductGrid({
                   </span>
                 )}
               </div>
+              {product.categoryLabel && (
+                <div className="mb-[7px] font-mono text-[10px] uppercase tracking-[0.12em] text-[#9a8a5c]">
+                  {product.categoryLabel}
+                </div>
+              )}
               <div className="mb-[5px] font-serif text-lg text-ink">
                 {product.name}
               </div>
             </Link>
-            <div className="flex items-center justify-between gap-2.5">
-              <span className="font-serif text-base text-forest">
-                {product.priceLabel}
-              </span>
-              <AddToCartButton variantId={product.variantId} />
-            </div>
+            {product.requiresQuote ? (
+              <div className="font-serif text-base text-forest">Request a Quote</div>
+            ) : (
+              <div className="flex items-center justify-between gap-2.5">
+                <span className="font-serif text-base text-forest">
+                  {product.priceLabel}
+                </span>
+                <AddToCartButton variantId={product.variantId} />
+              </div>
+            )}
           </div>
         ))}
       </div>

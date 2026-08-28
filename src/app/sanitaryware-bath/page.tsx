@@ -20,6 +20,7 @@ export default async function SanitarywareBathPage() {
         subcategoriesTitle="Shop Sanitarywares by type"
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
+        viewAllHref="/sanitaryware-bath/all"
         products={products}
         designerTitle="Book a designer for your bathroom project."
         designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."

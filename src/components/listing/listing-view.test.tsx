@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
 import { ListingView } from "./listing-view";
 import type { ListingProduct } from "./listing-product-grid";
+import { DEFAULT_LISTING_FILTERS } from "@/lib/listing-filters";
 
 const BREADCRUMB = [
   { label: "Home", href: "/" },
@@ -17,6 +18,7 @@ function makeProducts(count: number): ListingProduct[] {
     variantId: `variant-${i}`,
     name: `Test Sofa ${i}`,
     priceLabel: `₦${(i + 1) * 100000}`,
+    requiresQuote: false,
     imageUrl: null,
     imageAlt: `Test Sofa ${i}`,
     inShowroom: i % 2 === 0,
@@ -32,6 +34,8 @@ function renderListing(products: ListingProduct[]) {
         description="Sofas, seating, coffee and side tables, and media units."
         products={products}
         emptyMessage="No Living Room pieces published yet — check back soon."
+        filterOptions={{ finishes: [], colors: [], sizes: [] }}
+        activeFilters={DEFAULT_LISTING_FILTERS}
       />
     </CartProvider>,
   );

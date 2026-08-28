@@ -15,9 +15,8 @@ type RoomTile = {
 // href is resolved through hrefForSubcategorySlug (lib/categories.ts) —
 // the single source of truth for which subcategory listing pages
 // actually exist, same one the nav mega-menu and category pages use.
-// Only Living Room has a real listing page today; the rest stay "#"
-// until they're built, and pick up a real href automatically once they
-// are.
+// Anything not yet built stays "#" and picks up a real href
+// automatically once it is (all four rooms here have one today).
 const ROOMS: RoomTile[] = [
   { label: "Living Room", slug: "furniture-living", image: "/images/room-living.jpg", objectPosition: "center", fontSize: "text-[30px]" },
   { label: "Dining", slug: "furniture-dining", image: "/images/room-dining.webp", objectPosition: "center 42%", fontSize: "text-[28px]" },

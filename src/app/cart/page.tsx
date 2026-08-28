@@ -103,17 +103,19 @@ async function getCartItems(): Promise<{ items: CartLineItem[]; productIds: stri
 
 async function getSuggestions(excludeProductIds: string[]): Promise<FeaturedProduct[]> {
   const supabase = createPublicClient();
+  // public_product_variants, not product_variants — the only
+  // variant-price path public-facing code may read from.
   let query = supabase
     .from("products")
     .select(
       `
       id, slug, name, categories ( name ),
-      product_variants!inner ( id, price_kobo, is_default ),
+      public_product_variants!inner ( id, price_kobo, is_default, requires_quote ),
       product_images ( url, alt_text, is_primary )
     `,
     )
     .eq("status", "published")
-    .eq("product_variants.is_default", true)
+    .eq("public_product_variants.is_default", true)
     .order("created_at", { ascending: false })
     .limit(3);
 
@@ -127,13 +129,18 @@ async function getSuggestions(excludeProductIds: string[]): Promise<FeaturedProd
       slug: string;
       name: string;
       categories: { name: string } | null;
-      product_variants: { id: string; price_kobo: number; is_default: boolean }[];
+      public_product_variants: {
+        id: string;
+        price_kobo: number | null;
+        is_default: boolean;
+        requires_quote: boolean;
+      }[];
       product_images: { url: string; alt_text: string | null; is_primary: boolean }[];
     }[]
   >();
 
   return (data ?? []).map((row) => {
-    const variant = row.product_variants[0];
+    const variant = row.public_product_variants[0];
     const primaryImage =
       row.product_images.find((img) => img.is_primary) ?? row.product_images[0] ?? null;
     return {
@@ -141,7 +148,8 @@ async function getSuggestions(excludeProductIds: string[]): Promise<FeaturedProd
       slug: row.slug,
       name: row.name,
       categoryLabel: row.categories?.name ?? "",
-      priceLabel: variant ? formatNaira(variant.price_kobo) : "",
+      priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+      requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,
     };

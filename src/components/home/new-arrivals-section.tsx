@@ -3,13 +3,21 @@ import { createPublicClient } from "@/lib/supabase/public";
 import { formatNaira } from "@/lib/format";
 import { NewArrivalsGrid, type NewArrivalProductCard } from "./new-arrivals-grid";
 
+// public_product_variants, not product_variants — the only variant-price
+// path public-facing code may read from. It nulls price_kobo for a
+// requires_quote product at the data layer.
 type ProductQueryRow = {
   id: string;
   slug: string;
   name: string;
   short_description: string | null;
   categories: { name: string } | null;
-  product_variants: { id: string; price_kobo: number; is_default: boolean }[];
+  public_product_variants: {
+    id: string;
+    price_kobo: number | null;
+    is_default: boolean;
+    requires_quote: boolean;
+  }[];
   product_images: { url: string; alt_text: string | null; is_primary: boolean }[];
 };
 
@@ -28,12 +36,12 @@ export async function NewArrivalsSection() {
       name,
       short_description,
       categories ( name ),
-      product_variants!inner ( id, price_kobo, is_default ),
+      public_product_variants!inner ( id, price_kobo, is_default, requires_quote ),
       product_images ( url, alt_text, is_primary )
     `,
     )
     .eq("status", "published")
-    .eq("product_variants.is_default", true)
+    .eq("public_product_variants.is_default", true)
     .order("created_at", { ascending: false })
     .limit(4)
     .returns<ProductQueryRow[]>();
@@ -43,7 +51,7 @@ export async function NewArrivalsSection() {
   }
 
   const products: NewArrivalProductCard[] = (data ?? []).map((row) => {
-    const variant = row.product_variants[0];
+    const variant = row.public_product_variants[0];
     const primaryImage =
       row.product_images.find((img) => img.is_primary) ??
       row.product_images[0] ??
@@ -56,7 +64,8 @@ export async function NewArrivalsSection() {
       categoryLabel: row.categories?.name ?? "",
       name: row.name,
       spec: row.short_description,
-      priceLabel: variant ? formatNaira(variant.price_kobo) : "",
+      priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+      requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,
     };

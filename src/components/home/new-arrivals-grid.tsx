@@ -11,6 +11,7 @@ export type NewArrivalProductCard = {
   name: string;
   spec: string | null;
   priceLabel: string;
+  requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
 };
@@ -61,12 +62,18 @@ export function NewArrivalsGrid({
               )}
             </div>
           </Link>
-          <div className="flex items-center justify-between px-5 pb-[22px]">
-            <span className="font-serif text-[17px] text-forest">
-              {product.priceLabel}
-            </span>
-            <AddToCartButton variantId={product.variantId} />
-          </div>
+          {product.requiresQuote ? (
+            <div className="px-5 pb-[22px] font-serif text-[17px] text-forest">
+              Request a Quote
+            </div>
+          ) : (
+            <div className="flex items-center justify-between px-5 pb-[22px]">
+              <span className="font-serif text-[17px] text-forest">
+                {product.priceLabel}
+              </span>
+              <AddToCartButton variantId={product.variantId} />
+            </div>
+          )}
         </div>
       ))}
     </div>

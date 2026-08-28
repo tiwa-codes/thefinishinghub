@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { createPublicClient } from "@/lib/supabase/public";
-import { hrefForSubcategorySlug } from "@/lib/subcategory-hrefs";
+import { hrefForSubcategorySlug, hrefForTopLevelSlug } from "@/lib/subcategory-hrefs";
 
 export type CategoryNode = {
   id: string;
@@ -23,7 +23,12 @@ export type TopLevelCategory = CategoryNode & {
 // the actual implementation lives in lib/subcategory-hrefs.ts (kept
 // dependency-free so it's safe to import from components RTL renders
 // directly; see that file for why).
-export { BUILT_SUBCATEGORY_HREFS, hrefForSubcategorySlug } from "@/lib/subcategory-hrefs";
+export {
+  BUILT_SUBCATEGORY_HREFS,
+  hrefForSubcategorySlug,
+  BUILT_TOP_LEVEL_HREFS,
+  hrefForTopLevelSlug,
+} from "@/lib/subcategory-hrefs";
 
 type CategoryRow = {
   id: string;
@@ -60,10 +65,10 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
     slug: cat.slug,
     name: cat.name,
     navLabel: cat.nav_label ?? cat.name,
-    // Every top-level category gets a real, predictable path — even one
-    // that 404s (no page built yet) is reachable and fixable later; "#"
-    // is a permanent dead end a user can't tell apart from a bug.
-    href: `/${cat.slug}`,
+    // Explicit allowlist (lib/subcategory-hrefs.ts), same pattern as
+    // subcategory hrefs below — a renamed/removed top-level category
+    // degrades to "#" instead of a live 404.
+    href: hrefForTopLevelSlug(cat.slug),
     subcategories: rows
       .filter((row) => row.parent_id === cat.id)
       .sort((a, b) => a.display_order - b.display_order)

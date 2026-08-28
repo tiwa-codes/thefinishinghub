@@ -13,3 +13,24 @@ export function createPublicClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 }
+
+// Same as createPublicClient, but for routes that need a real-time-accurate
+// read on every request — the filtered/sorted listing pages (subcategory
+// pages, category "all" pages, /search). `dynamic = "force-dynamic"` on
+// those routes stops the *rendered HTML response* from being cached, but
+// verified live: the underlying Supabase fetch() call was still returning
+// a stale response after a real data change on an already-warm `next
+// start` server process — some layer beneath route-level config was still
+// caching it. Passing cache: "no-store" directly on the fetch call itself
+// removes any ambiguity about which layer is responsible.
+export function createUncachedPublicClient() {
+  return createSupabaseClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      global: {
+        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      },
+    },
+  );
+}

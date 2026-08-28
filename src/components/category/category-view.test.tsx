@@ -17,6 +17,7 @@ const PRODUCTS: FeaturedProduct[] = [
     name: "Carrara Porcelain, 60×120",
     categoryLabel: "Tiles & Wall Finishes",
     priceLabel: "₦18,500",
+    requiresQuote: false,
     imageUrl: null,
     imageAlt: "Carrara Porcelain, 60×120",
   },
@@ -30,6 +31,7 @@ function renderView(overrides: Partial<Parameters<typeof CategoryView>[0]> = {})
       heroImageAlt="Sanitarywares & Bath Accessories"
       subcategories={SUBCATEGORIES}
       featuredTitle="Featured pieces from Sanitarywares & Bath Accessories"
+      viewAllHref="/sanitaryware-bath/all"
       products={PRODUCTS}
       designerTitle="Book a designer for your bathroom project."
       designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."
@@ -92,6 +94,19 @@ describe("CategoryView — featured products", () => {
     expect(
       screen.getByText("No published products in this category yet."),
     ).toBeInTheDocument();
+  });
+
+  it("shows 'Request a Quote' instead of price for a requires_quote product", () => {
+    renderView({ products: [{ ...PRODUCTS[0], requiresQuote: true, priceLabel: "" }] });
+    expect(screen.getByText("Request a Quote")).toBeInTheDocument();
+    expect(screen.queryByText("₦18,500")).toBeNull();
+  });
+
+  it("links 'View all' to the real per-category page it's given, not a dead '#'", () => {
+    renderView();
+    expect(
+      screen.getByRole("link", { name: "View all sanitarywares & bath accessories" }),
+    ).toHaveAttribute("href", "/sanitaryware-bath/all");
   });
 });
 

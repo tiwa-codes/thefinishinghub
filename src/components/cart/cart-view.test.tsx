@@ -35,6 +35,7 @@ const SUGGESTIONS: FeaturedProduct[] = [
     name: "Carrara Porcelain, 60×120",
     categoryLabel: "Tiles & Wall Finishes",
     priceLabel: "₦18,500",
+    requiresQuote: false,
     imageUrl: "/images/tile-carrara.jpg",
     imageAlt: "Carrara Porcelain, 60×120",
   },
@@ -183,6 +184,12 @@ describe("CartView — suggestions and honesty guards", () => {
   it("hides the suggestions section entirely when there are none, instead of an empty grid", () => {
     renderCart(ITEMS, []);
     expect(screen.queryByText("You might also like")).toBeNull();
+  });
+
+  it("shows 'Request a Quote' instead of price for a requires_quote suggestion", () => {
+    renderCart(ITEMS, [{ ...SUGGESTIONS[0], requiresQuote: true, priceLabel: "" }]);
+    expect(screen.getByText("Request a Quote")).toBeInTheDocument();
+    expect(screen.queryByText("₦18,500")).toBeNull();
   });
 
   it("does not claim checkout works — the button is disabled with an honest explanation", () => {

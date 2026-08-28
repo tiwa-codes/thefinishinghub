@@ -37,6 +37,7 @@ export default async function FurniturePage() {
         subcategoriesTitle="Shop Furniture by room"
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
+        viewAllHref="/furniture/all"
         products={products}
         designerTitle="Book a designer for your furniture project."
         designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."

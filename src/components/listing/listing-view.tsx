@@ -1,6 +1,7 @@
 import { ListingBreadcrumb, type BreadcrumbCrumb } from "./listing-breadcrumb";
 import { FilterBar } from "./filter-bar";
 import { ListingProductGrid, type ListingProduct } from "./listing-product-grid";
+import type { ListingFilterOptions, ListingFilterState } from "@/lib/listing-filters";
 
 export function ListingView({
   breadcrumb,
@@ -8,12 +9,20 @@ export function ListingView({
   description,
   products,
   emptyMessage,
+  filterOptions,
+  activeFilters,
+  preserveParams,
 }: {
   breadcrumb: BreadcrumbCrumb[];
   title: string;
   description: string;
   products: ListingProduct[];
   emptyMessage: string;
+  filterOptions: ListingFilterOptions;
+  activeFilters: ListingFilterState;
+  // Query params FilterBar doesn't own but must preserve when it builds a
+  // new URL — e.g. /search's ?q=.
+  preserveParams?: Record<string, string>;
 }) {
   const countLabel = `${products.length} ${products.length === 1 ? "piece" : "pieces"}`;
 
@@ -28,7 +37,12 @@ export function ListingView({
       </section>
 
       <section className="mx-auto max-w-[1440px] px-5 pt-7 lg:px-10">
-        <FilterBar countLabel={countLabel} />
+        <FilterBar
+          countLabel={countLabel}
+          filterOptions={filterOptions}
+          activeFilters={activeFilters}
+          preserveParams={preserveParams}
+        />
       </section>
 
       <section className="mx-auto max-w-[1440px] px-5 pt-9 pb-12 lg:px-10 lg:pb-24">

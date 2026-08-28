@@ -10,6 +10,13 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
   const { count } = useCart();
   const [openSlug, setOpenSlug] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
 
   const openCategory = categories.find((cat) => cat.slug === openSlug) ?? null;
 
@@ -101,24 +108,57 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
           </nav>
 
           <div className="hidden flex-shrink-0 items-center gap-[18px] lg:flex lg:justify-self-end">
-            <Link
-              href="#"
-              aria-label="Search"
-              className="inline-flex items-center text-cream hover:text-gold-bright"
-            >
-              <svg
-                width="19"
-                height="19"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
+            {searchOpen ? (
+              // Native GET form — submitting navigates the browser
+              // straight to /search?q=<value>, no client-side routing
+              // logic needed.
+              <form action="/search" method="get" className="flex items-center gap-2">
+                <input
+                  type="search"
+                  name="q"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") closeSearch();
+                  }}
+                  placeholder="Search products…"
+                  aria-label="Search products"
+                  className="w-40 rounded-[2px] border border-cream/30 bg-transparent px-2.5 py-1.5 text-sm text-cream outline-none placeholder:text-cream/50 focus:border-gold-bright lg:w-56"
+                />
+                <button
+                  type="button"
+                  aria-label="Close search"
+                  onClick={closeSearch}
+                  className="inline-flex items-center text-cream hover:text-gold-bright"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                  </svg>
+                </button>
+              </form>
+            ) : (
+              <button
+                type="button"
+                aria-label="Search"
+                onClick={() => setSearchOpen(true)}
+                className="inline-flex items-center text-cream hover:text-gold-bright"
               >
-                <circle cx="11" cy="11" r="7"></circle>
-                <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
-              </svg>
-            </Link>
+                <svg
+                  width="19"
+                  height="19"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                >
+                  <circle cx="11" cy="11" r="7"></circle>
+                  <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
+                </svg>
+              </button>
+            )}
             <Link
               href="/#showroom"
               className="whitespace-nowrap rounded-[2px] bg-gold px-5 py-3 text-[13px] font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"

@@ -8,6 +8,7 @@ export type FeaturedProduct = {
   name: string;
   categoryLabel: string;
   priceLabel: string;
+  requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
 };
@@ -74,7 +75,7 @@ export function FeaturedProductsGrid({
                 {product.name}
               </div>
               <div className="font-serif text-base text-forest">
-                {product.priceLabel}
+                {product.requiresQuote ? "Request a Quote" : product.priceLabel}
               </div>
             </Link>
           ))}

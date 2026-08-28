@@ -19,6 +19,7 @@ export default async function TilesWallFinishesPage() {
         heroImageAlt={title}
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
+        viewAllHref="/tiles-wall-finishes/all"
         products={products}
         designerTitle="Book a designer for your tiling project."
         designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."

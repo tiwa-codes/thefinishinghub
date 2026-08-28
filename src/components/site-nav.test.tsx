@@ -122,3 +122,38 @@ describe("SiteNav", () => {
     expect(tilesLink.querySelector("span:last-child")?.textContent).not.toMatch(/▼|▼/);
   });
 });
+
+describe("SiteNav — search", () => {
+  it("reveals a real search input on click, submitting to /search?q=<value>", () => {
+    renderNav();
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+
+    const input = screen.getByRole("searchbox", { name: "Search products" });
+    expect(input.closest("form")).toHaveAttribute("action", "/search");
+    expect(input).toHaveAttribute("name", "q");
+
+    fireEvent.change(input, { target: { value: "brass pendant" } });
+    expect(input).toHaveValue("brass pendant");
+  });
+
+  it("closes the search input via the close button, clearing the query", () => {
+    renderNav();
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search products" }), {
+      target: { value: "tiles" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Close search" }));
+    expect(screen.queryByRole("searchbox", { name: "Search products" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Search" })).toBeInTheDocument();
+  });
+
+  it("closes the search input on Escape", () => {
+    renderNav();
+    fireEvent.click(screen.getByRole("button", { name: "Search" }));
+    const input = screen.getByRole("searchbox", { name: "Search products" });
+
+    fireEvent.keyDown(input, { key: "Escape" });
+    expect(screen.queryByRole("searchbox", { name: "Search products" })).toBeNull();
+  });
+});

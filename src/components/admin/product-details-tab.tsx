@@ -2,7 +2,11 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { fetchCategoryTree, type TopLevelWithSubs } from "@/lib/admin/category-tree";
+import {
+  fetchCategoryTree,
+  findTopLevelSlugForCategory,
+  type TopLevelWithSubs,
+} from "@/lib/admin/category-tree";
 import { CategoryPicker } from "@/components/admin/category-picker";
 import { revalidateAdminPaths } from "@/lib/admin/revalidate";
 
@@ -14,6 +18,8 @@ type ProductDetails = {
   category_id: string;
   is_showroom_display: boolean;
   status: string;
+  requires_quote: boolean;
+  is_atelier: boolean;
 };
 
 export function ProductDetailsTab({
@@ -31,6 +37,8 @@ export function ProductDetailsTab({
   const [shortDescription, setShortDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [isShowroomDisplay, setIsShowroomDisplay] = useState(false);
+  const [requiresQuote, setRequiresQuote] = useState(false);
+  const [isAtelier, setIsAtelier] = useState(false);
   const [status, setStatus] = useState("draft");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -44,7 +52,7 @@ export function ProductDetailsTab({
         supabase
           .from("products")
           .select(
-            "name, slug, description, short_description, category_id, is_showroom_display, status",
+            "name, slug, description, short_description, category_id, is_showroom_display, status, requires_quote, is_atelier",
           )
           .eq("id", productId)
           .returns<ProductDetails[]>()
@@ -60,6 +68,8 @@ export function ProductDetailsTab({
         setShortDescription(data.short_description ?? "");
         setCategoryId(data.category_id);
         setIsShowroomDisplay(data.is_showroom_display);
+        setRequiresQuote(data.requires_quote);
+        setIsAtelier(data.is_atelier);
         setStatus(data.status);
       }
       setLoading(false);
@@ -113,6 +123,8 @@ export function ProductDetailsTab({
         short_description: shortDescription.trim() || null,
         category_id: categoryId,
         is_showroom_display: isShowroomDisplay,
+        requires_quote: requiresQuote,
+        is_atelier: isAtelier,
         status,
       })
       .eq("id", productId);
@@ -123,10 +135,21 @@ export function ProductDetailsTab({
       return;
     }
 
-    const pathsToRevalidate = [`/products/${slug.trim()}`];
+    // The product's own PDP is enough on its own — but the homepage's New
+    // Arrivals and the top-level category landing page's Featured pieces
+    // both still read via the cached ISR client (getCategoryPageData /
+    // new-arrivals-section.tsx are intentionally NOT on the uncached
+    // client the filter-driven listing pages use), so a change here
+    // (price, requires_quote, name, ...) wouldn't show up there for up to
+    // the 1-hour ISR window without revalidating them explicitly too —
+    // confirmed live: a requires_quote flag wasn't reflected on either
+    // until this was added.
+    const pathsToRevalidate = [`/products/${slug.trim()}`, "/"];
     if (savedSlug && savedSlug !== slug.trim()) {
       pathsToRevalidate.push(`/products/${savedSlug}`);
     }
+    const topLevelSlug = findTopLevelSlugForCategory(tree, categoryId);
+    if (topLevelSlug) pathsToRevalidate.push(`/${topLevelSlug}`);
     await revalidateAdminPaths(pathsToRevalidate);
 
     setSavedSlug(slug.trim());
@@ -205,6 +228,22 @@ export function ProductDetailsTab({
           onChange={(e) => setIsShowroomDisplay(e.target.checked)}
         />
         On display in the Abuja showroom
+      </label>
+      <label className="flex items-center gap-2 text-sm text-ink">
+        <input
+          type="checkbox"
+          checked={requiresQuote}
+          onChange={(e) => setRequiresQuote(e.target.checked)}
+        />
+        Requires a quote (hides price)
+      </label>
+      <label className="flex items-center gap-2 text-sm text-ink">
+        <input
+          type="checkbox"
+          checked={isAtelier}
+          onChange={(e) => setIsAtelier(e.target.checked)}
+        />
+        Feature in The TFH Atelier
       </label>
       <div>
         <label

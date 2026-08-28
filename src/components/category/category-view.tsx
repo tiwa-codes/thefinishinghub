@@ -14,6 +14,7 @@ export function CategoryView({
   subcategoriesTitle,
   subcategories,
   featuredTitle,
+  viewAllHref,
   products,
   designerTitle,
   designerDescription,
@@ -25,6 +26,10 @@ export function CategoryView({
   subcategoriesTitle?: string;
   subcategories: SubcategoryTile[];
   featuredTitle: string;
+  // Real per-category "view all" page (e.g. /furniture/all) — each
+  // top-level category page passes its own, rather than this component
+  // hardcoding "#" the way it used to.
+  viewAllHref: string;
   products: FeaturedProduct[];
   designerTitle: string;
   designerDescription: string;
@@ -45,7 +50,7 @@ export function CategoryView({
       )}
       <FeaturedProductsGrid
         title={featuredTitle}
-        viewAllHref="#"
+        viewAllHref={viewAllHref}
         viewAllLabel={`View all ${title.toLowerCase()}`}
         products={products}
       />

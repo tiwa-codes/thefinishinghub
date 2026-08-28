@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "postinstall": "playwright install chromium",
     "build": "next build",
-    "postbuild": "node scripts/check-brand-guardrails.mjs",
+    "postbuild": "node scripts/postbuild.mjs",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "check:brand": "node scripts/check-brand-guardrails.mjs"
+    "check:brand": "node scripts/check-brand-guardrails.mjs",
+    "check:brand:dynamic": "node scripts/check-brand-guardrails-dynamic.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
@@ -28,6 +30,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "jsdom": "^29.1.1",
+    "playwright": "^1.62.1",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",

@@ -13,6 +13,7 @@ const FIXTURE: NewArrivalProductCard[] = [
     name: "Kano Upholstered Storage Bed",
     spec: "Faux leather, gas-lift storage",
     priceLabel: "₦540,000",
+    requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Kano Upholstered Storage Bed",
   },
@@ -24,6 +25,7 @@ const FIXTURE: NewArrivalProductCard[] = [
     name: "Gudu Brass Pendant",
     spec: "Aged brass, dimmable",
     priceLabel: "₦145,000",
+    requiresQuote: false,
     imageUrl: null,
     imageAlt: "Gudu Brass Pendant",
   },
@@ -76,5 +78,11 @@ describe("NewArrivalsGrid", () => {
     // A single RPC call per click — no separate select-then-insert/update
     // round trip.
     expect(rpcMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows 'Request a Quote' instead of price and Add button for a requires_quote product", () => {
+    renderGrid([{ ...FIXTURE[0], requiresQuote: true, priceLabel: "" }]);
+    expect(screen.getByText("Request a Quote")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add" })).toBeNull();
   });
 });

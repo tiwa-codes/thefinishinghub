@@ -6,6 +6,7 @@ import {
   signInWithPasswordMock,
   signOutMock,
 } from "@/test/supabase-mock";
+import { routerPushMock, pathnameMock } from "@/test/navigation-mock";
 
 // Every test that renders <CartProvider> (SiteNav, Home) triggers its
 // mount effect, which otherwise calls the real Supabase project — slow,
@@ -30,9 +31,25 @@ vi.mock("@/lib/supabase/client", () => ({
   }),
 }));
 
+// Real next/navigation hooks need an actual App Router context, which
+// RTL/jsdom doesn't provide — FilterBar (useRouter/usePathname) and the
+// admin pages that use useRouter would otherwise crash on render.
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: routerPushMock,
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+  }),
+  usePathname: () => pathnameMock(),
+}));
+
 beforeEach(() => {
   rpcMock.mockClear();
   fromMock.mockClear();
   signInWithPasswordMock.mockClear();
   signOutMock.mockClear();
+  routerPushMock.mockClear();
+  pathnameMock.mockClear();
 });

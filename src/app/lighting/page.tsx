@@ -19,6 +19,7 @@ export default async function LightingPage() {
         heroImageAlt={title}
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
+        viewAllHref="/lighting/all"
         products={products}
         designerTitle="Book a designer for your lighting project."
         designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."

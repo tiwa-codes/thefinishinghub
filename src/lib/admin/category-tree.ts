@@ -52,3 +52,20 @@ export function flattenCategoryTree(
     })),
   ]);
 }
+
+// A product's category_id may be a top-level id directly (categories
+// with no subcategories yet) or a subcategory id — either way, this
+// resolves which top-level category page (the one still on the cached
+// ISR client, unlike the filter-driven listing pages) could be showing
+// this product's price via its Featured pieces section, so admin saves
+// know what else needs revalidating besides the product's own PDP.
+export function findTopLevelSlugForCategory(
+  tree: TopLevelWithSubs[],
+  categoryId: string,
+): string | null {
+  for (const top of tree) {
+    if (top.id === categoryId) return top.slug;
+    if (top.subcategories.some((sub) => sub.id === categoryId)) return top.slug;
+  }
+  return null;
+}

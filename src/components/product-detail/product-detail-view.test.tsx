@@ -42,6 +42,7 @@ const COMPLEMENTS: FeaturedProduct[] = [
     name: "Asaba Bed",
     categoryLabel: "Dining",
     priceLabel: "₦610,000",
+    requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Asaba Bed",
   },
@@ -55,6 +56,7 @@ function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> 
         categoryPath="Furniture · Bedroom"
         name="Kano Upholstered Storage Bed"
         priceLabel="₦540,000"
+        requiresQuote={false}
         description="Faux leather upholstered bed frame with gas-lift storage."
         images={SINGLE_IMAGE}
         variants={SINGLE_VARIANT}
@@ -170,6 +172,19 @@ describe("ProductDetailView", () => {
     expect(
       screen.getByText("No published products in this category yet."),
     ).toBeInTheDocument();
+  });
+
+  it("shows 'Request a Quote' with real showroom contact links instead of price/Add to Cart when requiresQuote", () => {
+    renderView({ requiresQuote: true });
+    expect(screen.getAllByText("Request a Quote").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "Add to Cart" })).toBeNull();
+    expect(screen.getByRole("link", { name: "+234 (0) 803 311 7302" })).toHaveAttribute(
+      "href",
+      "tel:+2348033117302",
+    );
+    expect(
+      screen.getByRole("link", { name: "thefinishinghubng@gmail.com" }),
+    ).toHaveAttribute("href", "mailto:thefinishinghubng@gmail.com");
   });
 });
 

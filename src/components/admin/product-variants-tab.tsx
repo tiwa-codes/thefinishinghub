@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { koboToNairaInput, nairaInputToKobo } from "@/lib/format";
 import { revalidateAdminPaths } from "@/lib/admin/revalidate";
+import { fetchCategoryTree, findTopLevelSlugForCategory } from "@/lib/admin/category-tree";
 
 type VariantFormRow = {
   id?: string;
@@ -190,7 +191,23 @@ export function ProductVariantsTab({
     }
 
     if (productSlug) {
-      await revalidateAdminPaths([`/products/${productSlug}`]);
+      // Same reasoning as the Details tab: a price change here can also
+      // show up on the homepage's New Arrivals and the top-level category
+      // landing page's Featured pieces, both still on the cached ISR
+      // client — without revalidating them too, a price edit here
+      // wouldn't show up there for up to the 1-hour ISR window.
+      const pathsToRevalidate = [`/products/${productSlug}`, "/"];
+      const { data: productRow } = await supabase
+        .from("products")
+        .select("category_id")
+        .eq("id", productId)
+        .maybeSingle();
+      if (productRow) {
+        const tree = await fetchCategoryTree(supabase);
+        const topLevelSlug = findTopLevelSlugForCategory(tree, productRow.category_id);
+        if (topLevelSlug) pathsToRevalidate.push(`/${topLevelSlug}`);
+      }
+      await revalidateAdminPaths(pathsToRevalidate);
     }
 
     await load();

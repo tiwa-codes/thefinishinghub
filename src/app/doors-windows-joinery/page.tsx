@@ -21,6 +21,7 @@ export default async function DoorsWindowsJoineryPage() {
         heroImageAlt={title}
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
+        viewAllHref="/doors-windows-joinery/all"
         products={products}
         designerTitle="Book a designer for your doors and joinery project."
         designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."

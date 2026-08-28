@@ -179,7 +179,9 @@ export function CartView({
                     <div className="mb-[3px] font-serif text-[14.5px] text-ink">
                       {product.name}
                     </div>
-                    <div className="text-[13px] text-forest">{product.priceLabel}</div>
+                    <div className="text-[13px] text-forest">
+                      {product.requiresQuote ? "Request a Quote" : product.priceLabel}
+                    </div>
                   </Link>
                 ))}
               </div>

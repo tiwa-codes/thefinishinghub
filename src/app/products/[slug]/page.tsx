@@ -23,14 +23,19 @@ type ProductRow = {
   short_description: string | null;
   status: string;
   categories: { id: string; slug: string; name: string; parent_id: string | null } | null;
-  product_variants: {
+  // public_product_variants, not product_variants — this is the only
+  // variant-price path public-facing code may read from. It nulls
+  // price_kobo for a requires_quote product; the actual security
+  // boundary lives in that view, not here.
+  public_product_variants: {
     id: string;
     sku: string;
     finish: string | null;
     color: string | null;
     size: string | null;
-    price_kobo: number;
+    price_kobo: number | null;
     is_default: boolean;
+    requires_quote: boolean;
   }[];
   product_images: {
     url: string;
@@ -53,7 +58,7 @@ async function getProduct(slug: string) {
       short_description,
       status,
       categories ( id, slug, name, parent_id ),
-      product_variants ( id, sku, finish, color, size, price_kobo, is_default ),
+      public_product_variants ( id, sku, finish, color, size, price_kobo, is_default, requires_quote ),
       product_images ( url, alt_text, is_primary, display_order )
     `,
     )
@@ -86,12 +91,12 @@ async function getComplements(excludeId: string): Promise<FeaturedProduct[]> {
       slug,
       name,
       categories ( name ),
-      product_variants!inner ( id, price_kobo, is_default ),
+      public_product_variants!inner ( id, price_kobo, is_default, requires_quote ),
       product_images ( url, alt_text, is_primary )
     `,
     )
     .eq("status", "published")
-    .eq("product_variants.is_default", true)
+    .eq("public_product_variants.is_default", true)
     .neq("id", excludeId)
     .order("created_at", { ascending: false })
     .limit(4)
@@ -101,13 +106,18 @@ async function getComplements(excludeId: string): Promise<FeaturedProduct[]> {
         slug: string;
         name: string;
         categories: { name: string } | null;
-        product_variants: { id: string; price_kobo: number; is_default: boolean }[];
+        public_product_variants: {
+          id: string;
+          price_kobo: number | null;
+          is_default: boolean;
+          requires_quote: boolean;
+        }[];
         product_images: { url: string; alt_text: string | null; is_primary: boolean }[];
       }[]
     >();
 
   return (data ?? []).map((row) => {
-    const variant = row.product_variants[0];
+    const variant = row.public_product_variants[0];
     const primaryImage =
       row.product_images.find((img) => img.is_primary) ??
       row.product_images[0] ??
@@ -117,7 +127,8 @@ async function getComplements(excludeId: string): Promise<FeaturedProduct[]> {
       slug: row.slug,
       name: row.name,
       categoryLabel: row.categories?.name ?? "",
-      priceLabel: variant ? formatNaira(variant.price_kobo) : "",
+      priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+      requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,
     };
@@ -191,10 +202,10 @@ export default async function ProductDetailPage({
     .map((img) => ({ url: img.url, alt: img.alt_text ?? product.name }));
 
   const defaultVariant =
-    product.product_variants.find((v) => v.is_default) ??
-    product.product_variants[0];
+    product.public_product_variants.find((v) => v.is_default) ??
+    product.public_product_variants[0];
 
-  const variants: ProductVariantOption[] = product.product_variants.map((v) => ({
+  const variants: ProductVariantOption[] = product.public_product_variants.map((v) => ({
     id: v.id,
     label: v.finish ?? v.color ?? v.size ?? v.sku,
     swatchColor: v.color,
@@ -209,7 +220,10 @@ export default async function ProductDetailPage({
         breadcrumb={breadcrumb}
         categoryPath={categoryPath}
         name={product.name}
-        priceLabel={defaultVariant ? formatNaira(defaultVariant.price_kobo) : ""}
+        priceLabel={
+          defaultVariant?.price_kobo != null ? formatNaira(defaultVariant.price_kobo) : ""
+        }
+        requiresQuote={defaultVariant?.requires_quote ?? false}
         description={product.description ?? product.short_description ?? ""}
         images={images}
         variants={variants}

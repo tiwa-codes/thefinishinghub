@@ -16,6 +16,7 @@ export function ProductDetailView({
   categoryPath,
   name,
   priceLabel,
+  requiresQuote,
   description,
   images,
   variants,
@@ -26,6 +27,7 @@ export function ProductDetailView({
   categoryPath: string;
   name: string;
   priceLabel: string;
+  requiresQuote: boolean;
   description: string;
   images: GalleryImage[];
   variants: ProductVariantOption[];
@@ -51,7 +53,7 @@ export function ProductDetailView({
             {name}
           </h1>
           <div className="mb-[22px] font-serif text-2xl text-forest">
-            {priceLabel}
+            {requiresQuote ? "Request a Quote" : priceLabel}
           </div>
           {description && (
             <p className="mb-7 max-w-[520px] text-[15px] leading-[1.7] text-[#4a4339]">
@@ -62,6 +64,7 @@ export function ProductDetailView({
           <ProductPurchasePanel
             variants={variants}
             defaultVariantId={defaultVariantId}
+            requiresQuote={requiresQuote}
           />
 
           <p className="border-t border-[#ddd5c4] pt-6 text-[14px] leading-[1.7] text-[#4a4339]">

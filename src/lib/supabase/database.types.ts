@@ -72,6 +72,13 @@ export type Database = {
             referencedRelation: "product_variants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "cart_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "public_product_variants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       categories: {
@@ -176,6 +183,13 @@ export type Database = {
             referencedRelation: "product_variants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "order_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "public_product_variants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       orders: {
@@ -275,6 +289,13 @@ export type Database = {
             referencedRelation: "product_variants"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "product_images_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "public_product_variants"
+            referencedColumns: ["id"]
+          },
         ]
       }
       product_variants: {
@@ -330,8 +351,10 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_atelier: boolean
           is_showroom_display: boolean
           name: string
+          requires_quote: boolean
           short_description: string | null
           slug: string
           status: string
@@ -342,8 +365,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_atelier?: boolean
           is_showroom_display?: boolean
           name: string
+          requires_quote?: boolean
           short_description?: string | null
           slug: string
           status?: string
@@ -354,8 +379,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_atelier?: boolean
           is_showroom_display?: boolean
           name?: string
+          requires_quote?: boolean
           short_description?: string | null
           slug?: string
           status?: string
@@ -397,7 +424,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_product_variants: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          finish: string | null
+          id: string | null
+          in_stock: boolean | null
+          is_default: boolean | null
+          price_kobo: number | null
+          product_id: string | null
+          requires_quote: boolean | null
+          size: string | null
+          sku: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       add_to_cart: {
