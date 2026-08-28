@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "playwright install chromium",
     "build": "next build",
     "postbuild": "node scripts/postbuild.mjs",
     "start": "next start",

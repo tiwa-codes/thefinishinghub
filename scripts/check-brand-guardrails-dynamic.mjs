@@ -20,11 +20,17 @@
 // can load a real staff-gated page; see the credentials' own comment in
 // .env for how to recreate it if it's ever deleted.
 //
-// Runs as part of "postbuild" (after check-brand-guardrails.mjs) — this
-// means every `next build`, including Vercel deploys, now needs live
-// Supabase connectivity and a working Chromium binary. Chromium is fetched
-// via the "postinstall" npm script (playwright install chromium), so a
-// fresh `npm install` on a new machine or CI image pays that cost once.
+// Local/manual only (`npm run check:brand:dynamic`) — NOT part of
+// "postbuild". It briefly was, until a real Vercel deploy proved that
+// wrong: Vercel's build image is explicitly unsupported by Playwright and
+// is missing OS shared libraries headless Chromium needs to launch at
+// all, which isn't fixable from inside the build sandbox. See
+// postbuild.mjs's header for the full story.
+//
+// Needs a real Chromium binary and live Supabase connectivity to run.
+// First time on a machine: `npx playwright install chromium` (no longer
+// automatic via "postinstall" — that was the same Vercel-build cost this
+// script no longer needs to impose on every `npm install`).
 
 import { spawn } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";

@@ -1,6 +1,20 @@
 #!/usr/bin/env node
-// Orchestrates the full postbuild brand-guardrail chain (static, then
-// dynamic) — and is the one place SKIP_BRAND_GUARDRAIL is honored.
+// Runs the STATIC brand-guardrail only (check-brand-guardrails.mjs) — and
+// is the one place SKIP_BRAND_GUARDRAIL is honored.
+//
+// check-brand-guardrails-dynamic.mjs (the Playwright-driven one covering
+// /admin, /cart, and the filter-driven listing routes) is deliberately
+// NOT run here. It was, briefly — until a real Vercel deploy proved that
+// wrong: Vercel's build image is explicitly unsupported by Playwright
+// ("BEWARE: your OS is not officially supported"), and is missing system
+// shared libraries (libnspr4.so and friends) that headless Chromium needs
+// to even launch. `playwright install chromium` alone can't fix this —
+// the fix needs `--with-deps` (apt-get) or equivalent OS packages, which
+// Vercel's build sandbox doesn't grant. Rather than fight that, the
+// dynamic check goes back to being what it already was in practice all
+// along: a local/manual check (`npm run check:brand:dynamic`) run against
+// `next start` during development, not a CI gate. Its own file has the
+// full route list and reasoning.
 //
 // The skip requires TWO env vars, not one: SKIP_BRAND_GUARDRAIL plus a
 // non-empty SKIP_BRAND_GUARDRAIL_REASON. A bare boolean flag is exactly
@@ -44,9 +58,6 @@ if (skip) {
 
 try {
   execFileSync(process.execPath, ["scripts/check-brand-guardrails.mjs"], {
-    stdio: "inherit",
-  });
-  execFileSync(process.execPath, ["scripts/check-brand-guardrails-dynamic.mjs"], {
     stdio: "inherit",
   });
 } catch (err) {
