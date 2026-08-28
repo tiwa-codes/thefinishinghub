@@ -35,3 +35,18 @@ export function makeQueryStub(result: { data: unknown; error: unknown }) {
 // which table a mutation targeted (e.g. cart-context's setItemQuantity/
 // removeItem going through "cart_items"), same way rpcMock covers add().
 export const fromMock = vi.fn(() => makeQueryStub({ data: [], error: null }));
+
+// Shared with vitest.setup.ts's global client mock — for the admin login
+// form (signInWithPassword) and logout button (signOut). Typed broadly
+// (error as `{ message: string } | null`) so individual tests can
+// override with mockResolvedValueOnce to simulate a failed sign-in.
+export const signInWithPasswordMock = vi.fn(
+  async (): Promise<{
+    data: { user: null; session: null };
+    error: { message: string } | null;
+  }> => ({
+    data: { user: null, session: null },
+    error: null,
+  }),
+);
+export const signOutMock = vi.fn(async () => ({ error: null }));

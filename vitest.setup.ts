@@ -1,6 +1,11 @@
 import "@testing-library/jest-dom/vitest";
 import { vi, beforeEach } from "vitest";
-import { fromMock, rpcMock } from "@/test/supabase-mock";
+import {
+  fromMock,
+  rpcMock,
+  signInWithPasswordMock,
+  signOutMock,
+} from "@/test/supabase-mock";
 
 // Every test that renders <CartProvider> (SiteNav, Home) triggers its
 // mount effect, which otherwise calls the real Supabase project — slow,
@@ -17,6 +22,8 @@ vi.mock("@/lib/supabase/client", () => ({
         },
         error: null,
       }),
+      signInWithPassword: signInWithPasswordMock,
+      signOut: signOutMock,
     },
     from: fromMock,
     rpc: rpcMock,
@@ -26,4 +33,6 @@ vi.mock("@/lib/supabase/client", () => ({
 beforeEach(() => {
   rpcMock.mockClear();
   fromMock.mockClear();
+  signInWithPasswordMock.mockClear();
+  signOutMock.mockClear();
 });

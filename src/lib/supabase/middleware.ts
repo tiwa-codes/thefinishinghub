@@ -27,9 +27,12 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refreshes the session token if it's expired — keeps the anonymous
-  // session (and therefore the cart) alive across requests. Do not add
-  // logic between client creation and this call.
-  await supabase.auth.getUser();
+  // session (and therefore the cart) alive across requests, and is also
+  // what the /admin staff check in src/middleware.ts relies on being
+  // current. Do not add logic between client creation and this call.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  return supabaseResponse;
+  return { supabase, supabaseResponse, user };
 }
