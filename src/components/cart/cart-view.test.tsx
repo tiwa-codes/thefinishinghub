@@ -192,11 +192,11 @@ describe("CartView — suggestions and honesty guards", () => {
     expect(screen.queryByText("₦18,500")).toBeNull();
   });
 
-  it("does not claim checkout works — the button is disabled with an honest explanation", () => {
+  it("links Proceed to Checkout to the real checkout page, with an honest note that payment isn't live yet", () => {
     renderCart();
-    const checkout = screen.getByRole("button", { name: "Proceed to Checkout" });
-    expect(checkout).toBeDisabled();
-    expect(screen.getByText(/Checkout isn't live yet/)).toBeInTheDocument();
+    const checkout = screen.getByRole("link", { name: "Proceed to Checkout" });
+    expect(checkout).toHaveAttribute("href", "/checkout");
+    expect(screen.getByText(/Payment isn't live yet/)).toBeInTheDocument();
   });
 
   it("never claims a specific delivery cost (e.g. free/Abuja) that isn't backed by real data", () => {

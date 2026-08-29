@@ -5,6 +5,10 @@ import {
   rpcMock,
   signInWithPasswordMock,
   signOutMock,
+  onAuthStateChangeMock,
+  updateUserMock,
+  signUpMock,
+  resetPasswordForEmailMock,
 } from "@/test/supabase-mock";
 import { routerPushMock, pathnameMock } from "@/test/navigation-mock";
 
@@ -25,6 +29,10 @@ vi.mock("@/lib/supabase/client", () => ({
       }),
       signInWithPassword: signInWithPasswordMock,
       signOut: signOutMock,
+      onAuthStateChange: onAuthStateChangeMock,
+      updateUser: updateUserMock,
+      signUp: signUpMock,
+      resetPasswordForEmail: resetPasswordForEmailMock,
     },
     from: fromMock,
     rpc: rpcMock,
@@ -50,6 +58,10 @@ beforeEach(() => {
   fromMock.mockClear();
   signInWithPasswordMock.mockClear();
   signOutMock.mockClear();
+  onAuthStateChangeMock.mockClear();
+  updateUserMock.mockClear();
+  signUpMock.mockClear();
+  resetPasswordForEmailMock.mockClear();
   routerPushMock.mockClear();
   pathnameMock.mockClear();
 });

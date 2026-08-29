@@ -34,7 +34,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
               +234 (0) 803 311 7302
             </span>
             <span className="hidden opacity-40 sm:inline">·</span>
-            <Link href="#" className="hover:text-gold-bright">
+            <Link href="/account" className="hover:text-gold-bright">
               Account
             </Link>
             <span className="opacity-40">·</span>

@@ -13,6 +13,13 @@ import { createClient } from "@/lib/supabase/client";
 type CartContextValue = {
   count: number;
   ready: boolean;
+  // Auth state, reactive — updates on signup/login/logout without a page
+  // reload, so /checkout can flip from "sign in to continue" to the real
+  // form the instant an anonymous session converts to a permanent one.
+  // null until the initial session bootstrap resolves.
+  userId: string | null;
+  isAnonymous: boolean | null;
+  email: string | null;
   add: (variantId: string, quantity?: number) => Promise<void>;
   // Cart page quantity stepper/remove: unlike add() (atomic upsert via
   // RPC, since concurrent "add" clicks can race), these operate on a
@@ -28,10 +35,30 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 
+async function loadCartCount(
+  supabase: ReturnType<typeof createClient>,
+  uid: string,
+): Promise<number> {
+  const { data: cartRows, error } = await supabase
+    .from("cart_items")
+    .select("quantity")
+    .eq("user_id", uid)
+    .returns<{ quantity: number }[]>();
+
+  if (error) {
+    console.error("Failed to load cart:", error.message);
+    return 0;
+  }
+
+  return (cartRows ?? []).reduce((sum, row) => sum + row.quantity, 0);
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [count, setCount] = useState(0);
   const [ready, setReady] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isAnonymous, setIsAnonymous] = useState<boolean | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,6 +71,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         data: { session },
       } = await supabase.auth.getSession();
       let uid = session?.user?.id ?? null;
+      let anon = session?.user?.is_anonymous ?? null;
+      let userEmail = session?.user?.email ?? null;
 
       if (!uid) {
         const { data, error } = await supabase.auth.signInAnonymously();
@@ -52,29 +81,46 @@ export function CartProvider({ children }: { children: ReactNode }) {
           return;
         }
         uid = data.user?.id ?? null;
+        anon = data.user?.is_anonymous ?? true;
+        userEmail = data.user?.email ?? null;
       }
 
       if (!uid || cancelled) return;
 
-      const { data: cartRows, error: cartError } = await supabase
-        .from("cart_items")
-        .select("quantity")
-        .eq("user_id", uid)
-        .returns<{ quantity: number }[]>();
-
-      if (cartError) {
-        console.error("Failed to load cart:", cartError.message);
-      }
-
+      const cartCount = await loadCartCount(supabase, uid);
       if (cancelled) return;
+
       setUserId(uid);
-      setCount((cartRows ?? []).reduce((sum, row) => sum + row.quantity, 0));
+      setIsAnonymous(anon);
+      setEmail(userEmail);
+      setCount(cartCount);
       setReady(true);
     }
 
     bootstrap();
+
+    // Reactive: fires on signup (anonymous -> permanent linking), login
+    // (including to a different, pre-existing account), and logout — none
+    // of which the bootstrap effect above sees on its own, since it only
+    // runs once on mount.
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (cancelled) return;
+      const uid = session?.user?.id ?? null;
+      setUserId(uid);
+      setIsAnonymous(session?.user?.is_anonymous ?? null);
+      setEmail(session?.user?.email ?? null);
+      if (uid) {
+        setCount(await loadCartCount(supabase, uid));
+      } else {
+        setCount(0);
+      }
+    });
+
     return () => {
       cancelled = true;
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -141,7 +187,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <CartContext.Provider value={{ count, ready, add, setItemQuantity, removeItem }}>
+    <CartContext.Provider
+      value={{ count, ready, userId, isAnonymous, email, add, setItemQuantity, removeItem }}
+    >
       {children}
     </CartContext.Provider>
   );

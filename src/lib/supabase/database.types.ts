@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -463,6 +463,36 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "cart_items"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_order: {
+        Args: {
+          p_customer_email: string
+          p_customer_name: string
+          p_customer_phone: string
+          p_shipping_address: Json
+        }
+        Returns: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          order_number: string
+          payment_provider: string | null
+          payment_reference: string | null
+          shipping_address: Json | null
+          status: string
+          subtotal_kobo: number
+          total_kobo: number
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
           isOneToOne: true
           isSetofReturn: false
         }

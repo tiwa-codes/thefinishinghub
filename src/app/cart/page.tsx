@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
-import { CartView, type CartLineItem } from "@/components/cart/cart-view";
+import { CartView } from "@/components/cart/cart-view";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicClient } from "@/lib/supabase/public";
 import { formatNaira } from "@/lib/format";
+import { getCartItems } from "@/lib/cart-data";
+import type { CartLineItem } from "@/components/cart/cart-view";
 
 // No `revalidate` export here, deliberately — this page reads the calling
 // user's own cart via cookies(), which forces dynamic rendering regardless
@@ -17,30 +19,7 @@ export const metadata: Metadata = {
   title: "Your Cart — The Finishing Hub",
 };
 
-type CartItemRow = {
-  id: string;
-  quantity: number;
-  product_variants: {
-    id: string;
-    finish: string | null;
-    color: string | null;
-    size: string | null;
-    price_kobo: number;
-    products: {
-      id: string;
-      slug: string;
-      name: string;
-      product_images: {
-        url: string;
-        alt_text: string | null;
-        is_primary: boolean;
-        display_order: number;
-      }[];
-    };
-  };
-};
-
-async function getCartItems(): Promise<{ items: CartLineItem[]; productIds: string[] }> {
+async function getMyCartItems(): Promise<{ items: CartLineItem[]; productIds: string[] }> {
   const supabase = createClient();
   const {
     data: { user },
@@ -51,54 +30,7 @@ async function getCartItems(): Promise<{ items: CartLineItem[]; productIds: stri
   // this visitor, so an empty cart is the correct, honest answer.
   if (!user) return { items: [], productIds: [] };
 
-  const { data, error } = await supabase
-    .from("cart_items")
-    .select(
-      `
-      id,
-      quantity,
-      product_variants!inner (
-        id, finish, color, size, price_kobo,
-        products!inner (
-          id, slug, name,
-          product_images ( url, alt_text, is_primary, display_order )
-        )
-      )
-    `,
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: true })
-    .returns<CartItemRow[]>();
-
-  if (error) {
-    console.error("Failed to load cart items:", error.message);
-    return { items: [], productIds: [] };
-  }
-
-  const rows = data ?? [];
-  const items = rows.map((row) => {
-    const variant = row.product_variants;
-    const product = variant.products;
-    const primaryImage =
-      product.product_images.find((img) => img.is_primary) ??
-      product.product_images[0] ??
-      null;
-    const config = [variant.finish, variant.color, variant.size].filter(Boolean).join(" · ");
-
-    return {
-      cartItemId: row.id,
-      productSlug: product.slug,
-      name: product.name,
-      config,
-      quantity: row.quantity,
-      unitPriceKobo: variant.price_kobo,
-      imageUrl: primaryImage?.url ?? null,
-      imageAlt: primaryImage?.alt_text ?? product.name,
-    };
-  });
-  const productIds = Array.from(new Set(rows.map((row) => row.product_variants.products.id)));
-
-  return { items, productIds };
+  return getCartItems(supabase, user.id);
 }
 
 async function getSuggestions(excludeProductIds: string[]): Promise<FeaturedProduct[]> {
@@ -157,7 +89,7 @@ async function getSuggestions(excludeProductIds: string[]): Promise<FeaturedProd
 }
 
 export default async function CartPage() {
-  const { items, productIds } = await getCartItems();
+  const { items, productIds } = await getMyCartItems();
   const suggestions = await getSuggestions(productIds);
 
   return (

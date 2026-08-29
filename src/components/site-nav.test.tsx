@@ -108,6 +108,11 @@ describe("SiteNav", () => {
     expect(screen.getByText("+234 (0) 803 311 7302")).toBeInTheDocument();
   });
 
+  it("links Account to the real /account page, not a dead href", () => {
+    renderNav();
+    expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute("href", "/account");
+  });
+
   it("opens the mega-menu with real subcategory names when a category that has them is hovered", async () => {
     renderNav();
     const furnitureLink = screen.getByRole("link", { name: /^Furniture/ });

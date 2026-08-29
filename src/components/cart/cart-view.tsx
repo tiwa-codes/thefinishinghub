@@ -215,16 +215,17 @@ export function CartView({
             <span>Total</span>
             <span>{formatNaira(subtotalKobo)}</span>
           </div>
-          <button
-            type="button"
-            disabled
-            title="Checkout isn't live yet"
-            className="mb-[18px] w-full cursor-not-allowed rounded-[2px] bg-gold/50 px-4 py-4 font-sans text-sm font-semibold tracking-wide text-forest/70"
+          <Link
+            href="/checkout"
+            className="mb-[18px] block w-full rounded-[2px] bg-gold px-4 py-4 text-center font-sans text-sm font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
           >
             Proceed to Checkout
-          </button>
+          </Link>
           <div className="text-center text-[12.5px] leading-[1.8] text-[#8a8073]">
-            <div>Checkout isn&apos;t live yet — call +234 (0) 803 311 7302 to complete your order.</div>
+            <div>
+              Payment isn&apos;t live yet — we&apos;ll call you at +234 (0) 803 311 7302 to
+              confirm and complete your order.
+            </div>
             <div>
               Questions?{" "}
               <Link href="#" className="text-forest">
