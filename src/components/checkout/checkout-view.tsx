@@ -4,7 +4,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { createClient } from "@/lib/supabase/client";
-import { formatNaira } from "@/lib/format";
+import { Price } from "@/components/price";
 import { LoginForm } from "@/components/account/login-form";
 import { SignupForm } from "@/components/account/signup-form";
 import { PayNowButton } from "@/components/checkout/pay-now-button";
@@ -41,7 +41,7 @@ function OrderSummary({ items }: { items: CartLineItem[] }) {
               <span className="text-[#8a8073]"> × {item.quantity}</span>
             </span>
             <span className="whitespace-nowrap text-[#6b6155]">
-              {formatNaira(item.unitPriceKobo * item.quantity)}
+              <Price kobo={item.unitPriceKobo * item.quantity} alreadyDiscounted hideLabel />
             </span>
           </div>
         ))}
@@ -51,7 +51,9 @@ function OrderSummary({ items }: { items: CartLineItem[] }) {
       </p>
       <div className="flex justify-between border-t border-[#ddd5c4] pt-4 font-serif text-[19px] text-ink">
         <span>Total</span>
-        <span>{formatNaira(subtotalKobo)}</span>
+        <span>
+          <Price kobo={subtotalKobo} alreadyDiscounted />
+        </span>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { rpcMock } from "@/test/supabase-mock";
 import { ProductDetailView } from "./product-detail-view";
 import type { GalleryImage } from "./product-gallery";
@@ -41,7 +42,7 @@ const COMPLEMENTS: FeaturedProduct[] = [
     slug: "asaba-bed",
     name: "Asaba Bed",
     categoryLabel: "Dining",
-    priceLabel: "₦610,000",
+    priceKobo: 61000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Asaba Bed",
@@ -51,19 +52,22 @@ const COMPLEMENTS: FeaturedProduct[] = [
 function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> = {}) {
   return render(
     <CartProvider>
-      <ProductDetailView
-        breadcrumb={BREADCRUMB}
-        categoryPath="Furniture · Bedroom"
-        name="Kano Upholstered Storage Bed"
-        priceLabel="₦540,000"
-        requiresQuote={false}
-        description="Faux leather upholstered bed frame with gas-lift storage."
-        images={SINGLE_IMAGE}
-        variants={SINGLE_VARIANT}
-        defaultVariantId="variant-1"
-        complements={COMPLEMENTS}
-        {...overrides}
-      />
+      <TradeAccountProvider>
+        <ProductDetailView
+          productId="product-1"
+          breadcrumb={BREADCRUMB}
+          categoryPath="Furniture · Bedroom"
+          name="Kano Upholstered Storage Bed"
+          priceKobo={54000000}
+          requiresQuote={false}
+          description="Faux leather upholstered bed frame with gas-lift storage."
+          images={SINGLE_IMAGE}
+          variants={SINGLE_VARIANT}
+          defaultVariantId="variant-1"
+          complements={COMPLEMENTS}
+          {...overrides}
+        />
+      </TradeAccountProvider>
     </CartProvider>,
   );
 }

@@ -5,16 +5,11 @@ import { SiteFooterSection } from "@/components/site-footer-section";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/format";
 import { PayNowButton } from "@/components/checkout/pay-now-button";
+import { ORDER_STATUS_LABELS } from "@/lib/order-status";
+import { QuoteRequestsSection, type QuoteRequestRow } from "@/components/account/quote-requests-section";
 
 export const metadata: Metadata = {
   title: "My Account — The Finishing Hub",
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  pending_payment: "Payment pending",
-  paid: "Paid",
-  fulfilled: "Fulfilled",
-  cancelled: "Cancelled",
 };
 
 type OrderRow = {
@@ -80,12 +75,58 @@ export default async function AccountPage() {
     .order("created_at", { ascending: false })
     .returns<OrderRow[]>();
 
+  const { data: quoteRequestRows } = await supabase
+    .from("quote_requests")
+    .select(
+      `
+      id, status, message, quoted_price_kobo, quoted_notes, created_at,
+      products ( name ),
+      product_variants ( finish, color, size ),
+      orders ( order_number )
+    `,
+    )
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .returns<
+      {
+        id: string;
+        status: string;
+        message: string | null;
+        quoted_price_kobo: number | null;
+        quoted_notes: string | null;
+        created_at: string;
+        products: { name: string } | null;
+        product_variants: { finish: string | null; color: string | null; size: string | null } | null;
+        orders: { order_number: string } | null;
+      }[]
+    >();
+
+  const quoteRequests: QuoteRequestRow[] = (quoteRequestRows ?? []).map((r) => ({
+    id: r.id,
+    status: r.status,
+    message: r.message,
+    quoted_price_kobo: r.quoted_price_kobo,
+    quoted_notes: r.quoted_notes,
+    created_at: r.created_at,
+    product_name: r.products?.name ?? "Product",
+    variant_label:
+      [r.product_variants?.finish, r.product_variants?.color, r.product_variants?.size]
+        .filter(Boolean)
+        .join(" · ") || null,
+    order_number: r.orders?.order_number ?? null,
+  }));
+
   return (
     <div className="bg-cream font-sans text-ink antialiased">
       <SiteNavSection />
       <section className="mx-auto max-w-[840px] px-5 py-12 lg:px-10">
         <div className="mb-2 font-serif text-2xl text-ink">My Account</div>
         <p className="mb-10 text-sm text-[#8a8073]">{user.email}</p>
+
+        <h2 className="mb-5 font-serif text-xl text-ink">Quote requests</h2>
+        <div className="mb-12">
+          <QuoteRequestsSection initialRequests={quoteRequests} />
+        </div>
 
         <h2 className="mb-5 font-serif text-xl text-ink">Order history</h2>
 
@@ -113,7 +154,7 @@ export default async function AccountPage() {
                   </div>
                   <div className="text-right">
                     <div className="rounded-[2px] bg-cream px-2.5 py-1 text-xs uppercase tracking-[0.06em] text-[#6b6155]">
-                      {STATUS_LABELS[order.status] ?? order.status}
+                      {ORDER_STATUS_LABELS[order.status] ?? order.status}
                     </div>
                     <div className="mt-1.5 font-serif text-base text-forest">
                       {formatNaira(order.total_kobo)}

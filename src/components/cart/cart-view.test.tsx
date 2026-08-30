@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { fromMock } from "@/test/supabase-mock";
 import { CartView, type CartLineItem } from "./cart-view";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
@@ -34,7 +35,7 @@ const SUGGESTIONS: FeaturedProduct[] = [
     slug: "carrara-porcelain-60x120",
     name: "Carrara Porcelain, 60×120",
     categoryLabel: "Tiles & Wall Finishes",
-    priceLabel: "₦18,500",
+    priceKobo: 1850000,
     requiresQuote: false,
     imageUrl: "/images/tile-carrara.jpg",
     imageAlt: "Carrara Porcelain, 60×120",
@@ -44,7 +45,9 @@ const SUGGESTIONS: FeaturedProduct[] = [
 function renderCart(items: CartLineItem[] = ITEMS, suggestions: FeaturedProduct[] = SUGGESTIONS) {
   return render(
     <CartProvider>
-      <CartView initialItems={items} suggestions={suggestions} />
+      <TradeAccountProvider>
+        <CartView initialItems={items} suggestions={suggestions} />
+      </TradeAccountProvider>
     </CartProvider>,
   );
 }
@@ -187,7 +190,7 @@ describe("CartView — suggestions and honesty guards", () => {
   });
 
   it("shows 'Request a Quote' instead of price for a requires_quote suggestion", () => {
-    renderCart(ITEMS, [{ ...SUGGESTIONS[0], requiresQuote: true, priceLabel: "" }]);
+    renderCart(ITEMS, [{ ...SUGGESTIONS[0], requiresQuote: true, priceKobo: null }]);
     expect(screen.getByText("Request a Quote")).toBeInTheDocument();
     expect(screen.queryByText("₦18,500")).toBeNull();
   });

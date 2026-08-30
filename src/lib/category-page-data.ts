@@ -1,6 +1,5 @@
 import { createPublicClient, createUncachedPublicClient } from "@/lib/supabase/public";
 import { hrefForSubcategorySlug } from "@/lib/categories";
-import { formatNaira } from "@/lib/format";
 import type { SubcategoryTile } from "@/components/category/subcategory-tiles";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
 import type { FilterableProduct } from "@/lib/listing-filters";
@@ -117,7 +116,7 @@ export async function getCategoryPageData(
         slug: row.slug,
         name: row.name,
         categoryLabel: row.categories?.name ?? "",
-        priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+        priceKobo: variant?.price_kobo ?? null,
         requiresQuote: variant?.requires_quote ?? false,
         imageUrl: primaryImage?.url ?? null,
         imageAlt: primaryImage?.alt_text ?? row.name,

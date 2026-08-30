@@ -1,13 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { Price } from "@/components/price";
 
 export type FeaturedProduct = {
   id: string;
   slug: string;
   name: string;
   categoryLabel: string;
-  priceLabel: string;
+  priceKobo: number | null;
   requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
@@ -75,7 +76,11 @@ export function FeaturedProductsGrid({
                 {product.name}
               </div>
               <div className="font-serif text-base text-forest">
-                {product.requiresQuote ? "Request a Quote" : product.priceLabel}
+                {product.requiresQuote || product.priceKobo == null ? (
+                  "Request a Quote"
+                ) : (
+                  <Price kobo={product.priceKobo} />
+                )}
               </div>
             </Link>
           ))}

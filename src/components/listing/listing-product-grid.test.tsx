@@ -2,24 +2,29 @@ import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { ListingProductGrid, type ListingProduct } from "./listing-product-grid";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 
 const PRODUCT: ListingProduct = {
   id: "p1",
   slug: "gudu-brass-pendant",
   variantId: "v1",
   name: "Gudu Brass Pendant",
-  priceLabel: "₦85,000",
+  priceKobo: 8500000,
   requiresQuote: false,
   imageUrl: null,
   imageAlt: "Gudu Brass Pendant",
   inShowroom: false,
 };
 
-// AddToCartButton (rendered per card) needs CartProvider in the tree.
+// AddToCartButton (rendered per card) needs CartProvider in the tree;
+// <Price> (also rendered per card) needs TradeAccountProvider, which itself
+// needs CartProvider as an ancestor.
 function renderGrid(products: ListingProduct[], emptyMessage: string) {
   return render(
     <CartProvider>
-      <ListingProductGrid products={products} emptyMessage={emptyMessage} />
+      <TradeAccountProvider>
+        <ListingProductGrid products={products} emptyMessage={emptyMessage} />
+      </TradeAccountProvider>
     </CartProvider>,
   );
 }
@@ -43,7 +48,7 @@ describe("ListingProductGrid — category context", () => {
 
 describe("ListingProductGrid — requires_quote", () => {
   it("shows 'Request a Quote' instead of price and Add to Cart", () => {
-    renderGrid([{ ...PRODUCT, requiresQuote: true, priceLabel: "" }], "No products found.");
+    renderGrid([{ ...PRODUCT, requiresQuote: true, priceKobo: null }], "No products found.");
     expect(screen.getByText("Request a Quote")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add" })).toBeNull();
   });

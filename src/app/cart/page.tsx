@@ -5,7 +5,6 @@ import { CartView } from "@/components/cart/cart-view";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
 import { createClient } from "@/lib/supabase/server";
 import { createPublicClient } from "@/lib/supabase/public";
-import { formatNaira } from "@/lib/format";
 import { getCartItems } from "@/lib/cart-data";
 import type { CartLineItem } from "@/components/cart/cart-view";
 
@@ -80,7 +79,7 @@ async function getSuggestions(excludeProductIds: string[]): Promise<FeaturedProd
       slug: row.slug,
       name: row.name,
       categoryLabel: row.categories?.name ?? "",
-      priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+      priceKobo: variant?.price_kobo ?? null,
       requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,

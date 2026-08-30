@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -40,7 +41,9 @@ export default function RootLayout({
       <body
         className={`${fraunces.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <CartProvider>{children}</CartProvider>
+        <CartProvider>
+          <TradeAccountProvider>{children}</TradeAccountProvider>
+        </CartProvider>
       </body>
     </html>
   );

@@ -11,6 +11,22 @@ export const rpcMock = vi.fn<
   (...args: unknown[]) => Promise<{ data: unknown; error: { message: string } | null }>
 >(async () => ({ data: null, error: null }));
 
+// Real Supabase's .maybeSingle() resolves to `data: null` for zero matching
+// rows, never a truthy empty array. The shared fromMock default below is
+// `{ data: [], error: null }` (a sensible default for the far more common
+// list/`.then()` case) — without this normalization, any caller using
+// `.maybeSingle()` against an unconfigured stub would see a truthy `[]` and
+// wrongly treat that as "a row was found" (e.g. TradeAccountProvider's
+// `!!data` check). Only array-shaped `data` is special-cased, so a test that
+// explicitly configures a single-object result for `.maybeSingle()` is
+// unaffected.
+function normalizeMaybeSingle<T extends { data: unknown; error: unknown }>(result: T): T {
+  if (Array.isArray(result.data)) {
+    return { ...result, data: result.data.length > 0 ? result.data[0] : null };
+  }
+  return result;
+}
+
 export function makeQueryStub(result: { data: unknown; error: unknown }) {
   const stub: {
     select: (...args: unknown[]) => typeof stub;
@@ -32,7 +48,7 @@ export function makeQueryStub(result: { data: unknown; error: unknown }) {
     delete: vi.fn(() => stub),
     returns: vi.fn(() => stub),
     insert: vi.fn(() => Promise.resolve(result)),
-    maybeSingle: vi.fn(() => Promise.resolve(result)),
+    maybeSingle: vi.fn(() => Promise.resolve(normalizeMaybeSingle(result))),
     then: (resolve) => resolve(result),
   };
   return stub;
@@ -41,7 +57,13 @@ export function makeQueryStub(result: { data: unknown; error: unknown }) {
 // Shared with vitest.setup.ts's global client mock — lets any test assert
 // which table a mutation targeted (e.g. cart-context's setItemQuantity/
 // removeItem going through "cart_items"), same way rpcMock covers add().
-export const fromMock = vi.fn(() => makeQueryStub({ data: [], error: null }));
+// Accepts the table-name argument (even though the default implementation
+// ignores it) so tests can branch on it via mockImplementation, matching
+// how .from(table) is really called — a zero-arg signature would reject
+// any table-aware override at the type level.
+export const fromMock = vi.fn<(table?: string) => ReturnType<typeof makeQueryStub>>(
+  () => makeQueryStub({ data: [], error: null }),
+);
 
 // Shared with vitest.setup.ts's global client mock — for the admin login
 // form (signInWithPassword) and logout button (signOut). Typed broadly

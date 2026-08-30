@@ -239,19 +239,21 @@ describe("listingEmptyMessage", () => {
 });
 
 describe("toListingProduct", () => {
-  it("formats price and drops filter-only fields for the grid card", () => {
+  it("passes the raw price through and drops filter-only fields for the grid card", () => {
     const result = toListingProduct(
       product({ priceKobo: 125000, categoryLabel: "Lighting & Automation" }),
     );
-    expect(result.priceLabel).toBe("₦1,250");
+    // Raw kobo, not a formatted string — the grid card's own <Price>
+    // component computes any trade discount and formats it, which it can
+    // only do from the real kobo number, not a pre-formatted label.
+    expect(result.priceKobo).toBe(125000);
     expect(result.categoryLabel).toBe("Lighting & Automation");
     expect(result).not.toHaveProperty("finish");
-    expect(result).not.toHaveProperty("priceKobo");
   });
 
-  it("passes requiresQuote through with an empty priceLabel rather than formatting a null price", () => {
+  it("passes requiresQuote through with a null priceKobo rather than fabricating a price", () => {
     const result = toListingProduct(product({ priceKobo: null, requiresQuote: true }));
     expect(result.requiresQuote).toBe(true);
-    expect(result.priceLabel).toBe("");
+    expect(result.priceKobo).toBeNull();
   });
 });

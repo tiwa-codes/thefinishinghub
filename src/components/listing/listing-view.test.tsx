@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { ListingView } from "./listing-view";
 import type { ListingProduct } from "./listing-product-grid";
 import { DEFAULT_LISTING_FILTERS } from "@/lib/listing-filters";
@@ -17,7 +18,7 @@ function makeProducts(count: number): ListingProduct[] {
     slug: `test-sofa-${i}`,
     variantId: `variant-${i}`,
     name: `Test Sofa ${i}`,
-    priceLabel: `₦${(i + 1) * 100000}`,
+    priceKobo: (i + 1) * 10000000,
     requiresQuote: false,
     imageUrl: null,
     imageAlt: `Test Sofa ${i}`,
@@ -28,15 +29,17 @@ function makeProducts(count: number): ListingProduct[] {
 function renderListing(products: ListingProduct[]) {
   return render(
     <CartProvider>
-      <ListingView
-        breadcrumb={BREADCRUMB}
-        title="Living Room Furniture"
-        description="Sofas, seating, coffee and side tables, and media units."
-        products={products}
-        emptyMessage="No Living Room pieces published yet — check back soon."
-        filterOptions={{ finishes: [], colors: [], sizes: [] }}
-        activeFilters={DEFAULT_LISTING_FILTERS}
-      />
+      <TradeAccountProvider>
+        <ListingView
+          breadcrumb={BREADCRUMB}
+          title="Living Room Furniture"
+          description="Sofas, seating, coffee and side tables, and media units."
+          products={products}
+          emptyMessage="No Living Room pieces published yet — check back soon."
+          filterOptions={{ finishes: [], colors: [], sizes: [] }}
+          activeFilters={DEFAULT_LISTING_FILTERS}
+        />
+      </TradeAccountProvider>
     </CartProvider>,
   );
 }

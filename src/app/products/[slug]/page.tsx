@@ -7,7 +7,6 @@ import type { GalleryImage } from "@/components/product-detail/product-gallery";
 import type { ProductVariantOption } from "@/components/product-detail/variant-picker";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
 import { createPublicClient } from "@/lib/supabase/public";
-import { formatNaira } from "@/lib/format";
 import { hrefForSubcategorySlug } from "@/lib/categories";
 import type { BreadcrumbCrumb } from "@/components/listing/listing-breadcrumb";
 
@@ -127,7 +126,7 @@ async function getComplements(excludeId: string): Promise<FeaturedProduct[]> {
       slug: row.slug,
       name: row.name,
       categoryLabel: row.categories?.name ?? "",
-      priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+      priceKobo: variant?.price_kobo ?? null,
       requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,
@@ -217,12 +216,11 @@ export default async function ProductDetailPage({
     <div className="bg-cream font-sans text-ink antialiased">
       <SiteNavSection />
       <ProductDetailView
+        productId={product.id}
         breadcrumb={breadcrumb}
         categoryPath={categoryPath}
         name={product.name}
-        priceLabel={
-          defaultVariant?.price_kobo != null ? formatNaira(defaultVariant.price_kobo) : ""
-        }
+        priceKobo={defaultVariant?.price_kobo ?? null}
         requiresQuote={defaultVariant?.requires_quote ?? false}
         description={product.description ?? product.short_description ?? ""}
         images={images}

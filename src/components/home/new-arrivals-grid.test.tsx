@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { rpcMock } from "@/test/supabase-mock";
 import { NewArrivalsGrid, type NewArrivalProductCard } from "./new-arrivals-grid";
 
@@ -12,7 +13,7 @@ const FIXTURE: NewArrivalProductCard[] = [
     categoryLabel: "Bedroom",
     name: "Kano Upholstered Storage Bed",
     spec: "Faux leather, gas-lift storage",
-    priceLabel: "₦540,000",
+    priceKobo: 54000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Kano Upholstered Storage Bed",
@@ -24,7 +25,7 @@ const FIXTURE: NewArrivalProductCard[] = [
     categoryLabel: "Lighting",
     name: "Gudu Brass Pendant",
     spec: "Aged brass, dimmable",
-    priceLabel: "₦145,000",
+    priceKobo: 14500000,
     requiresQuote: false,
     imageUrl: null,
     imageAlt: "Gudu Brass Pendant",
@@ -34,7 +35,9 @@ const FIXTURE: NewArrivalProductCard[] = [
 function renderGrid(products: NewArrivalProductCard[] = FIXTURE) {
   return render(
     <CartProvider>
-      <NewArrivalsGrid products={products} />
+      <TradeAccountProvider>
+        <NewArrivalsGrid products={products} />
+      </TradeAccountProvider>
     </CartProvider>,
   );
 }
@@ -81,7 +84,7 @@ describe("NewArrivalsGrid", () => {
   });
 
   it("shows 'Request a Quote' instead of price and Add button for a requires_quote product", () => {
-    renderGrid([{ ...FIXTURE[0], requiresQuote: true, priceLabel: "" }]);
+    renderGrid([{ ...FIXTURE[0], requiresQuote: true, priceKobo: null }]);
     expect(screen.getByText("Request a Quote")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add" })).toBeNull();
   });

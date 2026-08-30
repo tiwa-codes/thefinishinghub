@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
-import { formatNaira } from "@/lib/format";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { Price } from "@/components/price";
 import type { FeaturedProduct } from "@/components/category/featured-products-grid";
 
 export type CartLineItem = {
@@ -143,10 +143,10 @@ export function CartView({
               </div>
 
               <div className="hidden whitespace-nowrap font-serif text-sm text-[#6b6155] sm:block">
-                {formatNaira(item.unitPriceKobo)}
+                <Price kobo={item.unitPriceKobo} alreadyDiscounted hideLabel />
               </div>
               <div className="col-span-2 whitespace-nowrap text-right font-serif text-base text-forest sm:col-span-1">
-                {formatNaira(item.unitPriceKobo * item.quantity)}
+                <Price kobo={item.unitPriceKobo * item.quantity} alreadyDiscounted />
               </div>
             </div>
           ))}
@@ -180,7 +180,11 @@ export function CartView({
                       {product.name}
                     </div>
                     <div className="text-[13px] text-forest">
-                      {product.requiresQuote ? "Request a Quote" : product.priceLabel}
+                      {product.requiresQuote || product.priceKobo == null ? (
+                        "Request a Quote"
+                      ) : (
+                        <Price kobo={product.priceKobo} />
+                      )}
                     </div>
                   </Link>
                 ))}
@@ -206,14 +210,18 @@ export function CartView({
           <h2 className="mb-6 font-serif text-xl font-normal text-ink">Order Summary</h2>
           <div className="mb-4 flex justify-between text-sm text-[#4a4339]">
             <span>Subtotal</span>
-            <span>{formatNaira(subtotalKobo)}</span>
+            <span>
+              <Price kobo={subtotalKobo} alreadyDiscounted hideLabel />
+            </span>
           </div>
           <p className="mb-5 text-[12.5px] leading-[1.6] text-[#8a8073]">
             Delivery cost is confirmed with the showroom before payment.
           </p>
           <div className="mb-6 flex justify-between border-t border-[#ddd5c4] pt-4 font-serif text-[19px] text-ink">
             <span>Total</span>
-            <span>{formatNaira(subtotalKobo)}</span>
+            <span>
+              <Price kobo={subtotalKobo} alreadyDiscounted />
+            </span>
           </div>
           <Link
             href="/checkout"

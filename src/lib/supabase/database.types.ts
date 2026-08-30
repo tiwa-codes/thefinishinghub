@@ -398,6 +398,90 @@ export type Database = {
           },
         ]
       }
+      quote_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          order_id: string | null
+          product_id: string
+          quoted_at: string | null
+          quoted_by: string | null
+          quoted_notes: string | null
+          quoted_price_kobo: number | null
+          responded_at: string | null
+          status: string
+          user_id: string
+          variant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          order_id?: string | null
+          product_id: string
+          quoted_at?: string | null
+          quoted_by?: string | null
+          quoted_notes?: string | null
+          quoted_price_kobo?: number | null
+          responded_at?: string | null
+          status?: string
+          user_id: string
+          variant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          order_id?: string | null
+          product_id?: string
+          quoted_at?: string | null
+          quoted_by?: string | null
+          quoted_notes?: string | null
+          quoted_price_kobo?: number | null
+          responded_at?: string | null
+          status?: string
+          user_id?: string
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_quoted_by_fkey"
+            columns: ["quoted_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_requests_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "public_product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff: {
         Row: {
           created_at: string
@@ -422,8 +506,66 @@ export type Database = {
         }
         Relationships: []
       }
+      trade_accounts: {
+        Row: {
+          applied_at: string
+          approved_at: string | null
+          approved_by: string | null
+          business_name: string
+          created_at: string
+          discount_percent: number | null
+          id: string
+          status: string
+          tier: string | null
+          tier_requested: string | null
+        }
+        Insert: {
+          applied_at?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          business_name: string
+          created_at?: string
+          discount_percent?: number | null
+          id: string
+          status?: string
+          tier?: string | null
+          tier_requested?: string | null
+        }
+        Update: {
+          applied_at?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          business_name?: string
+          created_at?: string
+          discount_percent?: number | null
+          id?: string
+          status?: string
+          tier?: string | null
+          tier_requested?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trade_accounts_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
+      customer_summary: {
+        Row: {
+          customer_email: string | null
+          customer_name: string | null
+          last_order_at: string | null
+          lifetime_value_kobo: number | null
+          order_count: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       public_product_variants: {
         Row: {
           color: string | null
@@ -432,6 +574,7 @@ export type Database = {
           id: string | null
           in_stock: boolean | null
           is_default: boolean | null
+          is_trade_price: boolean | null
           price_kobo: number | null
           product_id: string | null
           requires_quote: boolean | null
@@ -450,6 +593,36 @@ export type Database = {
       }
     }
     Functions: {
+      accept_quote: {
+        Args: {
+          p_customer_name: string
+          p_customer_phone: string
+          p_quote_request_id: string
+          p_shipping_address: Json
+        }
+        Returns: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          order_number: string
+          payment_provider: string | null
+          payment_reference: string | null
+          shipping_address: Json | null
+          status: string
+          subtotal_kobo: number
+          total_kobo: number
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       add_to_cart: {
         Args: { p_quantity?: number; p_variant_id: string }
         Returns: {
@@ -496,6 +669,18 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      decline_quote: {
+        Args: { p_quote_request_id: string }
+        Returns: undefined
+      }
+      respond_to_quote: {
+        Args: {
+          p_notes: string
+          p_price_kobo: number
+          p_quote_request_id: string
+        }
+        Returns: undefined
       }
     }
     Enums: {

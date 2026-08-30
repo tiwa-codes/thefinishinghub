@@ -3,6 +3,7 @@ import { FeaturedProductsGrid, type FeaturedProduct } from "@/components/categor
 import { ProductGallery, type GalleryImage } from "./product-gallery";
 import { ProductPurchasePanel } from "./product-purchase-panel";
 import type { ProductVariantOption } from "./variant-picker";
+import { Price } from "@/components/price";
 
 // Generic store policy, not per-product — the source design's specific
 // "5 working days / 6–8 weeks" numbers were about bed upholstery
@@ -12,10 +13,11 @@ const DELIVERY_NOTE =
   "Delivered nationwide. In-stock pieces ship from the Abuja showroom; made-to-order pieces may take longer — ask in showroom for lead times.";
 
 export function ProductDetailView({
+  productId,
   breadcrumb,
   categoryPath,
   name,
-  priceLabel,
+  priceKobo,
   requiresQuote,
   description,
   images,
@@ -23,10 +25,11 @@ export function ProductDetailView({
   defaultVariantId,
   complements,
 }: {
+  productId: string;
   breadcrumb: BreadcrumbCrumb[];
   categoryPath: string;
   name: string;
-  priceLabel: string;
+  priceKobo: number | null;
   requiresQuote: boolean;
   description: string;
   images: GalleryImage[];
@@ -53,7 +56,11 @@ export function ProductDetailView({
             {name}
           </h1>
           <div className="mb-[22px] font-serif text-2xl text-forest">
-            {requiresQuote ? "Request a Quote" : priceLabel}
+            {requiresQuote || priceKobo == null ? (
+              "Request a Quote"
+            ) : (
+              <Price kobo={priceKobo} />
+            )}
           </div>
           {description && (
             <p className="mb-7 max-w-[520px] text-[15px] leading-[1.7] text-[#4a4339]">
@@ -62,6 +69,7 @@ export function ProductDetailView({
           )}
 
           <ProductPurchasePanel
+            productId={productId}
             variants={variants}
             defaultVariantId={defaultVariantId}
             requiresQuote={requiresQuote}

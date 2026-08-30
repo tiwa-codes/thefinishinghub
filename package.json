@@ -10,7 +10,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "check:brand": "node scripts/check-brand-guardrails.mjs",
-    "check:brand:dynamic": "node scripts/check-brand-guardrails-dynamic.mjs"
+    "check:brand:dynamic": "node scripts/check-brand-guardrails-dynamic.mjs",
+    "check:trade-pricing": "node scripts/check-trade-pricing-rls.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

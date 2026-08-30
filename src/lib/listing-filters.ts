@@ -1,4 +1,3 @@
-import { formatNaira } from "@/lib/format";
 import type { ListingProduct } from "@/components/listing/listing-product-grid";
 
 // The richer, per-variant-field shape every listing data-fetcher
@@ -202,7 +201,7 @@ export function toListingProduct(p: FilterableProduct): ListingProduct {
     slug: p.slug,
     variantId: p.variantId,
     name: p.name,
-    priceLabel: p.priceKobo !== null ? formatNaira(p.priceKobo) : "",
+    priceKobo: p.priceKobo,
     requiresQuote: p.requiresQuote,
     imageUrl: p.imageUrl,
     imageAlt: p.imageAlt,

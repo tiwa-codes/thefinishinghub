@@ -5,13 +5,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { Price } from "@/components/price";
 
 export type ListingProduct = {
   id: string;
   slug: string;
   variantId: string;
   name: string;
-  priceLabel: string;
+  priceKobo: number | null;
   requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
@@ -93,12 +94,12 @@ export function ListingProductGrid({
                 {product.name}
               </div>
             </Link>
-            {product.requiresQuote ? (
+            {product.requiresQuote || product.priceKobo == null ? (
               <div className="font-serif text-base text-forest">Request a Quote</div>
             ) : (
               <div className="flex items-center justify-between gap-2.5">
                 <span className="font-serif text-base text-forest">
-                  {product.priceLabel}
+                  <Price kobo={product.priceKobo} />
                 </span>
                 <AddToCartButton variantId={product.variantId} />
               </div>

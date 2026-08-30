@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
-import { formatNaira } from "@/lib/format";
 import { NewArrivalsGrid, type NewArrivalProductCard } from "./new-arrivals-grid";
 
 // public_product_variants, not product_variants — the only variant-price
@@ -64,7 +63,7 @@ export async function NewArrivalsSection() {
       categoryLabel: row.categories?.name ?? "",
       name: row.name,
       spec: row.short_description,
-      priceLabel: variant?.price_kobo != null ? formatNaira(variant.price_kobo) : "",
+      priceKobo: variant?.price_kobo ?? null,
       requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { CategoryView } from "./category-view";
 import type { SubcategoryTile } from "./subcategory-tiles";
 import type { FeaturedProduct } from "./featured-products-grid";
@@ -16,7 +18,7 @@ const PRODUCTS: FeaturedProduct[] = [
     slug: "carrara-porcelain-60x120",
     name: "Carrara Porcelain, 60×120",
     categoryLabel: "Tiles & Wall Finishes",
-    priceLabel: "₦18,500",
+    priceKobo: 1850000,
     requiresQuote: false,
     imageUrl: null,
     imageAlt: "Carrara Porcelain, 60×120",
@@ -25,18 +27,22 @@ const PRODUCTS: FeaturedProduct[] = [
 
 function renderView(overrides: Partial<Parameters<typeof CategoryView>[0]> = {}) {
   return render(
-    <CategoryView
-      title="Sanitarywares & Bath Accessories"
-      heroDescription="Showers, baths and fittings for a finished bathroom."
-      heroImageAlt="Sanitarywares & Bath Accessories"
-      subcategories={SUBCATEGORIES}
-      featuredTitle="Featured pieces from Sanitarywares & Bath Accessories"
-      viewAllHref="/sanitaryware-bath/all"
-      products={PRODUCTS}
-      designerTitle="Book a designer for your bathroom project."
-      designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."
-      {...overrides}
-    />,
+    <CartProvider>
+      <TradeAccountProvider>
+        <CategoryView
+          title="Sanitarywares & Bath Accessories"
+          heroDescription="Showers, baths and fittings for a finished bathroom."
+          heroImageAlt="Sanitarywares & Bath Accessories"
+          subcategories={SUBCATEGORIES}
+          featuredTitle="Featured pieces from Sanitarywares & Bath Accessories"
+          viewAllHref="/sanitaryware-bath/all"
+          products={PRODUCTS}
+          designerTitle="Book a designer for your bathroom project."
+          designerDescription="Bring a plan or a photo. We'll help you specify pieces from the showroom for your space."
+          {...overrides}
+        />
+      </TradeAccountProvider>
+    </CartProvider>,
   );
 }
 
@@ -97,7 +103,7 @@ describe("CategoryView — featured products", () => {
   });
 
   it("shows 'Request a Quote' instead of price for a requires_quote product", () => {
-    renderView({ products: [{ ...PRODUCTS[0], requiresQuote: true, priceLabel: "" }] });
+    renderView({ products: [{ ...PRODUCTS[0], requiresQuote: true, priceKobo: null }] });
     expect(screen.getByText("Request a Quote")).toBeInTheDocument();
     expect(screen.queryByText("₦18,500")).toBeNull();
   });

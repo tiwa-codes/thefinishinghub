@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { Price } from "@/components/price";
 
 export type NewArrivalProductCard = {
   id: string;
@@ -10,7 +11,7 @@ export type NewArrivalProductCard = {
   categoryLabel: string;
   name: string;
   spec: string | null;
-  priceLabel: string;
+  priceKobo: number | null;
   requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
@@ -62,14 +63,14 @@ export function NewArrivalsGrid({
               )}
             </div>
           </Link>
-          {product.requiresQuote ? (
+          {product.requiresQuote || product.priceKobo == null ? (
             <div className="px-5 pb-[22px] font-serif text-[17px] text-forest">
               Request a Quote
             </div>
           ) : (
             <div className="flex items-center justify-between px-5 pb-[22px]">
               <span className="font-serif text-[17px] text-forest">
-                {product.priceLabel}
+                <Price kobo={product.priceKobo} />
               </span>
               <AddToCartButton variantId={product.variantId} />
             </div>

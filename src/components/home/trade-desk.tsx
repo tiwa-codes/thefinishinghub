@@ -19,7 +19,7 @@ export function TradeDesk() {
         </div>
         <div className="flex w-full flex-shrink-0 flex-col gap-3 lg:w-auto">
           <Link
-            href="#"
+            href="/trade/apply"
             className="whitespace-nowrap rounded-[2px] bg-forest px-8 py-[15px] text-center text-sm font-semibold tracking-wide text-cream no-underline hover:bg-deep-forest"
           >
             Apply for trade pricing

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { VariantPicker, type ProductVariantOption } from "./variant-picker";
+import { QuoteRequestForm } from "./quote-request-form";
 
 // Real contact facts (CLAUDE.md) — used exactly, never invented.
 const SHOWROOM_PHONE_DISPLAY = "+234 (0) 803 311 7302";
@@ -11,10 +12,12 @@ const SHOWROOM_PHONE_TEL = "+2348033117302";
 const SHOWROOM_EMAIL = "thefinishinghubng@gmail.com";
 
 export function ProductPurchasePanel({
+  productId,
   variants,
   defaultVariantId,
   requiresQuote,
 }: {
+  productId: string;
   variants: ProductVariantOption[];
   defaultVariantId: string;
   requiresQuote: boolean;
@@ -42,9 +45,13 @@ export function ProductPurchasePanel({
           </div>
           <p className="mb-4 text-[14.5px] leading-[1.7] text-[#4a4339]">
             This piece is available by quote — pricing depends on finish, size and
-            delivery. Call or email the showroom and we&apos;ll put a number together.
+            delivery.
           </p>
-          <div className="flex flex-col gap-2 text-sm">
+          <QuoteRequestForm productId={productId} variantId={selectedVariantId || null} />
+          <div className="mt-4 flex flex-col gap-2 border-t border-[#eee7d8] pt-4 text-sm">
+            <p className="text-[12.5px] text-[#8a8073]">
+              Would rather just call or email?
+            </p>
             <a
               href={`tel:${SHOWROOM_PHONE_TEL}`}
               className="font-semibold text-forest hover:underline"

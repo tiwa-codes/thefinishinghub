@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, fireEvent, waitFor, act, within } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
+import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { CheckoutView } from "./checkout-view";
 import { rpcMock, emitAuthStateChange } from "@/test/supabase-mock";
 import type { CartLineItem } from "@/components/cart/cart-view";
@@ -21,7 +22,9 @@ const ITEMS: CartLineItem[] = [
 function renderCheckout(items: CartLineItem[] = ITEMS, email: string | null = null) {
   return render(
     <CartProvider>
-      <CheckoutView initialItems={items} initialEmail={email} />
+      <TradeAccountProvider>
+        <CheckoutView initialItems={items} initialEmail={email} />
+      </TradeAccountProvider>
     </CartProvider>,
   );
 }

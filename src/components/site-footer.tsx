@@ -31,7 +31,7 @@ const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
       { label: "Trade pricing", href: "#" },
       { label: "Trade desk", href: "#" },
       { label: "For designers", href: "#" },
-      { label: "Apply", href: "#" },
+      { label: "Apply", href: "/trade/apply" },
     ],
   },
 ];
