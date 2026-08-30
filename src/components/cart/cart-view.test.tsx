@@ -192,11 +192,11 @@ describe("CartView — suggestions and honesty guards", () => {
     expect(screen.queryByText("₦18,500")).toBeNull();
   });
 
-  it("links Proceed to Checkout to the real checkout page, with an honest note that payment isn't live yet", () => {
+  it("links Proceed to Checkout to the real checkout page, with a note that online payment is available", () => {
     renderCart();
     const checkout = screen.getByRole("link", { name: "Proceed to Checkout" });
     expect(checkout).toHaveAttribute("href", "/checkout");
-    expect(screen.getByText(/Payment isn't live yet/)).toBeInTheDocument();
+    expect(screen.getByText(/Pay securely online with Paystack/)).toBeInTheDocument();
   });
 
   it("never claims a specific delivery cost (e.g. free/Abuja) that isn't backed by real data", () => {

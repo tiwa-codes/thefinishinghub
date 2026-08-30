@@ -4,6 +4,7 @@ import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
 import { createClient } from "@/lib/supabase/server";
 import { formatNaira } from "@/lib/format";
+import { PayNowButton } from "@/components/checkout/pay-now-button";
 
 export const metadata: Metadata = {
   title: "My Account — The Finishing Hub",
@@ -135,6 +136,14 @@ export default async function AccountPage() {
                     </div>
                   ))}
                 </div>
+                {order.status === "pending_payment" && (
+                  <div className="mt-4 border-t border-[#eee7d8] pt-4">
+                    <PayNowButton
+                      orderNumber={order.order_number}
+                      className="rounded-[2px] bg-gold px-5 py-2.5 text-[13px] font-semibold tracking-wide text-forest hover:bg-gold-bright disabled:cursor-not-allowed disabled:opacity-60"
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatNaira } from "@/lib/format";
 import { LoginForm } from "@/components/account/login-form";
 import { SignupForm } from "@/components/account/signup-form";
+import { PayNowButton } from "@/components/checkout/pay-now-button";
 import type { CartLineItem } from "@/components/cart/cart-view";
 
 // create_order (see supabase/migrations/20260829090000_customer_checkout.sql)
@@ -81,12 +82,21 @@ function SuccessState({ orderNumber }: { orderNumber: string | null }) {
         <p className="mb-2 font-mono text-sm text-[#6b6155]">{orderNumber}</p>
       )}
       <p className="mb-[34px] text-[15px] leading-[1.7] text-[#6b6155]">
-        We&apos;ll call you shortly to confirm delivery and complete payment. Your cart
-        is untouched, in case you&apos;d like to keep browsing and add to the order.
+        Pay now to confirm it, or come back to your account later — your cart is
+        untouched either way, in case you&apos;d like to keep browsing and add to
+        the order first.
       </p>
+      {orderNumber && (
+        <div className="mb-3.5">
+          <PayNowButton
+            orderNumber={orderNumber}
+            className="rounded-[2px] bg-gold px-7 py-[15px] text-sm font-semibold tracking-wide text-forest hover:bg-gold-bright disabled:cursor-not-allowed disabled:opacity-60"
+          />
+        </div>
+      )}
       <Link
         href="/account"
-        className="inline-block rounded-[2px] bg-forest px-7 py-[15px] text-sm font-semibold tracking-wide text-cream no-underline hover:bg-deep-forest"
+        className="inline-block rounded-[2px] border border-forest px-7 py-[15px] text-sm font-semibold tracking-wide text-forest no-underline hover:bg-forest hover:text-cream"
       >
         View my orders
       </Link>
@@ -317,8 +327,8 @@ export function CheckoutView({
             {status === "pending" ? "Placing order…" : "Place Order"}
           </button>
           <p className="text-center text-[12.5px] leading-[1.7] text-[#8a8073]">
-            Payment isn&apos;t collected here yet — we&apos;ll call you at
-            +234 (0) 803 311 7302 to confirm and complete payment.
+            You&apos;ll be able to pay online with Paystack right after this, or
+            we&apos;ll call you at +234 (0) 803 311 7302 to arrange it.
           </p>
         </form>
       </div>

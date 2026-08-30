@@ -223,8 +223,8 @@ export function CartView({
           </Link>
           <div className="text-center text-[12.5px] leading-[1.8] text-[#8a8073]">
             <div>
-              Payment isn&apos;t live yet — we&apos;ll call you at +234 (0) 803 311 7302 to
-              confirm and complete your order.
+              Pay securely online with Paystack, or call +234 (0) 803 311 7302 to
+              arrange payment.
             </div>
             <div>
               Questions?{" "}
