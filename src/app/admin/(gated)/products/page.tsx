@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatNaira } from "@/lib/format";
@@ -34,23 +34,38 @@ export default function AdminProductsPage() {
     if (status) setStatusFilter(status);
   }, []);
 
+  // Category tree feeds the filter dropdown itself and rarely changes —
+  // fetched once, independently of the product list below.
   useEffect(() => {
-    async function load() {
+    async function loadCategories() {
       const supabase = createClient();
-      const [{ data: productRows }, tree] = await Promise.all([
-        supabase
-          .from("products")
-          .select("id, slug, name, status, category_id, product_variants(price_kobo, is_default)")
-          .order("created_at", { ascending: false })
-          .returns<ProductListRow[]>(),
-        fetchCategoryTree(supabase),
-      ]);
-      setProducts(productRows ?? []);
+      const tree = await fetchCategoryTree(supabase);
       setCategoryLabels(flattenCategoryTree(tree));
-      setLoading(false);
     }
-    load();
+    loadCategories();
   }, []);
+
+  const loadProducts = useCallback(async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("products")
+      .select("id, slug, name, status, category_id, product_variants(price_kobo, is_default)")
+      .order("created_at", { ascending: false })
+      .returns<ProductListRow[]>();
+    setProducts(data ?? []);
+    setLoading(false);
+  }, []);
+
+  // Re-fetch whenever the category/status filter changes, not just once
+  // on mount — a product added or edited elsewhere while this page was
+  // already open would otherwise stay invisible (or show stale data)
+  // until a manual reload, since switching a filter only re-filtered
+  // whatever was already in memory. Deliberately NOT keyed on `search`
+  // too — that's a per-keystroke text field, and re-fetching on every
+  // character would be worse, not better.
+  useEffect(() => {
+    loadProducts();
+  }, [categoryFilter, statusFilter, loadProducts]);
 
   const categoryLabelById = useMemo(() => {
     const map = new Map<string, string>();

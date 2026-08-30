@@ -4,13 +4,13 @@ import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
 import { createClient } from "@/lib/supabase/server";
 import { TradeApplyForm } from "@/components/trade/trade-apply-form";
+import { TradeReapplyForm } from "@/components/trade/trade-reapply-form";
 
 export const metadata: Metadata = { title: "Apply for Trade Pricing — The Finishing Hub" };
 
 const STATUS_COPY: Record<string, string> = {
   pending: "Your application is under review — we'll follow up soon.",
   approved: "Your trade account is approved. Trade pricing is already applied across the site.",
-  rejected: "Your application wasn't approved. Contact the trade desk if you'd like to discuss it.",
 };
 
 export default async function TradeApplyPage() {
@@ -54,9 +54,13 @@ async function TradeApplySection({ userId }: { userId: string }) {
   const supabase = createClient();
   const { data: existing } = await supabase
     .from("trade_accounts")
-    .select("status")
+    .select("status, tier_requested")
     .eq("id", userId)
     .maybeSingle();
+
+  if (existing?.status === "rejected") {
+    return <TradeReapplyForm previousTierRequested={existing.tier_requested} />;
+  }
 
   if (existing) {
     return (

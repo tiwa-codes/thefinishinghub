@@ -674,6 +674,10 @@ export type Database = {
         Args: { p_quote_request_id: string }
         Returns: undefined
       }
+      reapply_for_trade_pricing: {
+        Args: { p_tier_requested: string }
+        Returns: undefined
+      }
       respond_to_quote: {
         Args: {
           p_notes: string

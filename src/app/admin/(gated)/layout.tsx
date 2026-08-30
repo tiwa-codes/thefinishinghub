@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: "/admin/quotes", label: "Quotes" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/trade-accounts", label: "Trade Accounts" },
+  { href: "/admin/reports", label: "Reports" },
 ];
 
 export default async function AdminGatedLayout({

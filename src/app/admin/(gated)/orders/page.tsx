@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatNaira } from "@/lib/format";
@@ -40,19 +40,27 @@ export default function AdminOrdersPage() {
     if (status) setStatusFilter(status);
   }, []);
 
-  useEffect(() => {
-    async function load() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("orders")
-        .select("id, order_number, customer_name, customer_email, status, total_kobo, created_at")
-        .order("created_at", { ascending: false })
-        .returns<OrderListRow[]>();
-      setOrders(data ?? []);
-      setLoading(false);
-    }
-    load();
+  const load = useCallback(async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("orders")
+      .select("id, order_number, customer_name, customer_email, status, total_kobo, created_at")
+      .order("created_at", { ascending: false })
+      .returns<OrderListRow[]>();
+    setOrders(data ?? []);
+    setLoading(false);
   }, []);
+
+  // Re-fetch whenever the status filter changes, not just once on mount —
+  // a new order (or a status change from another staff session) landed
+  // while this page was already open would otherwise stay invisible
+  // until a manual reload, since switching the filter only re-filtered
+  // whatever was already in memory. Deliberately NOT keyed on `search`
+  // too — that's a per-keystroke text field, and re-fetching on every
+  // character would be worse, not better.
+  useEffect(() => {
+    load();
+  }, [statusFilter, load]);
 
   const filtered = orders.filter((o) => {
     if (statusFilter !== "all" && o.status !== statusFilter) return false;

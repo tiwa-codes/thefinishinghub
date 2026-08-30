@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type TradeAccountRow = {
@@ -135,7 +135,7 @@ export default function AdminTradeAccountsPage() {
   const [statusFilter, setStatusFilter] = useState("pending");
   const [decidingId, setDecidingId] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     const supabase = createClient();
     const { data } = await supabase
       .from("trade_accounts")
@@ -144,11 +144,16 @@ export default function AdminTradeAccountsPage() {
       .returns<TradeAccountRow[]>();
     setAccounts(data ?? []);
     setLoading(false);
-  }
+  }, []);
 
+  // Re-fetch whenever the status tab changes, not just once on mount — a
+  // fresh application (or a change made by another staff session) landed
+  // while this page was already open would otherwise stay invisible
+  // until a manual reload, since switching tabs only re-filtered whatever
+  // was already in memory.
   useEffect(() => {
     load();
-  }, []);
+  }, [statusFilter, load]);
 
   const filtered = accounts.filter((a) => statusFilter === "all" || a.status === statusFilter);
 

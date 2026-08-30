@@ -69,3 +69,21 @@ export function findTopLevelSlugForCategory(
   }
   return null;
 }
+
+// Same "resolve up to the top-level parent" lookup as above, returning
+// the top-level category's own name — used by /admin/reports to group
+// revenue by top-level category regardless of whether a given product is
+// filed directly under a top-level category or one of its subcategories.
+export function findTopLevelCategoryForId(
+  tree: TopLevelWithSubs[],
+  categoryId: string | null,
+): { id: string; name: string } | null {
+  if (!categoryId) return null;
+  for (const top of tree) {
+    if (top.id === categoryId) return { id: top.id, name: top.name };
+    if (top.subcategories.some((sub) => sub.id === categoryId)) {
+      return { id: top.id, name: top.name };
+    }
+  }
+  return null;
+}

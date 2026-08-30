@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { formatNaira, nairaInputToKobo } from "@/lib/format";
 
@@ -119,7 +119,7 @@ export default function AdminQuotesPage() {
   const [statusFilter, setStatusFilter] = useState("pending");
   const [respondingId, setRespondingId] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     const supabase = createClient();
     const { data } = await supabase
       .from("quote_requests")
@@ -131,11 +131,16 @@ export default function AdminQuotesPage() {
       .returns<QuoteRequestRow[]>();
     setRequests(data ?? []);
     setLoading(false);
-  }
+  }, []);
 
+  // Re-fetch whenever the status tab changes, not just once on mount — a
+  // new quote request (or a response from another staff session) landed
+  // while this page was already open would otherwise stay invisible
+  // until a manual reload, since switching tabs only re-filtered whatever
+  // was already in memory.
   useEffect(() => {
     load();
-  }, []);
+  }, [statusFilter, load]);
 
   const filtered = requests.filter((r) => statusFilter === "all" || r.status === statusFilter);
 

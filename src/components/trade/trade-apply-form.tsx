@@ -10,10 +10,18 @@ const TIER_OPTIONS = [
   { value: "bulk", label: "Bulk / Developer" },
 ];
 
+// Postgres unique-violation code (trade_accounts.id is a primary key) —
+// hit if a second submission lands while a first is already on file
+// (e.g. two tabs, or a double-click racing the disabled-button guard
+// below). Not a real failure from the customer's point of view: they DO
+// already have an application on file, so that's exactly what gets told
+// to them instead of a raw "duplicate key value violates..." message.
+const UNIQUE_VIOLATION = "23505";
+
 export function TradeApplyForm({ userId }: { userId: string }) {
   const [businessName, setBusinessName] = useState("");
   const [tierRequested, setTierRequested] = useState("standard");
-  const [status, setStatus] = useState<"idle" | "pending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "pending" | "sent" | "already-applied" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleSubmit(e: FormEvent) {
@@ -30,6 +38,10 @@ export function TradeApplyForm({ userId }: { userId: string }) {
       .insert({ id: userId, business_name: businessName.trim(), tier_requested: tierRequested });
 
     if (error) {
+      if (error.code === UNIQUE_VIOLATION) {
+        setStatus("already-applied");
+        return;
+      }
       setStatus("error");
       setErrorMessage(error.message);
       return;
@@ -41,6 +53,14 @@ export function TradeApplyForm({ userId }: { userId: string }) {
     return (
       <p className="text-[15px] leading-[1.7] text-[#4a4339]">
         Application received — we&apos;ll review it and follow up.
+      </p>
+    );
+  }
+
+  if (status === "already-applied") {
+    return (
+      <p className="text-[15px] leading-[1.7] text-[#4a4339]">
+        You already have a pending application — we&apos;ll follow up soon.
       </p>
     );
   }
