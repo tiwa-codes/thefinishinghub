@@ -1,7 +1,17 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { publicAssetExists } from "@/lib/public-asset";
+
+// image: stock photography, temporary — swap for real concept-board/
+// install photos when available.
+const CONCEPT_BOARD_IMAGE = "/images/design-concept-board.jpg";
+const INSTALL_SHOT_IMAGE = "/images/design-install-shot.jpg";
 
 export function DesignServices() {
+  const hasConceptBoardImage = publicAssetExists(CONCEPT_BOARD_IMAGE.replace(/^\//, ""));
+  const hasInstallShotImage = publicAssetExists(INSTALL_SHOT_IMAGE.replace(/^\//, ""));
+
   return (
     <section id="design-services" className="bg-forest text-cream">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-10 px-5 py-14 lg:grid-cols-2 lg:gap-[72px] lg:px-10 lg:py-[88px]">
@@ -25,11 +35,31 @@ export function DesignServices() {
           </Link>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div className="h-[200px] overflow-hidden rounded-[3px]">
-            <PlaceholderBlock label="[ concept board ]" tone="dark" className="h-full" />
+          <div className="relative h-[200px] overflow-hidden rounded-[3px]">
+            {hasConceptBoardImage ? (
+              <Image
+                src={CONCEPT_BOARD_IMAGE}
+                alt="Interior design concept board"
+                fill
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <PlaceholderBlock label="[ concept board ]" tone="dark" className="h-full" />
+            )}
           </div>
-          <div className="mt-8 h-[200px] overflow-hidden rounded-[3px]">
-            <PlaceholderBlock label="[ install shot ]" tone="dark" className="h-full" />
+          <div className="relative mt-8 h-[200px] overflow-hidden rounded-[3px]">
+            {hasInstallShotImage ? (
+              <Image
+                src={INSTALL_SHOT_IMAGE}
+                alt="Joinery and install work in progress"
+                fill
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="object-cover"
+              />
+            ) : (
+              <PlaceholderBlock label="[ install shot ]" tone="dark" className="h-full" />
+            )}
           </div>
         </div>
       </div>

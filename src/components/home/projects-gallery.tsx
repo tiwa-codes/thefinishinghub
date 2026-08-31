@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { publicAssetExists } from "@/lib/public-asset";
 import { PROJECTS } from "./home-data";
 
 export function ProjectsGallery() {
@@ -22,10 +24,22 @@ export function ProjectsGallery() {
         </Link>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-        {PROJECTS.map((project) => (
+        {PROJECTS.map((project) => {
+          const hasImage = project.image ? publicAssetExists(project.image.replace(/^\//, "")) : false;
+          return (
           <Link key={project.name} href="#" className="block no-underline">
-            <div className="h-80 overflow-hidden rounded-[3px]">
-              <PlaceholderBlock label={project.placeholderLabel} className="h-full" />
+            <div className="relative h-80 overflow-hidden rounded-[3px]">
+              {hasImage && project.image ? (
+                <Image
+                  src={project.image}
+                  alt={project.name}
+                  fill
+                  sizes="(min-width: 1024px) 33vw, 100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <PlaceholderBlock label={project.placeholderLabel} className="h-full" />
+              )}
             </div>
             <div className="pt-4">
               <div className="font-serif text-lg text-ink">{project.name}</div>
@@ -34,7 +48,8 @@ export function ProjectsGallery() {
               </div>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

@@ -25,24 +25,24 @@ from categories where slug = 'furniture';
 -- ============================================================
 insert into products (slug, name, category_id, short_description, is_showroom_display, status) values
   (
-    'kano-upholstered-storage-bed',
-    'Kano Upholstered Storage Bed',
+    'provence-upholstered-storage-bed',
+    'Provence Upholstered Storage Bed',
     (select id from categories where slug = 'furniture-bedroom'),
     'Faux leather, gas-lift storage',
     true,
     'published'
   ),
   (
-    'asaba-wingback-bed',
-    'Asaba Wingback Bed',
+    'milano-wingback-bed',
+    'Milano Wingback Bed',
     (select id from categories where slug = 'furniture-bedroom'),
     'Channel-tufted headboard',
     true,
     'published'
   ),
   (
-    'gudu-brass-pendant',
-    'Gudu Brass Pendant',
+    'amalfi-brass-pendant',
+    'Amalfi Brass Pendant',
     (select id from categories where slug = 'lighting'),
     'Aged brass, dimmable',
     false,
@@ -64,16 +64,16 @@ insert into products (slug, name, category_id, short_description, is_showroom_di
 -- ============================================================
 insert into product_variants (product_id, sku, price_kobo, is_default, in_stock) values
   (
-    (select id from products where slug = 'kano-upholstered-storage-bed'),
-    'BED-KANO-TAUPE-STD', 54000000, true, true
+    (select id from products where slug = 'provence-upholstered-storage-bed'),
+    'BED-PROVENCE-TAUPE-STD', 54000000, true, true
   ),
   (
-    (select id from products where slug = 'asaba-wingback-bed'),
-    'BED-ASABA-GREY-STD', 61000000, true, true
+    (select id from products where slug = 'milano-wingback-bed'),
+    'BED-MILANO-GREY-STD', 61000000, true, true
   ),
   (
-    (select id from products where slug = 'gudu-brass-pendant'),
-    'LGT-GUDU-BRASS-STD', 14500000, true, true
+    (select id from products where slug = 'amalfi-brass-pendant'),
+    'LGT-AMALFI-BRASS-STD', 14500000, true, true
   ),
   (
     (select id from products where slug = 'carrara-porcelain-60x120'),
@@ -88,14 +88,14 @@ insert into product_variants (product_id, sku, price_kobo, is_default, in_stock)
 -- ============================================================
 insert into product_images (product_id, url, alt_text, is_primary) values
   (
-    (select id from products where slug = 'kano-upholstered-storage-bed'),
+    (select id from products where slug = 'provence-upholstered-storage-bed'),
     '/images/bed-taupe.jpg',
-    'Kano Upholstered Storage Bed',
+    'Provence Upholstered Storage Bed',
     true
   ),
   (
-    (select id from products where slug = 'asaba-wingback-bed'),
+    (select id from products where slug = 'milano-wingback-bed'),
     '/images/bed-grey-wing.jpg',
-    'Asaba Wingback Bed',
+    'Milano Wingback Bed',
     true
   );

@@ -1,5 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PlaceholderBlock } from "@/components/placeholder-block";
+import { publicAssetExists } from "@/lib/public-asset";
+
+// image: stock photography, temporary — swap for a real showroom photo
+// when available.
+const SHOWROOM_IMAGE = "/images/showroom-interior.jpg";
 
 const CONTACT_ROWS = [
   {
@@ -12,15 +18,27 @@ const CONTACT_ROWS = [
 ];
 
 export function VisitShowroom() {
+  const hasShowroomImage = publicAssetExists(SHOWROOM_IMAGE.replace(/^\//, ""));
+
   return (
     <section id="showroom" className="bg-deep-forest text-cream">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2">
-        <div className="h-[260px] lg:h-auto lg:min-h-[440px]">
-          <PlaceholderBlock
-            label="[ showroom interior — Gudu, Abuja ]"
-            tone="dark"
-            className="h-full"
-          />
+        <div className="relative h-[260px] lg:h-auto lg:min-h-[440px]">
+          {hasShowroomImage ? (
+            <Image
+              src={SHOWROOM_IMAGE}
+              alt="Showroom interior"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <PlaceholderBlock
+              label="[ showroom interior — Gudu, Abuja ]"
+              tone="dark"
+              className="h-full"
+            />
+          )}
         </div>
         <div className="flex flex-col justify-center px-6 py-12 lg:px-16 lg:py-20">
           <div className="mb-[18px] text-xs uppercase tracking-[0.2em] text-gold-bright">
