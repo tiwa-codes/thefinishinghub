@@ -4,7 +4,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatNaira } from "@/lib/format";
-import { fetchCategoryTree, flattenCategoryTree } from "@/lib/admin/category-tree";
+import {
+  fetchCategoryTree,
+  findTopLevelSlugForCategory,
+  flattenCategoryTree,
+  type TopLevelWithSubs,
+} from "@/lib/admin/category-tree";
+import { revalidateAdminPaths } from "@/lib/admin/revalidate";
 
 type ProductListRow = {
   id: string;
@@ -17,13 +23,13 @@ type ProductListRow = {
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductListRow[]>([]);
-  const [categoryLabels, setCategoryLabels] = useState<
-    { id: string; label: string }[]
-  >([]);
+  const [categoryTree, setCategoryTree] = useState<TopLevelWithSubs[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [publishingId, setPublishingId] = useState<string | null>(null);
+  const [publishError, setPublishError] = useState<{ id: string; message: string } | null>(null);
 
   useEffect(() => {
     // Admin convenience only (e.g. the Overview page's "Drafts" tile links
@@ -35,15 +41,20 @@ export default function AdminProductsPage() {
   }, []);
 
   // Category tree feeds the filter dropdown itself and rarely changes —
-  // fetched once, independently of the product list below.
+  // fetched once, independently of the product list below. Kept as the
+  // full tree (not just flattened labels) so publishing can also resolve
+  // a product's top-level category page to revalidate, the same way
+  // ProductDetailsTab's own save does.
   useEffect(() => {
     async function loadCategories() {
       const supabase = createClient();
       const tree = await fetchCategoryTree(supabase);
-      setCategoryLabels(flattenCategoryTree(tree));
+      setCategoryTree(tree);
     }
     loadCategories();
   }, []);
+
+  const categoryLabels = useMemo(() => flattenCategoryTree(categoryTree), [categoryTree]);
 
   const loadProducts = useCallback(async () => {
     const supabase = createClient();
@@ -85,6 +96,56 @@ export default function AdminProductsPage() {
     }
     return true;
   });
+
+  // Same "exactly one default variant" rule ProductDetailsTab enforces
+  // before allowing draft -> published — checked here from the variants
+  // already loaded for this row (no extra query needed) rather than
+  // letting a zero/multi-default product go live broken.
+  async function publishProduct(product: ProductListRow) {
+    setPublishingId(product.id);
+    setPublishError(null);
+
+    if (product.product_variants.length === 0) {
+      setPublishingId(null);
+      setPublishError({ id: product.id, message: "Add at least one variant before publishing." });
+      return;
+    }
+    const defaults = product.product_variants.filter((v) => v.is_default).length;
+    if (defaults !== 1) {
+      setPublishingId(null);
+      setPublishError({
+        id: product.id,
+        message: "Exactly one variant must be marked default before publishing.",
+      });
+      return;
+    }
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("products")
+      .update({ status: "published" })
+      .eq("id", product.id);
+
+    setPublishingId(null);
+    if (error) {
+      setPublishError({ id: product.id, message: error.message });
+      return;
+    }
+
+    setProducts((prev) =>
+      prev.map((p) => (p.id === product.id ? { ...p, status: "published" } : p)),
+    );
+
+    // Same paths ProductDetailsTab's own save revalidates: the product's
+    // own PDP (statically cached, so a fresh publish otherwise wouldn't
+    // appear for up to the 1-hour ISR window), the homepage (New
+    // Arrivals), and its top-level category landing page (Featured
+    // pieces) — both of those also read via the cached ISR client.
+    const topLevelSlug = findTopLevelSlugForCategory(categoryTree, product.category_id);
+    const paths = [`/products/${product.slug}`, "/"];
+    if (topLevelSlug) paths.push(`/${topLevelSlug}`);
+    await revalidateAdminPaths(paths);
+  }
 
   if (loading) {
     return <p className="text-sm text-[#8a8073]">Loading products…</p>;
@@ -152,6 +213,7 @@ export default function AdminProductsPage() {
               <th className="px-4 py-3 font-medium">Category</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Price</th>
+              <th className="px-4 py-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#eee7d8]">
@@ -188,12 +250,29 @@ export default function AdminProductsPage() {
                       ? formatNaira(defaultVariant.price_kobo)
                       : "—"}
                   </td>
+                  <td className="px-4 py-3">
+                    {p.status === "draft" && (
+                      <button
+                        type="button"
+                        disabled={publishingId === p.id}
+                        onClick={() => publishProduct(p)}
+                        className="rounded-[2px] border border-forest px-3 py-1.5 text-xs font-medium text-forest hover:bg-forest hover:text-cream disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {publishingId === p.id ? "Publishing…" : "Publish"}
+                      </button>
+                    )}
+                    {publishError?.id === p.id && (
+                      <p className="mt-1.5 max-w-[220px] text-[12px] text-[#b3261e]">
+                        {publishError.message}
+                      </p>
+                    )}
+                  </td>
                 </tr>
               );
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-[#8a8073]">
+                <td colSpan={5} className="px-4 py-8 text-center text-[#8a8073]">
                   No products match.
                 </td>
               </tr>
