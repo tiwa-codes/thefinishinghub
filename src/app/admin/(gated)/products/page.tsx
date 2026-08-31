@@ -28,8 +28,10 @@ export default function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [publishingId, setPublishingId] = useState<string | null>(null);
-  const [publishError, setPublishError] = useState<{ id: string; message: string } | null>(null);
+  const [statusChangingId, setStatusChangingId] = useState<string | null>(null);
+  const [statusChangeError, setStatusChangeError] = useState<{ id: string; message: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     // Admin convenience only (e.g. the Overview page's "Drafts" tile links
@@ -97,48 +99,51 @@ export default function AdminProductsPage() {
     return true;
   });
 
-  // Same "exactly one default variant" rule ProductDetailsTab enforces
-  // before allowing draft -> published — checked here from the variants
-  // already loaded for this row (no extra query needed) rather than
-  // letting a zero/multi-default product go live broken.
-  async function publishProduct(product: ProductListRow) {
-    setPublishingId(product.id);
-    setPublishError(null);
+  // draft -> published and published -> draft, both from the list — no
+  // trip into the Details tab just to flip status. The "exactly one
+  // default variant" rule only applies going live (checked from the
+  // variants already loaded for this row, no extra query needed) —
+  // pulling a product back to draft has no such requirement.
+  async function setProductStatus(product: ProductListRow, nextStatus: "draft" | "published") {
+    setStatusChangingId(product.id);
+    setStatusChangeError(null);
 
-    if (product.product_variants.length === 0) {
-      setPublishingId(null);
-      setPublishError({ id: product.id, message: "Add at least one variant before publishing." });
-      return;
-    }
-    const defaults = product.product_variants.filter((v) => v.is_default).length;
-    if (defaults !== 1) {
-      setPublishingId(null);
-      setPublishError({
-        id: product.id,
-        message: "Exactly one variant must be marked default before publishing.",
-      });
-      return;
+    if (nextStatus === "published") {
+      if (product.product_variants.length === 0) {
+        setStatusChangingId(null);
+        setStatusChangeError({ id: product.id, message: "Add at least one variant before publishing." });
+        return;
+      }
+      const defaults = product.product_variants.filter((v) => v.is_default).length;
+      if (defaults !== 1) {
+        setStatusChangingId(null);
+        setStatusChangeError({
+          id: product.id,
+          message: "Exactly one variant must be marked default before publishing.",
+        });
+        return;
+      }
     }
 
     const supabase = createClient();
     const { error } = await supabase
       .from("products")
-      .update({ status: "published" })
+      .update({ status: nextStatus })
       .eq("id", product.id);
 
-    setPublishingId(null);
+    setStatusChangingId(null);
     if (error) {
-      setPublishError({ id: product.id, message: error.message });
+      setStatusChangeError({ id: product.id, message: error.message });
       return;
     }
 
     setProducts((prev) =>
-      prev.map((p) => (p.id === product.id ? { ...p, status: "published" } : p)),
+      prev.map((p) => (p.id === product.id ? { ...p, status: nextStatus } : p)),
     );
 
     // Same paths ProductDetailsTab's own save revalidates: the product's
-    // own PDP (statically cached, so a fresh publish otherwise wouldn't
-    // appear for up to the 1-hour ISR window), the homepage (New
+    // own PDP (statically cached, so a status flip otherwise wouldn't
+    // show up for up to the 1-hour ISR window), the homepage (New
     // Arrivals), and its top-level category landing page (Featured
     // pieces) — both of those also read via the cached ISR client.
     const topLevelSlug = findTopLevelSlugForCategory(categoryTree, product.category_id);
@@ -251,19 +256,37 @@ export default function AdminProductsPage() {
                       : "—"}
                   </td>
                   <td className="px-4 py-3">
-                    {p.status === "draft" && (
-                      <button
-                        type="button"
-                        disabled={publishingId === p.id}
-                        onClick={() => publishProduct(p)}
-                        className="rounded-[2px] border border-forest px-3 py-1.5 text-xs font-medium text-forest hover:bg-forest hover:text-cream disabled:cursor-not-allowed disabled:opacity-60"
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/admin/products/${p.id}`}
+                        className="rounded-[2px] border border-[#cfc6b6] px-3 py-1.5 text-xs font-medium text-ink hover:border-forest hover:text-forest"
                       >
-                        {publishingId === p.id ? "Publishing…" : "Publish"}
-                      </button>
-                    )}
-                    {publishError?.id === p.id && (
-                      <p className="mt-1.5 max-w-[220px] text-[12px] text-[#b3261e]">
-                        {publishError.message}
+                        Edit
+                      </Link>
+                      {p.status === "draft" && (
+                        <button
+                          type="button"
+                          disabled={statusChangingId === p.id}
+                          onClick={() => setProductStatus(p, "published")}
+                          className="rounded-[2px] border border-forest px-3 py-1.5 text-xs font-medium text-forest hover:bg-forest hover:text-cream disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {statusChangingId === p.id ? "Publishing…" : "Publish"}
+                        </button>
+                      )}
+                      {p.status === "published" && (
+                        <button
+                          type="button"
+                          disabled={statusChangingId === p.id}
+                          onClick={() => setProductStatus(p, "draft")}
+                          className="rounded-[2px] border border-[#cfc6b6] px-3 py-1.5 text-xs font-medium text-[#6b6155] hover:border-forest hover:text-forest disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {statusChangingId === p.id ? "Unpublishing…" : "Unpublish"}
+                        </button>
+                      )}
+                    </div>
+                    {statusChangeError?.id === p.id && (
+                      <p className="mt-1.5 max-w-[260px] text-[12px] text-[#b3261e]">
+                        {statusChangeError.message}
                       </p>
                     )}
                   </td>
