@@ -19,7 +19,11 @@ const HERO_SLIDES = [
     headline: "Furniture for those who build above the ordinary",
     ctaLabel: "Shop Villa",
     href: "/styles/villa",
-    imageId: "1618219740975-d40978bb7378",
+    // Not a literal ornate/gold palace shot (that theme is scarce on
+    // Unsplash — searched extensively, see homepage rebuild history) —
+    // the darkest, warmest, most upscale-hospitality interior found:
+    // dark wood paneling/nightstands, warm brass lamp light, styled bed.
+    imageId: "1618773928121-c32242e63f39",
   },
   {
     id: "contemporary",
@@ -51,7 +55,7 @@ export function Hero() {
       aria-label="Featured collections"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative h-[100svh] min-h-[520px] w-full overflow-hidden bg-ink"
+      className="relative h-[calc(100svh-72px)] min-h-[420px] w-full overflow-hidden bg-ink lg:h-[calc(100svh-128px)]"
     >
       {HERO_SLIDES.map((slide, i) => (
         <div
