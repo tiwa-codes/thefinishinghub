@@ -1,3 +1,5 @@
+// PENDING REWORK: replaced by ShopByStyle component (Villa/Contemporary)
+// Removed from homepage render 2026-09-13 pending full redesign
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceholderBlock } from "@/components/placeholder-block";

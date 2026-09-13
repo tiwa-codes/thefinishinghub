@@ -20,14 +20,20 @@
 // heavily-used export) — kept as-is rather than renamed to avoid
 // unrelated import churn across nav/footer/category-page/test files.
 export const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
-  "furniture-living": "/furniture/living",
-  "furniture-dining": "/furniture/dining",
   "furniture-bedroom": "/furniture/bedroom",
-  "furniture-workspace": "/furniture/workspace",
-  "furniture-office": "/furniture/office",
-  "sanitaryware-shower": "/sanitaryware-bath/shower",
-  "sanitaryware-bathtub": "/sanitaryware-bath/bathtub",
-  "sanitaryware-toilet": "/sanitaryware-bath/toilet",
+  "furniture-sofas": "/furniture/sofas",
+  "furniture-beds-bedroom-sets": "/furniture/beds-bedroom-sets",
+  "furniture-wardrobes-dressers": "/furniture/wardrobes-dressers",
+  "furniture-dining-tables-chairs": "/furniture/dining-tables-chairs",
+  "furniture-coffee-side-tables": "/furniture/coffee-side-tables",
+  "furniture-office-seating": "/furniture/office-seating",
+  "furniture-office-desks-suites": "/furniture/office-desks-suites",
+  "furniture-conference-tables": "/furniture/conference-tables",
+  "furniture-outdoor": "/furniture/outdoor",
+  "furniture-accent-occasional": "/furniture/accent-occasional",
+  "showers-panels": "/sanitaryware-bath/shower",
+  "baths-jacuzzis": "/sanitaryware-bath/bathtub",
+  "toilets-bidets": "/sanitaryware-bath/toilet",
 };
 
 export function hrefForSubcategorySlug(slug: string): string {

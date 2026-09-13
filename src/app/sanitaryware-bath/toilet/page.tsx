@@ -27,7 +27,7 @@ export default async function ToiletPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const { category, products: allProducts } =
-    await getSubcategoryListingData("sanitaryware-toilet");
+    await getSubcategoryListingData("toilets-bidets");
   const filterOptions = computeFilterOptions(allProducts);
   const activeFilters = parseListingFilters(searchParams);
   const products = sortListingProducts(

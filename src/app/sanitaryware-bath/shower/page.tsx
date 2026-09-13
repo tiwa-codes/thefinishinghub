@@ -27,7 +27,7 @@ export default async function ShowerPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const { category, products: allProducts } =
-    await getSubcategoryListingData("sanitaryware-shower");
+    await getSubcategoryListingData("showers-panels");
   const filterOptions = computeFilterOptions(allProducts);
   const activeFilters = parseListingFilters(searchParams);
   const products = sortListingProducts(

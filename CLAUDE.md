@@ -48,11 +48,19 @@ logic to this repo — it will conflict with SSR/SEO on the public site.
   8. Decor
 - Interior Design is a SERVICE, not a catalog category — do not add it
   to the primary category nav.
-- Nav: two-row. Thin utility bar on top, main nav below. TFH monogram +
-  wordmark dominant, left-aligned (wordmark must NOT shrink to illegible —
-  this was corrected once already, don't regress it). Eight category
-  dropdowns centered, each a DWR-style mega-menu. Gold "Visit the Showroom"
-  CTA button, right-aligned.
+- Nav: sticky, two-row, Edward Martin-style mega-menu (dark background,
+  cream text, gold hover accents) — matches edwardmartin.com's real
+  structure, not a single shared row (measured: the 8 categories + "Shop
+  by" don't fit next to a full right zone in one row at 1440px). Row 1:
+  TFH monogram + wordmark dominant, left-aligned (wordmark must NOT
+  shrink to illegible — this was corrected once already, don't regress
+  it); right side = plain links (Design Resources, New Arrivals, Trade
+  Program) followed by the gold "Visit the Showroom" CTA button, then
+  account/wishlist/cart icons. Row 2, full width: the eight category dropdowns
+  (Furniture, Tiles, Sanitarywares, Lighting, Doors, Kitchens, Outdoor,
+  Decor) plus a "Shop by" dropdown (Space / Style columns). Each category
+  dropdown is a full-width
+  mega-menu: subcategory columns + an editorial image panel.
 - Homepage: NO product carousel anywhere (this was explicitly removed once —
   do not reintroduce it). Use a "Shop by Room" photo-tile grid instead
   (Living Room / Dining / Bedroom / Workspace), Bernhardt-style.

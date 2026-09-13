@@ -1,7 +1,8 @@
 import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
 import { Hero } from "@/components/home/hero";
-import { ShopByRoom } from "@/components/home/shop-by-room";
+// ShopByRoom removed from render 2026-09-13, pending ShopByStyle rework —
+// see shop-by-room.tsx header comment.
 import { ShopByCategory } from "@/components/home/shop-by-category";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { RoomEditorial } from "@/components/home/room-editorial";
@@ -23,7 +24,7 @@ export default function Home() {
     <div className="bg-cream font-sans text-ink antialiased">
       <SiteNavSection />
       <Hero />
-      <ShopByRoom />
+      {/* ShopByRoom removed 2026-09-13, pending ShopByStyle rework */}
       <ShopByCategory />
       <NewArrivalsSection />
       <RoomEditorial />

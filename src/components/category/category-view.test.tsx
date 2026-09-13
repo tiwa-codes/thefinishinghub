@@ -7,9 +7,9 @@ import type { SubcategoryTile } from "./subcategory-tiles";
 import type { FeaturedProduct } from "./featured-products-grid";
 
 const SUBCATEGORIES: SubcategoryTile[] = [
-  { slug: "sanitaryware-shower", name: "Shower", href: "#" },
-  { slug: "sanitaryware-bathtub", name: "Bath", href: "#" },
-  { slug: "sanitaryware-toilet", name: "Toilet", href: "#" },
+  { slug: "showers-panels", name: "Shower", href: "#" },
+  { slug: "baths-jacuzzis", name: "Bath", href: "#" },
+  { slug: "toilets-bidets", name: "Toilet", href: "#" },
 ];
 
 const PRODUCTS: FeaturedProduct[] = [

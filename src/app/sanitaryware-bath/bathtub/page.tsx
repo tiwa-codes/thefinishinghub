@@ -27,7 +27,7 @@ export default async function BathtubPage({
   searchParams: Record<string, string | string[] | undefined>;
 }) {
   const { category, products: allProducts } =
-    await getSubcategoryListingData("sanitaryware-bathtub");
+    await getSubcategoryListingData("baths-jacuzzis");
   const filterOptions = computeFilterOptions(allProducts);
   const activeFilters = parseListingFilters(searchParams);
   const products = sortListingProducts(
