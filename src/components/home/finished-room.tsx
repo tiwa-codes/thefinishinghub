@@ -1,21 +1,30 @@
 import Image from "next/image";
 import Link from "next/link";
-import { UNSPLASH_BLUR_DATA_URL, unsplashUrl } from "@/lib/unsplash";
+import { PlaceholderBlock } from "@/components/placeholder-block";
+import { publicAssetExists } from "@/lib/public-asset";
+
+// Restored from the pre-rebuild RoomEditorial component (deleted in
+// 4944d09) — that section used this local asset, not an Unsplash image.
+const ROOM_IMAGE = "/images/editorial-full-room-scene.jpg";
 
 export function FinishedRoom() {
+  const hasImage = publicAssetExists(ROOM_IMAGE.replace(/^\//, ""));
+
   return (
     <section className="bg-forest text-cream">
       <div className="grid grid-cols-1 lg:h-screen lg:grid-cols-2">
         <div className="relative h-[320px] lg:h-full">
-          <Image
-            src={unsplashUrl("1615529182904-14819c35db37", 1200)}
-            alt="A finished living room with matching tiles, lighting, and furniture"
-            fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            placeholder="blur"
-            blurDataURL={UNSPLASH_BLUR_DATA_URL}
-            className="object-cover"
-          />
+          {hasImage ? (
+            <Image
+              src={ROOM_IMAGE}
+              alt="A finished living room with matching tiles, lighting, and furniture"
+              fill
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-cover object-[center_38%]"
+            />
+          ) : (
+            <PlaceholderBlock label="[ full room scene ]" tone="dark" className="absolute inset-0" />
+          )}
         </div>
         <div className="flex flex-col justify-center px-6 py-14 lg:px-16 lg:py-0">
           <div className="mb-5 text-xs uppercase tracking-[0.25em] text-gold-bright">

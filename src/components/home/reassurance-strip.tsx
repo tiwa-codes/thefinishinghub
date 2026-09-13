@@ -57,7 +57,7 @@ const REASSURANCE_ITEMS = [
 
 export function ReassuranceStrip() {
   return (
-    <section className="border-y border-ink/10 bg-[#f4efe4]">
+    <section className="border-y border-ink/10 bg-cream">
       <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-x-6 gap-y-10 px-5 py-12 lg:grid-cols-4 lg:gap-8 lg:px-10 lg:py-16">
         {REASSURANCE_ITEMS.map((item) => (
           <div key={item.heading} className="flex flex-col items-start gap-3">

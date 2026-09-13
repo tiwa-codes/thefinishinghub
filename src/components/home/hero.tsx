@@ -19,11 +19,14 @@ const HERO_SLIDES = [
     headline: "Furniture for those who build above the ordinary",
     ctaLabel: "Shop Villa",
     href: "/styles/villa",
-    // Not a literal ornate/gold palace shot (that theme is scarce on
-    // Unsplash — searched extensively, see homepage rebuild history) —
-    // the darkest, warmest, most upscale-hospitality interior found:
-    // dark wood paneling/nightstands, warm brass lamp light, styled bed.
-    imageId: "1618773928121-c32242e63f39",
+    // Not a literal marble/gold-chandelier palace shot — that theme was
+    // searched extensively across multiple rounds (villa bedroom, palace
+    // interior, grand hall, mansion staircase, opulent dining room) and
+    // isn't reliably findable on Unsplash. This is the same vaulted
+    // wood-beam, arched-window villa living room used for the Shop by
+    // Style Villa tile — real architectural scale and grandeur, reused
+    // deliberately for thematic consistency rather than a mismatched fill.
+    imageId: "1600210491892-03d54c0aaf87",
   },
   {
     id: "contemporary",
@@ -55,7 +58,7 @@ export function Hero() {
       aria-label="Featured collections"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative h-[calc(100svh-72px)] min-h-[420px] w-full overflow-hidden bg-ink lg:h-[calc(100svh-128px)]"
+      className="relative h-[calc(100svh-72px)] min-h-[420px] w-full overflow-hidden bg-forest lg:h-[calc(100svh-128px)]"
     >
       {HERO_SLIDES.map((slide, i) => (
         <div

@@ -71,7 +71,7 @@ export async function NewArrivalsSection() {
   });
 
   return (
-    <section id="new-arrivals" className="bg-[#ebe5db]">
+    <section id="new-arrivals" className="bg-cream">
       <div className="mx-auto max-w-[1440px] px-5 py-12 lg:px-10 lg:py-[88px]">
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
           <div>

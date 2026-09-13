@@ -29,8 +29,8 @@ export function InteriorDesign() {
         <div className="grid grid-cols-2 gap-4">
           <div className="relative aspect-[3/4] overflow-hidden rounded-[2px]">
             <Image
-              src={unsplashUrl("1620799140408-edc6dcb6d633", 800)}
-              alt="Fabric and material textures used in interior design projects"
+              src={unsplashUrl("1616486338812-3dadae4b4ace", 800)}
+              alt="A professionally designed, high-end living room"
               fill
               sizes="(min-width: 1024px) 25vw, 50vw"
               placeholder="blur"

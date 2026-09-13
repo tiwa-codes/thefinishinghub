@@ -169,7 +169,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
     <header
       onMouseEnter={handleNavAreaEnter}
       onMouseLeave={handleNavAreaLeave}
-      className={`sticky top-0 z-50 bg-ink text-cream transition-colors duration-200 ${
+      className={`sticky top-0 z-50 bg-forest text-cream transition-colors duration-200 ${
         scrolled ? "border-b border-gold/25" : ""
       }`}
     >
@@ -315,7 +315,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
       {/* Desktop category mega-menu */}
       {openCategory && MEGA_MENU_SUBCATEGORIES[openCategory.slug] && (
-        <div className="hidden border-t border-gold/25 bg-ink lg:block">
+        <div className="hidden border-t border-gold/25 bg-forest lg:block">
           <div className="mx-auto flex max-w-[1440px] gap-16 px-10 pb-10 pt-8">
             <div className="grid flex-1 grid-cols-2 gap-x-10 gap-y-3 self-start">
               {MEGA_MENU_SUBCATEGORIES[openCategory.slug].map((sub) => (
@@ -356,7 +356,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
       {/* Shop by dropdown */}
       {openKey === "shop-by" && (
-        <div className="hidden border-t border-gold/25 bg-ink lg:block">
+        <div className="hidden border-t border-gold/25 bg-forest lg:block">
           <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-16 px-10 pb-10 pt-8">
             <div>
               <div className="mb-4 text-[11px] uppercase tracking-[0.2em] text-gold">
@@ -414,7 +414,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
       {/* Design Resources dropdown */}
       {openKey === "design-resources" && (
-        <div className="hidden border-t border-gold/25 bg-ink lg:block">
+        <div className="hidden border-t border-gold/25 bg-forest lg:block">
           <div className="mx-auto grid max-w-[1440px] grid-cols-4 gap-10 px-10 pb-10 pt-8">
             {DESIGN_RESOURCE_COLUMNS.map((col) => (
               <div key={col.title}>
@@ -440,7 +440,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
       {/* Mobile drawer */}
       {mobileOpen && createPortal(
-        <div role="dialog" aria-modal="true" aria-label="Mobile menu" className="fixed inset-0 z-[60] flex bg-ink lg:hidden">
+        <div role="dialog" aria-modal="true" aria-label="Mobile menu" className="fixed inset-0 z-[60] flex bg-forest lg:hidden">
           <div className="flex h-full w-full flex-col overflow-y-auto px-5 py-6">
             <div className="mb-4 flex items-center justify-between">
               <span className="font-serif text-lg text-cream">The Finishing Hub</span>

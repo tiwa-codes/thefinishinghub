@@ -13,7 +13,7 @@ const HOURS = "Mon–Sat, 9am–6pm";
 
 export function ShowroomCta() {
   return (
-    <section id="showroom" className="bg-ink text-cream">
+    <section id="showroom" className="bg-forest text-cream">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 py-14 lg:px-16 lg:py-24">
           <h2 className="mb-5 font-serif text-2xl font-normal leading-[1.15] text-cream lg:text-[36px]">
