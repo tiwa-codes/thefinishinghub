@@ -3,7 +3,9 @@ import { SiteFooterSection } from "@/components/site-footer-section";
 import { Hero } from "@/components/home/hero";
 import { ShopByStyle } from "@/components/home/shop-by-style";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
+import { FinishedRoom } from "@/components/home/finished-room";
 import { FeaturedCategories } from "@/components/home/featured-categories";
+import { InteriorDesign } from "@/components/home/interior-design";
 import { ShowroomCta } from "@/components/home/showroom-cta";
 import { ReassuranceStrip } from "@/components/home/reassurance-strip";
 
@@ -21,7 +23,9 @@ export default function Home() {
       <Hero />
       <ShopByStyle />
       <NewArrivalsSection />
+      <FinishedRoom />
       <FeaturedCategories />
+      <InteriorDesign />
       <ShowroomCta />
       <ReassuranceStrip />
       <SiteFooterSection />
