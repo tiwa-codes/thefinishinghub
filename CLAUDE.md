@@ -40,16 +40,18 @@ logic to this repo — it will conflict with SSR/SEO on the public site.
 - Categories (top-level nav, in this order):
   1. Furniture & Furnishings (lead category)
   2. Tiles & Wall Finishes
-  3. Lighting & Home Automation
+  3. Lighting & Automation
   4. Sanitarywares & Bath Accessories
   5. Doors, Windows & Joinery
-- Interior Design is a SERVICE, not a 6th catalog category — do not add it
+  6. Kitchens
+  7. Outdoor
+  8. Decor
+- Interior Design is a SERVICE, not a catalog category — do not add it
   to the primary category nav.
 - Nav: two-row. Thin utility bar on top, main nav below. TFH monogram +
   wordmark dominant, left-aligned (wordmark must NOT shrink to illegible —
-  this was corrected once already, don't regress it). Five category
-  dropdowns centered, each a DWR-style mega-menu (e.g. Furniture → Living
-  Room / Dining / Bedroom / Workspace / Bespoke). Gold "Visit the Showroom"
+  this was corrected once already, don't regress it). Eight category
+  dropdowns centered, each a DWR-style mega-menu. Gold "Visit the Showroom"
   CTA button, right-aligned.
 - Homepage: NO product carousel anywhere (this was explicitly removed once —
   do not reintroduce it). Use a "Shop by Room" photo-tile grid instead
