@@ -7,6 +7,10 @@ const nextConfig = {
         hostname: "ycvjjyzydgbigqytsnsa.supabase.co",
         pathname: "/storage/v1/object/public/product-images/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
   async redirects() {

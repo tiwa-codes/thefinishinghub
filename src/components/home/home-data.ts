@@ -1,69 +1,21 @@
-export type Category = {
+import { hrefForTopLevelSlug } from "@/lib/subcategory-hrefs";
+
+export type FeaturedCategory = {
   name: string;
   href: string;
-  sub: string;
-  placeholderLabel: string;
-  image?: string;
+  imageId: string;
 };
 
-export const CATEGORIES: Category[] = [
-  {
-    name: "Tiles & Wall Finishes",
-    href: "/tiles-wall-finishes",
-    sub: "Porcelain · Marble · Mosaic",
-    placeholderLabel: "[ tiles ]",
-    image: "/images/category-tiles.jpg",
-  },
-  {
-    name: "Lighting & Automation",
-    href: "/lighting",
-    sub: "Chandeliers · Pendants · Smart",
-    placeholderLabel: "[ lighting ]",
-    image: "/images/category-lighting.jpg",
-  },
-  {
-    name: "Sanitaryware & Bath",
-    href: "/sanitaryware-bath",
-    sub: "Basins · Baths · Showers · Taps",
-    placeholderLabel: "[ bathroom ]",
-    image: "/images/category-sanitaryware.webp",
-  },
-  {
-    name: "Doors, Windows & Joinery",
-    href: "/doors-windows-joinery",
-    sub: "Interior · Security · Casement",
-    placeholderLabel: "[ doors ]",
-    image: "/images/category-doors.webp",
-  },
-];
-
-export type Project = {
-  name: string;
-  meta: string;
-  placeholderLabel: string;
-  image?: string;
-};
-
-// image: stock photography, temporary — swap for real project photos
-// when available (falls back to PlaceholderBlock in ProjectsGallery if
-// the file is ever missing).
-export const PROJECTS: Project[] = [
-  {
-    name: "Maitama Residence",
-    meta: "Abuja · 2025",
-    placeholderLabel: "[ living room ]",
-    image: "/images/project-maitama-living-room.jpg",
-  },
-  {
-    name: "Gudu Duplex",
-    meta: "Abuja · 2024",
-    placeholderLabel: "[ full interior ]",
-    image: "/images/project-gudu-full-interior.jpg",
-  },
-  {
-    name: "Wuse Office Suite",
-    meta: "Abuja · 2024",
-    placeholderLabel: "[ workspace ]",
-    image: "/images/project-wuse-workspace.jpg",
-  },
+// hrefForTopLevelSlug falls back to "#" for a category with no built page
+// yet (kitchens/outdoor/decor — categories-table rows only, no route)
+// rather than linking to a path that would 404. See lib/subcategory-hrefs.ts.
+export const FEATURED_CATEGORIES: FeaturedCategory[] = [
+  { name: "Furniture", href: hrefForTopLevelSlug("furniture"), imageId: "1615529182904-14819c35db37" },
+  { name: "Tiles", href: hrefForTopLevelSlug("tiles-wall-finishes"), imageId: "1584622650111-993a426fbf0a" },
+  { name: "Sanitarywares", href: hrefForTopLevelSlug("sanitaryware-bath"), imageId: "1600566752355-35792bedcfea" },
+  { name: "Lighting", href: hrefForTopLevelSlug("lighting"), imageId: "1524758631624-e2822e304c36" },
+  { name: "Doors", href: hrefForTopLevelSlug("doors-windows-joinery"), imageId: "1600607687920-4e2a09cf159d" },
+  { name: "Kitchens", href: hrefForTopLevelSlug("kitchens"), imageId: "1484154218962-a197022b5858" },
+  { name: "Outdoor", href: hrefForTopLevelSlug("outdoor"), imageId: "1600210492493-0946911123ea" },
+  { name: "Decor", href: hrefForTopLevelSlug("decor"), imageId: "1600166898405-da9535204843" },
 ];

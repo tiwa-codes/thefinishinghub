@@ -1,16 +1,11 @@
 import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
 import { Hero } from "@/components/home/hero";
-// ShopByRoom removed from render 2026-09-13, pending ShopByStyle rework —
-// see shop-by-room.tsx header comment.
-import { ShopByCategory } from "@/components/home/shop-by-category";
+import { ShopByStyle } from "@/components/home/shop-by-style";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
-import { RoomEditorial } from "@/components/home/room-editorial";
-import { DesignServices } from "@/components/home/design-services";
-import { TradeDesk } from "@/components/home/trade-desk";
-import { ProjectsGallery } from "@/components/home/projects-gallery";
-import { VisitShowroom } from "@/components/home/visit-showroom";
-import { Newsletter } from "@/components/home/newsletter";
+import { FeaturedCategories } from "@/components/home/featured-categories";
+import { ShowroomCta } from "@/components/home/showroom-cta";
+import { ReassuranceStrip } from "@/components/home/reassurance-strip";
 
 // ISR: the catalog changes rarely, and NewArrivalsSection now reads it
 // through a cookie-free client (see lib/supabase/public.ts), so nothing
@@ -24,15 +19,11 @@ export default function Home() {
     <div className="bg-cream font-sans text-ink antialiased">
       <SiteNavSection />
       <Hero />
-      {/* ShopByRoom removed 2026-09-13, pending ShopByStyle rework */}
-      <ShopByCategory />
+      <ShopByStyle />
       <NewArrivalsSection />
-      <RoomEditorial />
-      <DesignServices />
-      <TradeDesk />
-      <ProjectsGallery />
-      <VisitShowroom />
-      <Newsletter />
+      <FeaturedCategories />
+      <ShowroomCta />
+      <ReassuranceStrip />
       <SiteFooterSection />
     </div>
   );

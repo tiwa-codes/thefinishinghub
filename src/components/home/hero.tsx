@@ -1,56 +1,115 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PlaceholderBlock } from "@/components/placeholder-block";
-import { publicAssetExists } from "@/lib/public-asset";
+import { UNSPLASH_BLUR_DATA_URL, unsplashUrl } from "@/lib/unsplash";
+
+const AUTO_ADVANCE_MS = 6000;
+
+// Named "deck"/"slide" throughout, never "slider"/"carousel" — the
+// no-carousel structural guard test (page.test.tsx) asserts on
+// [aria-roledescription="carousel"] and any class containing "carousel" or
+// "slider" (case-insensitive). This is a plain CSS-crossfade + dot nav, no
+// library.
+const HERO_SLIDES = [
+  {
+    id: "villa",
+    kicker: "VILLA COLLECTION",
+    headline: "Furniture for those who build above the ordinary",
+    ctaLabel: "Shop Villa",
+    href: "/styles/villa",
+    imageId: "1618219740975-d40978bb7378",
+  },
+  {
+    id: "contemporary",
+    kicker: "CONTEMPORARY LIVING",
+    headline: "Where clean lines meet refined craftsmanship",
+    ctaLabel: "Shop Contemporary",
+    href: "/styles/contemporary",
+    imageId: "1611048267451-e6ed903d4a38",
+  },
+];
 
 export function Hero() {
-  const hasHeroImage = publicAssetExists("images/hero-living-room.png");
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (paused) return;
+    timerRef.current = setInterval(() => {
+      setActive((i) => (i + 1) % HERO_SLIDES.length);
+    }, AUTO_ADVANCE_MS);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [paused, active]);
 
   return (
-    <section className="relative h-[560px] overflow-hidden bg-forest lg:h-[640px]">
-      <div className="absolute inset-0">
-        {hasHeroImage ? (
+    <section
+      aria-label="Featured collections"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      className="relative h-[100svh] min-h-[520px] w-full overflow-hidden bg-ink"
+    >
+      {HERO_SLIDES.map((slide, i) => (
+        <div
+          key={slide.id}
+          aria-hidden={i !== active}
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+            i === active ? "z-10 opacity-100" : "z-0 opacity-0"
+          }`}
+        >
           <Image
-            src="/images/hero-living-room.png"
-            alt="Living room, finished"
+            src={unsplashUrl(slide.imageId, 1920)}
+            alt=""
             fill
-            priority
+            priority={i === 0}
             sizes="100vw"
-            className="object-cover object-[center_42%]"
+            placeholder="blur"
+            blurDataURL={UNSPLASH_BLUR_DATA_URL}
+            className="object-cover"
           />
-        ) : (
-          <PlaceholderBlock
-            label="[ hero — living room scene ]"
-            tone="dark"
+          <div
             className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(0deg, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.32) 45%, rgba(0,0,0,0.08) 75%)",
+            }}
           />
-        )}
-      </div>
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(7,40,24,0.86) 0%, rgba(7,40,24,0.6) 42%, rgba(7,40,24,0.15) 78%, rgba(7,40,24,0.05) 100%)",
-        }}
-      />
-      <div className="relative mx-auto flex h-full max-w-[1440px] items-center px-5 lg:px-10">
-        <div className="max-w-[560px]">
-          <div className="mb-5 text-xs uppercase tracking-[0.2em] text-gold-bright">
-            FURNITURE · FINISHING · INTERIORS
+          <div className="relative z-10 flex h-full items-end px-5 pb-16 lg:px-10 lg:pb-24">
+            <div className="max-w-[620px]">
+              <div className="mb-4 text-xs uppercase tracking-[0.25em] text-gold-bright">
+                {slide.kicker}
+              </div>
+              <h1 className="mb-7 text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[56px] lg:leading-[1.08]">
+                {slide.headline}
+              </h1>
+              <Link
+                href={slide.href}
+                className="inline-block cursor-pointer border-2 border-gold px-7 py-3 text-sm font-semibold uppercase tracking-wide text-cream transition-colors duration-200 hover:bg-gold hover:text-ink"
+              >
+                {slide.ctaLabel}
+              </Link>
+            </div>
           </div>
-          <h1 className="mb-5 text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[52px] lg:leading-[1.08]">
-            Furniture, Finishes, and Interiors for the Finished Home.
-          </h1>
-          <p className="mb-8 max-w-[440px] text-[15px] leading-[1.6] text-[#d7ddd4] lg:text-[17px]">
-            Five categories under one roof in Abuja. Delivered nationwide.
-          </p>
-          <Link
-            href="#categories"
-            className="inline-block rounded-[2px] bg-gold px-6 py-3.5 text-sm font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright lg:px-[30px] lg:py-[15px]"
-          >
-            Shop the collection
-          </Link>
         </div>
+      ))}
+
+      <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
+        {HERO_SLIDES.map((slide, i) => (
+          <button
+            key={slide.id}
+            type="button"
+            aria-label={`Show slide ${i + 1}: ${slide.kicker}`}
+            aria-current={i === active}
+            onClick={() => setActive(i)}
+            className={`h-2.5 w-2.5 cursor-pointer rounded-full transition-colors duration-200 ${
+              i === active ? "bg-gold" : "bg-cream/40 hover:bg-cream/70"
+            }`}
+          />
+        ))}
       </div>
     </section>
   );
