@@ -101,8 +101,6 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -156,11 +154,6 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
     closeTimer.current = setTimeout(() => setOpenKey(null), CLOSE_DELAY_MS);
   }
 
-  function closeSearch() {
-    setSearchOpen(false);
-    setSearchQuery("");
-  }
-
   function closeMobile() {
     setMobileOpen(false);
     setMobileAccordion(null);
@@ -176,8 +169,8 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
     <header
       onMouseEnter={handleNavAreaEnter}
       onMouseLeave={handleNavAreaLeave}
-      className={`sticky top-0 z-50 text-cream transition-colors duration-200 ${
-        scrolled ? "border-b border-gold/25 bg-ink" : "bg-ink/95 backdrop-blur-sm"
+      className={`sticky top-0 z-50 bg-ink text-cream transition-colors duration-200 ${
+        scrolled ? "border-b border-gold/25" : ""
       }`}
     >
       {/* Row 1: logo, right-zone links + CTA + icons. Row 2 (category
@@ -186,7 +179,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
           right zone, a single shared row doesn't have enough width at
           1440px (measured: content needs ~650px, a shared row only
           leaves ~435px). Matches the reference site's two-row pattern. */}
-      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between px-5 lg:h-20 lg:px-10">
+      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center gap-6 px-5 lg:h-20 lg:px-10">
         <Link
           href="/"
           className="flex flex-shrink-0 items-center gap-[15px] no-underline"
@@ -208,6 +201,16 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
             </span>
           </span>
         </Link>
+
+        <div className="hidden min-w-0 flex-1 justify-center lg:flex">
+          <input
+            type="search"
+            aria-label="Search by product, category, or style"
+            placeholder="Search by product, category, or style"
+            disabled
+            className="w-full max-w-[440px] rounded-[2px] border border-cream/25 bg-transparent px-4 py-2.5 text-sm text-cream outline-none placeholder:text-cream/50 focus:border-gold-bright disabled:cursor-not-allowed"
+          />
+        </div>
 
         <div className="hidden flex-shrink-0 items-center gap-5 lg:flex">
           <nav aria-label="Discover and services" className="flex items-center gap-4 text-[13px]">
@@ -235,51 +238,6 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
               ),
             )}
           </nav>
-
-          {searchOpen ? (
-            <form action="/search" method="get" className="flex items-center gap-2">
-              <input
-                type="search"
-                name="q"
-                autoFocus
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") closeSearch();
-                }}
-                placeholder="Search products…"
-                aria-label="Search products"
-                className="w-40 rounded-[2px] border border-cream/30 bg-transparent px-2.5 py-1.5 text-sm text-cream outline-none placeholder:text-cream/50 focus:border-gold-bright"
-              />
-              <button
-                type="button"
-                aria-label="Close search"
-                onClick={closeSearch}
-                className="inline-flex cursor-pointer items-center text-cream hover:text-gold-bright"
-              >
-                <CloseIcon />
-              </button>
-            </form>
-          ) : (
-            <button
-              type="button"
-              aria-label="Search"
-              onClick={() => setSearchOpen(true)}
-              className="inline-flex cursor-pointer items-center text-cream hover:text-gold-bright"
-            >
-              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="7"></circle>
-                <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
-              </svg>
-            </button>
-          )}
-
-          <Link
-            href="/#showroom"
-            className="whitespace-nowrap rounded-[2px] bg-gold px-4 py-2 text-[13px] font-semibold tracking-wide text-ink no-underline hover:bg-gold-bright"
-          >
-            Visit the Showroom
-          </Link>
 
           <Link href="/account" aria-label="Account" className="flex cursor-pointer items-center text-cream hover:text-gold-bright">
             <UserIcon />
@@ -310,38 +268,50 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
         </button>
       </div>
 
-      {/* Row 2: category links, full-width — see the row-1 comment above
-          for why this isn't sharing a row with the logo/right zone. */}
-      <nav
-        aria-label="Product categories"
-        className="hidden h-12 min-w-0 items-center justify-center gap-6 overflow-x-auto border-t border-cream/10 px-5 text-sm lg:mx-auto lg:flex lg:max-w-[1440px] lg:px-10"
-      >
-        {orderedCategories.map((cat) => (
-          <Link
-            key={cat.id}
-            href={cat.href}
-            onMouseEnter={() => handleTriggerEnter(cat.slug)}
-            aria-haspopup="true"
-            aria-expanded={openKey === cat.slug}
-            className="flex h-12 flex-shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap font-medium text-cream no-underline hover:text-gold-bright"
+      {/* Row 2: category links + the "Visit the Showroom" CTA, full-width —
+          see the row-1 comment above for why categories aren't sharing a
+          row with the logo/search/right zone. */}
+      <div className="hidden h-12 border-t border-cream/10 lg:block">
+        <div className="mx-auto flex h-full max-w-[1440px] items-center px-5 lg:px-10">
+          <nav
+            aria-label="Product categories"
+            className="flex min-w-0 flex-1 items-center justify-center gap-6 overflow-x-auto text-sm"
           >
-            <span>{cat.navLabel}</span>
-            {MEGA_MENU_SUBCATEGORIES[cat.slug] && (
+            {orderedCategories.map((cat) => (
+              <Link
+                key={cat.id}
+                href={cat.href}
+                onMouseEnter={() => handleTriggerEnter(cat.slug)}
+                aria-haspopup="true"
+                aria-expanded={openKey === cat.slug}
+                className="flex h-12 flex-shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap font-medium text-cream no-underline hover:text-gold-bright"
+              >
+                <span>{cat.navLabel}</span>
+                {MEGA_MENU_SUBCATEGORIES[cat.slug] && (
+                  <ChevronDownIcon className="opacity-70" />
+                )}
+              </Link>
+            ))}
+            <button
+              type="button"
+              onMouseEnter={() => handleTriggerEnter("shop-by")}
+              aria-haspopup="true"
+              aria-expanded={openKey === "shop-by"}
+              className="flex h-12 flex-shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap bg-transparent font-medium text-cream hover:text-gold-bright"
+            >
+              <span>Shop by</span>
               <ChevronDownIcon className="opacity-70" />
-            )}
+            </button>
+          </nav>
+
+          <Link
+            href="/#showroom"
+            className="ml-6 flex-shrink-0 whitespace-nowrap rounded-[2px] bg-gold px-4 py-2 text-[13px] font-semibold tracking-wide text-ink no-underline hover:bg-gold-bright"
+          >
+            Visit the Showroom
           </Link>
-        ))}
-        <button
-          type="button"
-          onMouseEnter={() => handleTriggerEnter("shop-by")}
-          aria-haspopup="true"
-          aria-expanded={openKey === "shop-by"}
-          className="flex h-12 flex-shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap bg-transparent font-medium text-cream hover:text-gold-bright"
-        >
-          <span>Shop by</span>
-          <ChevronDownIcon className="opacity-70" />
-        </button>
-      </nav>
+        </div>
+      </div>
 
       {/* Desktop category mega-menu */}
       {openCategory && MEGA_MENU_SUBCATEGORIES[openCategory.slug] && (
