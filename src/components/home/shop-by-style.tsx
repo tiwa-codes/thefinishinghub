@@ -28,7 +28,7 @@ export function ShopByStyle() {
           <Link
             key={tile.slug}
             href={`/styles/${tile.slug}`}
-            className="group relative block aspect-[4/5] overflow-hidden rounded-[2px] no-underline lg:aspect-[3/4]"
+            className="group relative block h-[340px] overflow-hidden rounded-[2px] no-underline lg:h-[420px]"
           >
             <Image
               src={unsplashUrl(tile.imageId, 1200)}

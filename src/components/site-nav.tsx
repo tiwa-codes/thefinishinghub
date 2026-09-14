@@ -15,8 +15,6 @@ import {
   SHOP_BY_STYLE,
 } from "@/lib/mega-menu-data";
 
-const OPEN_DELAY_MS = 100;
-const CLOSE_DELAY_MS = 150;
 const SCROLL_THRESHOLD = 60;
 
 const RIGHT_ZONE_LINKS = [
@@ -102,8 +100,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
   const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
 
-  const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const headerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     function onScroll() {
@@ -114,44 +111,32 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Click-to-open dropdowns: clicking outside the nav, or Escape, closes
+  // whatever is open. Clicking a trigger toggles it (handleTriggerClick).
   useEffect(() => {
+    if (!openKey) return;
+
+    function onDocumentClick(e: MouseEvent) {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setOpenKey(null);
+      }
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpenKey(null);
+    }
+
+    document.addEventListener("click", onDocumentClick);
+    document.addEventListener("keydown", onKeyDown);
     return () => {
-      if (openTimer.current) clearTimeout(openTimer.current);
-      if (closeTimer.current) clearTimeout(closeTimer.current);
+      document.removeEventListener("click", onDocumentClick);
+      document.removeEventListener("keydown", onKeyDown);
     };
-  }, []);
+  }, [openKey]);
 
-  function clearPendingOpen() {
-    if (openTimer.current) {
-      clearTimeout(openTimer.current);
-      openTimer.current = null;
-    }
-  }
-
-  function clearPendingClose() {
-    if (closeTimer.current) {
-      clearTimeout(closeTimer.current);
-      closeTimer.current = null;
-    }
-  }
-
-  function handleTriggerEnter(key: DropdownKey) {
-    clearPendingClose();
-    clearPendingOpen();
-    if (openKey !== null && openKey !== key) {
-      setOpenKey(key);
-    } else if (openKey === null) {
-      openTimer.current = setTimeout(() => setOpenKey(key), OPEN_DELAY_MS);
-    }
-  }
-
-  function handleNavAreaEnter() {
-    clearPendingClose();
-  }
-
-  function handleNavAreaLeave() {
-    clearPendingOpen();
-    closeTimer.current = setTimeout(() => setOpenKey(null), CLOSE_DELAY_MS);
+  function handleTriggerClick(key: DropdownKey, e?: { preventDefault: () => void }) {
+    e?.preventDefault();
+    setOpenKey((current) => (current === key ? null : key));
   }
 
   function closeMobile() {
@@ -167,8 +152,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
   return (
     <header
-      onMouseEnter={handleNavAreaEnter}
-      onMouseLeave={handleNavAreaLeave}
+      ref={headerRef}
       className={`sticky top-0 z-50 bg-forest text-cream transition-colors duration-200 ${
         scrolled ? "border-b border-gold/25" : ""
       }`}
@@ -219,7 +203,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
                 <Link
                   key={item.key}
                   href={item.href}
-                  onMouseEnter={() => handleTriggerEnter(item.key)}
+                  onClick={(e) => handleTriggerClick(item.key, e)}
                   aria-haspopup="true"
                   aria-expanded={openKey === item.key}
                   className="flex cursor-pointer items-center gap-0.5 whitespace-nowrap font-medium text-cream no-underline hover:text-gold-bright"
@@ -281,7 +265,11 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
               <Link
                 key={cat.id}
                 href={cat.href}
-                onMouseEnter={() => handleTriggerEnter(cat.slug)}
+                onClick={(e) =>
+                  MEGA_MENU_SUBCATEGORIES[cat.slug]
+                    ? handleTriggerClick(cat.slug, e)
+                    : undefined
+                }
                 aria-haspopup="true"
                 aria-expanded={openKey === cat.slug}
                 className="flex h-12 flex-shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap font-medium text-cream no-underline hover:text-gold-bright"
@@ -294,7 +282,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
             ))}
             <button
               type="button"
-              onMouseEnter={() => handleTriggerEnter("shop-by")}
+              onClick={() => handleTriggerClick("shop-by")}
               aria-haspopup="true"
               aria-expanded={openKey === "shop-by"}
               className="flex h-12 flex-shrink-0 cursor-pointer items-center gap-1 whitespace-nowrap bg-transparent font-medium text-cream hover:text-gold-bright"

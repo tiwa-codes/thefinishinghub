@@ -13,7 +13,7 @@ export function FeaturedCategories() {
         Everything for the home, from foundation to finish.
       </p>
 
-      <div className="mx-auto mt-10 grid max-w-[1440px] grid-cols-1 gap-x-5 gap-y-8 px-5 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-x-6 lg:px-10">
+      <div className="mx-auto mt-10 grid max-w-[1200px] grid-cols-1 gap-x-5 gap-y-8 px-5 sm:grid-cols-2 lg:mt-14 lg:grid-cols-4 lg:gap-x-6 lg:px-10">
         {FEATURED_CATEGORIES.map((cat) => (
           <Link
             key={cat.name}

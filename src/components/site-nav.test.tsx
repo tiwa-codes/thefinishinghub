@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { SiteNav } from "@/components/site-nav";
 import { CartProvider } from "@/lib/cart-context";
 import type { TopLevelCategory } from "@/lib/categories";
@@ -80,36 +80,53 @@ describe("SiteNav", () => {
     expect(screen.getByRole("link", { name: /^Cart, 0 items/ })).toBeInTheDocument();
   });
 
-  it("opens the mega-menu with real subcategory names 100ms after hovering a category, and only one dropdown is open at a time", async () => {
+  it("opens the mega-menu with real subcategory names on click, and only one dropdown is open at a time", () => {
     renderNav();
     const furnitureLink = screen.getByRole("link", { name: /^Furniture/ });
-    fireEvent.mouseEnter(furnitureLink);
     expect(screen.queryByText("Sofas")).toBeNull();
-    await waitFor(() => expect(screen.getByText("Sofas")).toBeInTheDocument(), { timeout: 300 });
+    fireEvent.click(furnitureLink);
+    expect(screen.getByText("Sofas")).toBeInTheDocument();
     expect(screen.getByText("Beds & Bedroom Sets")).toBeInTheDocument();
 
     const tilesLink = screen.getByRole("link", { name: /^Tiles/ });
-    fireEvent.mouseEnter(tilesLink);
-    await waitFor(() => expect(screen.getByText("Floor Tiles")).toBeInTheDocument(), { timeout: 300 });
+    fireEvent.click(tilesLink);
+    expect(screen.getByText("Floor Tiles")).toBeInTheDocument();
     expect(screen.queryByText("Sofas")).toBeNull();
   });
 
-  it("closes the open dropdown 150ms after the mouse leaves the nav entirely", async () => {
-    const { container } = renderNav();
-    const header = container.querySelector("header") as HTMLElement;
+  it("clicking an open dropdown's trigger again closes it", () => {
+    renderNav();
     const furnitureLink = screen.getByRole("link", { name: /^Furniture/ });
-    fireEvent.mouseEnter(furnitureLink);
-    await waitFor(() => expect(screen.getByText("Sofas")).toBeInTheDocument(), { timeout: 300 });
+    fireEvent.click(furnitureLink);
+    expect(screen.getByText("Sofas")).toBeInTheDocument();
 
-    fireEvent.mouseLeave(header);
-    await waitFor(() => expect(screen.queryByText("Sofas")).toBeNull(), { timeout: 300 });
+    fireEvent.click(furnitureLink);
+    expect(screen.queryByText("Sofas")).toBeNull();
   });
 
-  it("opens the Shop by dropdown with Space and Style columns", async () => {
+  it("closes the open dropdown when clicking outside the nav", () => {
+    renderNav();
+    fireEvent.click(screen.getByRole("link", { name: /^Furniture/ }));
+    expect(screen.getByText("Sofas")).toBeInTheDocument();
+
+    fireEvent.click(document.body);
+    expect(screen.queryByText("Sofas")).toBeNull();
+  });
+
+  it("closes the open dropdown on Escape", () => {
+    renderNav();
+    fireEvent.click(screen.getByRole("link", { name: /^Furniture/ }));
+    expect(screen.getByText("Sofas")).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByText("Sofas")).toBeNull();
+  });
+
+  it("opens the Shop by dropdown with Space and Style columns", () => {
     renderNav();
     const shopByButton = screen.getByRole("button", { name: /Shop by/ });
-    fireEvent.mouseEnter(shopByButton);
-    await waitFor(() => expect(screen.getByText("Shop by Space")).toBeInTheDocument(), { timeout: 300 });
+    fireEvent.click(shopByButton);
+    expect(screen.getByText("Shop by Space")).toBeInTheDocument();
     expect(screen.getByText("Bathroom")).toBeInTheDocument();
     expect(screen.getByText("Shop by Style")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "View all styles →" })).toHaveAttribute("href", "/styles");
@@ -117,11 +134,11 @@ describe("SiteNav", () => {
     expect(screen.getByRole("link", { name: /^Contemporary/ })).toHaveAttribute("href", "/styles/contemporary");
   });
 
-  it("opens the Design Resources dropdown with its four columns", async () => {
+  it("opens the Design Resources dropdown with its four columns", () => {
     renderNav();
     const designResourcesLink = screen.getByRole("link", { name: /^Design Resources/ });
-    fireEvent.mouseEnter(designResourcesLink);
-    await waitFor(() => expect(screen.getByText("Discover")).toBeInTheDocument(), { timeout: 300 });
+    fireEvent.click(designResourcesLink);
+    expect(screen.getByText("Discover")).toBeInTheDocument();
     expect(screen.getByText("Buying Guides")).toBeInTheDocument();
     expect(screen.getByText("Care & Installation")).toBeInTheDocument();
     expect(screen.getByText("About")).toBeInTheDocument();

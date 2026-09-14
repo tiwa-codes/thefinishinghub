@@ -27,7 +27,7 @@ export function InteriorDesign() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-[2px]">
+          <div className="relative h-[240px] lg:h-[320px] overflow-hidden rounded-[2px]">
             <Image
               src={unsplashUrl("1616486338812-3dadae4b4ace", 800)}
               alt="A professionally designed, high-end living room"
@@ -38,7 +38,7 @@ export function InteriorDesign() {
               className="object-cover"
             />
           </div>
-          <div className="relative mt-8 aspect-[3/4] overflow-hidden rounded-[2px]">
+          <div className="relative mt-8 h-[240px] lg:h-[320px] overflow-hidden rounded-[2px]">
             <Image
               src={unsplashUrl("1503387762-592deb58ef4e", 800)}
               alt="A craftsman drafting an interior design plan"

@@ -14,6 +14,17 @@ const AUTO_ADVANCE_MS = 6000;
 // library.
 const HERO_SLIDES = [
   {
+    id: "brand",
+    kicker: "FURNITURE · FINISHING · INTERIORS",
+    headline: "Furniture, Finishes, and Interiors for the Finished Home.",
+    subline: "Five categories under one roof in Abuja. Delivered nationwide.",
+    ctaLabel: "Shop the collection",
+    href: "/furniture",
+    // Local file (already in the repo), not Unsplash — the original
+    // brand hero image, restored as slide 1.
+    imageSrc: "/images/hero-living-room.png",
+  },
+  {
     id: "villa",
     kicker: "VILLA COLLECTION",
     headline: "Furniture for those who build above the ordinary",
@@ -69,7 +80,7 @@ export function Hero() {
           }`}
         >
           <Image
-            src={unsplashUrl(slide.imageId, 1920)}
+            src={slide.imageSrc ?? unsplashUrl(slide.imageId!, 1920)}
             alt=""
             fill
             priority={i === 0}
@@ -90,9 +101,18 @@ export function Hero() {
               <div className="mb-4 text-xs uppercase tracking-[0.25em] text-gold-bright">
                 {slide.kicker}
               </div>
-              <h1 className="mb-7 text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[56px] lg:leading-[1.08]">
+              <h1
+                className={`text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[56px] lg:leading-[1.08] ${
+                  slide.subline ? "mb-4" : "mb-7"
+                }`}
+              >
                 {slide.headline}
               </h1>
+              {slide.subline && (
+                <p className="mb-7 max-w-[440px] text-[15px] leading-[1.6] text-cream/80 lg:text-[17px]">
+                  {slide.subline}
+                </p>
+              )}
               <Link
                 href={slide.href}
                 className="inline-block cursor-pointer border-2 border-gold px-7 py-3 text-sm font-semibold uppercase tracking-wide text-cream transition-colors duration-200 hover:bg-gold hover:text-ink"
