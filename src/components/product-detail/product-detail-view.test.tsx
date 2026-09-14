@@ -5,13 +5,12 @@ import { TradeAccountProvider } from "@/lib/trade-account-context";
 import { rpcMock } from "@/test/supabase-mock";
 import { ProductDetailView } from "./product-detail-view";
 import type { GalleryImage } from "./product-gallery";
-import type { ProductVariantOption } from "./variant-picker";
-import type { FeaturedProduct } from "@/components/category/featured-products-grid";
+import type { ProductVariant } from "./variant-selector";
+import type { NewArrivalProductCard } from "@/components/home/new-arrivals-grid";
 
 const BREADCRUMB = [
   { label: "Home", href: "/" },
   { label: "Furniture", href: "/furniture" },
-  { label: "Bedroom" },
   { label: "Kano Upholstered Storage Bed" },
 ];
 
@@ -24,25 +23,48 @@ const MULTI_IMAGE: GalleryImage[] = [
   { url: "/images/bed-grey-wing.jpg", alt: "Kano bed, side" },
 ];
 
-const SINGLE_VARIANT: ProductVariantOption[] = [
-  { id: "variant-1", label: "SKU-1", swatchColor: null },
+const SINGLE_VARIANT: ProductVariant[] = [
+  {
+    id: "variant-1",
+    finish: null,
+    color: null,
+    size: null,
+    priceKobo: 54000000,
+    isDefault: true,
+    inStock: true,
+  },
 ];
 
-const MULTI_VARIANT: ProductVariantOption[] = [
-  { id: "variant-1", label: "Taupe", swatchColor: "#c9bfae" },
-  { id: "variant-2", label: "Charcoal", swatchColor: "#3a3a3a" },
+const MULTI_VARIANT: ProductVariant[] = [
+  {
+    id: "variant-1",
+    finish: "Taupe",
+    color: null,
+    size: null,
+    priceKobo: 54000000,
+    isDefault: true,
+    inStock: true,
+  },
+  {
+    id: "variant-2",
+    finish: "Charcoal",
+    color: null,
+    size: null,
+    priceKobo: 61000000,
+    isDefault: false,
+    inStock: true,
+  },
 ];
 
-// categoryLabel/imageUrl deliberately differ from the main product's own
-// fixtures (Bedroom / no photo) so assertions on one don't accidentally
-// match text belonging to the other.
-const COMPLEMENTS: FeaturedProduct[] = [
+const RELATED: NewArrivalProductCard[] = [
   {
     id: "product-2",
     slug: "asaba-bed",
-    name: "Asaba Bed",
+    variantId: "variant-3",
     categoryLabel: "Dining",
-    priceKobo: 61000000,
+    name: "Asaba Bed",
+    spec: null,
+    priceKobo: 39000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Asaba Bed",
@@ -56,15 +78,17 @@ function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> 
         <ProductDetailView
           productId="product-1"
           breadcrumb={BREADCRUMB}
-          categoryPath="Furniture · Bedroom"
+          categoryName="Bedroom"
+          styleName={null}
           name="Kano Upholstered Storage Bed"
-          priceKobo={54000000}
-          requiresQuote={false}
           description="Faux leather upholstered bed frame with gas-lift storage."
+          warrantyYears={null}
+          origin={null}
+          videoUrl={null}
           images={SINGLE_IMAGE}
           variants={SINGLE_VARIANT}
           defaultVariantId="variant-1"
-          complements={COMPLEMENTS}
+          related={RELATED}
           {...overrides}
         />
       </TradeAccountProvider>
@@ -80,18 +104,22 @@ describe("ProductDetailView", () => {
       "href",
       "/furniture",
     );
-    expect(screen.getByText("Bedroom")).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Bedroom" })).toBeNull();
+    expect(screen.getAllByText("Kano Upholstered Storage Bed").length).toBeGreaterThan(0);
   });
 
-  it("renders name, price, category path and description", () => {
+  it("renders name, price, category and description", () => {
     renderView();
     expect(
       screen.getByRole("heading", { name: "Kano Upholstered Storage Bed" }),
     ).toBeInTheDocument();
     expect(screen.getByText("₦540,000")).toBeInTheDocument();
-    expect(screen.getByText("Furniture · Bedroom")).toBeInTheDocument();
+    expect(screen.getByText("Bedroom")).toBeInTheDocument();
     expect(screen.getByText(/gas-lift storage/)).toBeInTheDocument();
+  });
+
+  it("shows the style tag only when styleName is set", () => {
+    renderView({ styleName: "Villa" });
+    expect(screen.getByText(/Villa/)).toBeInTheDocument();
   });
 
   it("shows a single real photo with no thumbnail strip when only one image exists", () => {
@@ -100,8 +128,9 @@ describe("ProductDetailView", () => {
   });
 
   it("shows an honest placeholder instead of a broken image when a product has zero photos", () => {
-    renderView({ images: [] });
-    expect(screen.getByText("[ no photo yet ]")).toBeInTheDocument();
+    const { container } = renderView({ images: [] });
+    expect(container.querySelector('img[alt=""]')).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Show photo/ })).toBeNull();
   });
 
   it("renders a thumbnail strip and switches the main image when a product has multiple photos", () => {
@@ -112,19 +141,19 @@ describe("ProductDetailView", () => {
     expect(thumbs[1]).toHaveAttribute("aria-current", "true");
   });
 
-  it("hides the variant picker entirely when the product has only one (real) variant", () => {
+  it("hides the variant selector entirely when the product has only one variant", () => {
     renderView();
-    expect(screen.queryByText(/^Finish/)).toBeNull();
+    expect(screen.queryByText("Finish")).toBeNull();
   });
 
-  it("shows swatches and updates the selected label when a product has real finish options", () => {
+  it("shows finish pills and updates the selected price when a product has real variant options", () => {
     renderView({ variants: MULTI_VARIANT, defaultVariantId: "variant-1" });
-    expect(screen.getByText("Finish — Taupe")).toBeInTheDocument();
+    expect(screen.getByText("₦540,000")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Charcoal" }));
-    expect(screen.getByText("Finish — Charcoal")).toBeInTheDocument();
+    expect(screen.getByText("₦610,000")).toBeInTheDocument();
   });
 
-  it("steps quantity up and down, never below 1", () => {
+  it("steps quantity up and down, never below 1 or above 99", () => {
     renderView();
     const decrease = screen.getByRole("button", { name: "Decrease quantity" });
     const increase = screen.getByRole("button", { name: "Increase quantity" });
@@ -134,6 +163,14 @@ describe("ProductDetailView", () => {
     fireEvent.click(increase);
     fireEvent.click(increase);
     expect(screen.getByText("3")).toBeInTheDocument();
+  });
+
+  it("shows Out of Stock as a disabled state instead of Add to Cart when the variant is unavailable", () => {
+    renderView({
+      variants: [{ ...SINGLE_VARIANT[0], inStock: false }],
+    });
+    expect(screen.getByRole("button", { name: "Out of Stock" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Add to Cart" })).toBeNull();
   });
 
   it("adds the selected variant and quantity to the cart via the atomic RPC, then shows transient confirmation", async () => {
@@ -160,35 +197,35 @@ describe("ProductDetailView", () => {
     ).toHaveAttribute("href", "/#showroom");
   });
 
-  it("renders real complementary products with working product links, not fabricated ones", () => {
+  it("renders real related products with working product links, not fabricated ones", () => {
     renderView();
-    expect(screen.getByText("Complete the room")).toBeInTheDocument();
+    expect(screen.getByText("You might also like")).toBeInTheDocument();
     expect(screen.getByText("Asaba Bed")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Asaba Bed/ })).toHaveAttribute(
       "href",
       "/products/asaba-bed",
     );
-    expect(screen.queryByText(/coffee table|basin/i)).toBeNull();
   });
 
-  it("shows an honest empty state instead of fake complements when there are none yet", () => {
-    renderView({ complements: [] });
-    expect(
-      screen.getByText("No published products in this category yet."),
-    ).toBeInTheDocument();
+  it("shows no related-products section at all when there are none yet", () => {
+    renderView({ related: [] });
+    expect(screen.queryByText("You might also like")).toBeNull();
   });
 
-  it("shows 'Request a Quote' with real showroom contact links instead of price/Add to Cart when requiresQuote", () => {
-    renderView({ requiresQuote: true });
-    expect(screen.getAllByText("Request a Quote").length).toBeGreaterThan(0);
-    expect(screen.queryByRole("button", { name: "Add to Cart" })).toBeNull();
-    expect(screen.getByRole("link", { name: "+234 (0) 803 311 7302" })).toHaveAttribute(
+  it("shows 'Price on request' instead of a price when the selected variant has no price_kobo", () => {
+    renderView({
+      variants: [{ ...SINGLE_VARIANT[0], priceKobo: null }],
+    });
+    expect(screen.getByText("Price on request")).toBeInTheDocument();
+  });
+
+  it("shows the showroom editorial banner with the real phone number", () => {
+    renderView();
+    expect(screen.getByText("See this piece in person before you commit.")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /\+234 \(0\) 803 311 7302/ })).toHaveAttribute(
       "href",
       "tel:+2348033117302",
     );
-    expect(
-      screen.getByRole("link", { name: "thefinishinghubng@gmail.com" }),
-    ).toHaveAttribute("href", "mailto:thefinishinghubng@gmail.com");
   });
 });
 

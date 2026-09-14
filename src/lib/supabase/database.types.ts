@@ -354,6 +354,7 @@ export type Database = {
           is_atelier: boolean
           is_showroom_display: boolean
           name: string
+          origin: string | null
           requires_quote: boolean
           short_description: string | null
           slug: string
@@ -361,6 +362,8 @@ export type Database = {
           style_id: string | null
           tier: string | null
           updated_at: string
+          video_url: string | null
+          warranty_years: number | null
         }
         Insert: {
           category_id: string
@@ -370,6 +373,7 @@ export type Database = {
           is_atelier?: boolean
           is_showroom_display?: boolean
           name: string
+          origin?: string | null
           requires_quote?: boolean
           short_description?: string | null
           slug: string
@@ -377,6 +381,8 @@ export type Database = {
           style_id?: string | null
           tier?: string | null
           updated_at?: string
+          video_url?: string | null
+          warranty_years?: number | null
         }
         Update: {
           category_id?: string
@@ -386,6 +392,7 @@ export type Database = {
           is_atelier?: boolean
           is_showroom_display?: boolean
           name?: string
+          origin?: string | null
           requires_quote?: boolean
           short_description?: string | null
           slug?: string
@@ -393,6 +400,8 @@ export type Database = {
           style_id?: string | null
           tier?: string | null
           updated_at?: string
+          video_url?: string | null
+          warranty_years?: number | null
         }
         Relationships: [
           {
