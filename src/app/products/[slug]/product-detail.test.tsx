@@ -19,6 +19,7 @@ const DEFAULT_VARIANT: ProductVariant = {
   priceKobo: 175000000,
   isDefault: true,
   inStock: true,
+  requiresQuote: false,
 };
 
 function renderProduct(overrides: Partial<Parameters<typeof ProductDetailView>[0]> = {}) {
@@ -39,6 +40,15 @@ function renderProduct(overrides: Partial<Parameters<typeof ProductDetailView>[0
           warrantyYears={null}
           origin={null}
           videoUrl={null}
+          dimensions={null}
+          weightKg={null}
+          materials={null}
+          careInstructions={null}
+          leadTimeDays={null}
+          features={null}
+          manufacturer={null}
+          collection={null}
+          productSlug="positano-sofa"
           images={[{ url: "/images/positano-sofa.jpg", alt: "Positano Sofa" }]}
           variants={[DEFAULT_VARIANT]}
           defaultVariantId="variant-1"

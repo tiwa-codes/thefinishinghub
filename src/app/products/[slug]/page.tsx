@@ -13,6 +13,8 @@ import type { BreadcrumbCrumb } from "@/components/listing/listing-breadcrumb";
 // stays eligible for static generation with a revalidation window.
 export const revalidate = 3600;
 
+type ProductDimensions = { width_cm?: number; depth_cm?: number; height_cm?: number };
+
 type ProductRow = {
   id: string;
   slug: string;
@@ -23,6 +25,14 @@ type ProductRow = {
   video_url: string | null;
   warranty_years: number | null;
   origin: string | null;
+  dimensions: ProductDimensions | null;
+  weight_kg: number | null;
+  materials: string | null;
+  care_instructions: string | null;
+  lead_time_days: number | null;
+  features: string[] | null;
+  manufacturer: string | null;
+  collection: string | null;
   categories: { id: string; slug: string; name: string; parent_id: string | null } | null;
   styles: { name: string; slug: string } | null;
 };
@@ -35,6 +45,7 @@ type VariantRow = {
   price_kobo: number | null;
   is_default: boolean | null;
   in_stock: boolean | null;
+  requires_quote: boolean | null;
 };
 
 type ImageRow = {
@@ -59,6 +70,14 @@ async function getProduct(slug: string) {
       video_url,
       warranty_years,
       origin,
+      dimensions,
+      weight_kg,
+      materials,
+      care_instructions,
+      lead_time_days,
+      features,
+      manufacturer,
+      collection,
       categories ( id, slug, name, parent_id ),
       styles ( name, slug )
     `,
@@ -79,7 +98,7 @@ async function getVariants(productId: string) {
   // lib/supabase/public.ts and every other product page in this codebase).
   const { data } = await supabase
     .from("public_product_variants")
-    .select("id, finish, color, size, price_kobo, is_default, in_stock")
+    .select("id, finish, color, size, price_kobo, is_default, in_stock, requires_quote")
     .eq("product_id", productId)
     .order("is_default", { ascending: false })
     .order("created_at", { ascending: true })
@@ -256,6 +275,7 @@ export default async function ProductDetailPage({
     priceKobo: v.price_kobo,
     isDefault: v.is_default ?? false,
     inStock: v.in_stock ?? true,
+    requiresQuote: v.requires_quote ?? false,
   }));
 
   const defaultVariant = variants.find((v) => v.isDefault) ?? variants[0];
@@ -275,6 +295,15 @@ export default async function ProductDetailPage({
         warrantyYears={product.warranty_years}
         origin={product.origin}
         videoUrl={product.video_url}
+        dimensions={product.dimensions}
+        weightKg={product.weight_kg}
+        materials={product.materials}
+        careInstructions={product.care_instructions}
+        leadTimeDays={product.lead_time_days}
+        features={product.features}
+        manufacturer={product.manufacturer}
+        collection={product.collection}
+        productSlug={product.slug}
         images={images}
         variants={variants}
         defaultVariantId={defaultVariant?.id ?? ""}

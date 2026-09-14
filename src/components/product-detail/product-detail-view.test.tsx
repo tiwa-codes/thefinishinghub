@@ -32,6 +32,7 @@ const SINGLE_VARIANT: ProductVariant[] = [
     priceKobo: 54000000,
     isDefault: true,
     inStock: true,
+    requiresQuote: false,
   },
 ];
 
@@ -44,6 +45,7 @@ const MULTI_VARIANT: ProductVariant[] = [
     priceKobo: 54000000,
     isDefault: true,
     inStock: true,
+    requiresQuote: false,
   },
   {
     id: "variant-2",
@@ -53,6 +55,7 @@ const MULTI_VARIANT: ProductVariant[] = [
     priceKobo: 61000000,
     isDefault: false,
     inStock: true,
+    requiresQuote: false,
   },
 ];
 
@@ -85,6 +88,15 @@ function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> 
           warrantyYears={null}
           origin={null}
           videoUrl={null}
+          dimensions={null}
+          weightKg={null}
+          materials={null}
+          careInstructions={null}
+          leadTimeDays={null}
+          features={null}
+          manufacturer={null}
+          collection={null}
+          productSlug="kano-upholstered-storage-bed"
           images={SINGLE_IMAGE}
           variants={SINGLE_VARIANT}
           defaultVariantId="variant-1"
@@ -192,9 +204,10 @@ describe("ProductDetailView", () => {
 
   it("shows a link to book a showroom viewing", () => {
     renderView();
-    expect(
-      screen.getByRole("link", { name: "Book a viewing at the showroom" }),
-    ).toHaveAttribute("href", "/#showroom");
+    expect(screen.getByRole("link", { name: /Book a showroom viewing/ })).toHaveAttribute(
+      "href",
+      "/#showroom",
+    );
   });
 
   it("renders real related products with working product links, not fabricated ones", () => {
@@ -225,6 +238,99 @@ describe("ProductDetailView", () => {
     expect(screen.getByRole("link", { name: /\+234 \(0\) 803 311 7302/ })).toHaveAttribute(
       "href",
       "tel:+2348033117302",
+    );
+  });
+
+  it("renders collection label when collection is set", () => {
+    renderView({ collection: "Positano Collection" });
+    expect(screen.getByText("Positano Collection")).toBeInTheDocument();
+  });
+
+  it("does not render a collection label when collection is null", () => {
+    renderView({ collection: null });
+    expect(screen.queryByText("Positano Collection")).toBeNull();
+  });
+
+  it("renders manufacturer badge when manufacturer is set", () => {
+    renderView({ manufacturer: "NBH" });
+    expect(screen.getByText("By NBH")).toBeInTheDocument();
+  });
+
+  it("renders features section when features array is non-empty", () => {
+    renderView({ features: ["Solid hardwood frame", "Brass-finished trim"] });
+    expect(screen.getByText("Features")).toBeInTheDocument();
+    expect(screen.getByText("Solid hardwood frame")).toBeInTheDocument();
+    expect(screen.getByText("Brass-finished trim")).toBeInTheDocument();
+  });
+
+  it("does not render the features section when features is null or empty", () => {
+    renderView({ features: null });
+    expect(screen.queryByText("Features")).toBeNull();
+    renderView({ features: [] });
+    expect(screen.queryAllByText("Features")).toHaveLength(0);
+  });
+
+  it("renders specifications section with dimensions, weight, and materials", () => {
+    renderView({
+      dimensions: { width_cm: 240, depth_cm: 92, height_cm: 83 },
+      weightKg: 68,
+      materials: "Full-grain Italian leather.",
+    });
+    expect(screen.getByText("Specifications")).toBeInTheDocument();
+    expect(screen.getByText("240 × 92 × 83 cm")).toBeInTheDocument();
+    expect(screen.getByText("68 kg")).toBeInTheDocument();
+    expect(screen.getByText("Full-grain Italian leather.")).toBeInTheDocument();
+  });
+
+  it("does not render the specifications section when every spec field is null", () => {
+    renderView();
+    expect(screen.queryByText("Specifications")).toBeNull();
+  });
+
+  it("renders care section when care_instructions is set", () => {
+    renderView({ careInstructions: "Wipe clean with a soft, dry cloth." });
+    expect(screen.getByText("Care & Maintenance")).toBeInTheDocument();
+    expect(screen.getByText("Wipe clean with a soft, dry cloth.")).toBeInTheDocument();
+  });
+
+  it("does not render the care section when care_instructions is null", () => {
+    renderView({ careInstructions: null });
+    expect(screen.queryByText("Care & Maintenance")).toBeNull();
+  });
+
+  it("renders WhatsApp CTA when requires_quote is true", () => {
+    renderView({
+      variants: [{ ...SINGLE_VARIANT[0], requiresQuote: true }],
+    });
+    const whatsapp = screen.getByRole("link", { name: "Request a Quote" });
+    expect(whatsapp).toHaveAttribute("href", expect.stringContaining("wa.me/2348033117302"));
+    expect(whatsapp).toHaveAttribute("target", "_blank");
+    expect(whatsapp).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getByRole("link", { name: /Call us/ })).toHaveAttribute(
+      "href",
+      "tel:+2348033117302",
+    );
+    expect(screen.queryByRole("button", { name: "Add to Cart" })).toBeNull();
+  });
+
+  it("renders Add to Cart when requires_quote is false and price is set", () => {
+    renderView({
+      variants: [{ ...SINGLE_VARIANT[0], requiresQuote: false, priceKobo: 54000000 }],
+    });
+    expect(screen.getByRole("button", { name: "Add to Cart" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Request a Quote" })).toBeNull();
+  });
+
+  it("renders the share section with WhatsApp and email links", () => {
+    renderView({ productSlug: "kano-upholstered-storage-bed" });
+    expect(screen.getByText("Share this piece:")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Share on WhatsApp" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("wa.me/?text="),
+    );
+    expect(screen.getByRole("link", { name: "Share by email" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("mailto:?subject="),
     );
   });
 });

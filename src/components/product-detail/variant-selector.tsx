@@ -8,6 +8,7 @@ export type ProductVariant = {
   priceKobo: number | null;
   isDefault: boolean;
   inStock: boolean;
+  requiresQuote: boolean;
 };
 
 const ATTRIBUTES = [

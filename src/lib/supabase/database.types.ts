@@ -347,12 +347,19 @@ export type Database = {
       }
       products: {
         Row: {
+          care_instructions: string | null
           category_id: string
+          collection: string | null
           created_at: string
           description: string | null
+          dimensions: Json | null
+          features: Json | null
           id: string
           is_atelier: boolean
           is_showroom_display: boolean
+          lead_time_days: number | null
+          manufacturer: string | null
+          materials: string | null
           name: string
           origin: string | null
           requires_quote: boolean
@@ -364,14 +371,22 @@ export type Database = {
           updated_at: string
           video_url: string | null
           warranty_years: number | null
+          weight_kg: number | null
         }
         Insert: {
+          care_instructions?: string | null
           category_id: string
+          collection?: string | null
           created_at?: string
           description?: string | null
+          dimensions?: Json | null
+          features?: Json | null
           id?: string
           is_atelier?: boolean
           is_showroom_display?: boolean
+          lead_time_days?: number | null
+          manufacturer?: string | null
+          materials?: string | null
           name: string
           origin?: string | null
           requires_quote?: boolean
@@ -383,14 +398,22 @@ export type Database = {
           updated_at?: string
           video_url?: string | null
           warranty_years?: number | null
+          weight_kg?: number | null
         }
         Update: {
+          care_instructions?: string | null
           category_id?: string
+          collection?: string | null
           created_at?: string
           description?: string | null
+          dimensions?: Json | null
+          features?: Json | null
           id?: string
           is_atelier?: boolean
           is_showroom_display?: boolean
+          lead_time_days?: number | null
+          manufacturer?: string | null
+          materials?: string | null
           name?: string
           origin?: string | null
           requires_quote?: boolean
@@ -402,6 +425,7 @@ export type Database = {
           updated_at?: string
           video_url?: string | null
           warranty_years?: number | null
+          weight_kg?: number | null
         }
         Relationships: [
           {
