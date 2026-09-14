@@ -10,6 +10,9 @@ type ProductQueryRow = {
   slug: string;
   name: string;
   short_description: string | null;
+  created_at: string;
+  collection: string | null;
+  is_bestseller: boolean;
   categories: { name: string } | null;
   public_product_variants: {
     id: string;
@@ -17,8 +20,10 @@ type ProductQueryRow = {
     is_default: boolean;
     requires_quote: boolean;
   }[];
-  product_images: { url: string; alt_text: string | null; is_primary: boolean }[];
+  product_images: { url: string; alt_text: string | null; is_primary: boolean; display_order: number }[];
 };
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 // Async Server Component: fetches, then hands plain data to the
 // presentational <NewArrivalsGrid>. Kept separate because RTL/jsdom can't
@@ -34,9 +39,12 @@ export async function NewArrivalsSection() {
       slug,
       name,
       short_description,
+      created_at,
+      collection,
+      is_bestseller,
       categories ( name ),
       public_product_variants!inner ( id, price_kobo, is_default, requires_quote ),
-      product_images ( url, alt_text, is_primary )
+      product_images ( url, alt_text, is_primary, display_order )
     `,
     )
     .eq("status", "published")
@@ -55,6 +63,8 @@ export async function NewArrivalsSection() {
       row.product_images.find((img) => img.is_primary) ??
       row.product_images[0] ??
       null;
+    const secondaryImage =
+      row.product_images.find((img) => !img.is_primary && img.display_order === 2) ?? null;
 
     return {
       id: row.id,
@@ -62,11 +72,15 @@ export async function NewArrivalsSection() {
       variantId: variant?.id ?? "",
       categoryLabel: row.categories?.name ?? "",
       name: row.name,
+      collection: row.collection,
       spec: row.short_description,
       priceKobo: variant?.price_kobo ?? null,
       requiresQuote: variant?.requires_quote ?? false,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? row.name,
+      secondaryImageUrl: secondaryImage?.url ?? null,
+      isNew: Date.now() - new Date(row.created_at).getTime() < THIRTY_DAYS_MS,
+      isBestseller: row.is_bestseller,
     };
   });
 

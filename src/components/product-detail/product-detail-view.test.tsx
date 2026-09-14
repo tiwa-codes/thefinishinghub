@@ -66,11 +66,15 @@ const RELATED: NewArrivalProductCard[] = [
     variantId: "variant-3",
     categoryLabel: "Dining",
     name: "Asaba Bed",
+    collection: null,
     spec: null,
     priceKobo: 39000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Asaba Bed",
+    secondaryImageUrl: null,
+    isNew: false,
+    isBestseller: false,
   },
 ];
 

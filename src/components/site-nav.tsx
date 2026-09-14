@@ -8,12 +8,14 @@ import { useCart } from "@/lib/cart-context";
 import { PlaceholderBlock } from "@/components/placeholder-block";
 import type { TopLevelCategory } from "@/lib/categories";
 import {
-  DESIGN_RESOURCE_COLUMNS,
+  DESIGN_RESOURCE_TILES,
+  resourceTileImageUrl,
   MEGA_MENU_SUBCATEGORIES,
   NAV_CATEGORY_ORDER,
   SHOP_BY_SPACE,
   SHOP_BY_STYLE,
 } from "@/lib/mega-menu-data";
+import { UNSPLASH_BLUR_DATA_URL } from "@/lib/unsplash";
 
 const SCROLL_THRESHOLD = 60;
 
@@ -400,27 +402,28 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
         </div>
       )}
 
-      {/* Design Resources dropdown */}
+      {/* Design Resources dropdown — 2x2 grid of editorial image tiles */}
       {openKey === "design-resources" && (
         <div className="hidden border-t border-gold/25 bg-forest lg:block">
-          <div className="mx-auto grid max-w-[1440px] grid-cols-4 gap-10 px-10 pb-10 pt-8">
-            {DESIGN_RESOURCE_COLUMNS.map((col) => (
-              <div key={col.title}>
-                <div className="mb-4 text-[11px] uppercase tracking-[0.2em] text-gold">
-                  {col.title}
+          <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-8 px-10 pb-10 pt-8 lg:grid-cols-4">
+            {DESIGN_RESOURCE_TILES.map((tile) => (
+              <Link key={tile.key} href={tile.href} className="group block no-underline">
+                <div className="relative mb-3 aspect-[3/2] w-full overflow-hidden rounded-[2px]">
+                  <Image
+                    src={resourceTileImageUrl(tile)}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 22vw, 45vw"
+                    placeholder={tile.imageId ? "blur" : undefined}
+                    blurDataURL={tile.imageId ? UNSPLASH_BLUR_DATA_URL : undefined}
+                    className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.02]"
+                  />
                 </div>
-                <div className="flex flex-col gap-3">
-                  {col.links.map((l) => (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      className="text-sm text-[#e6ede6] no-underline hover:text-gold-bright"
-                    >
-                      {l.name}
-                    </Link>
-                  ))}
+                <div className="mb-1 w-fit border-b border-transparent font-serif text-[15px] text-cream group-hover:border-gold-bright group-hover:text-gold-bright">
+                  {tile.title}
                 </div>
-              </div>
+                <div className="text-[12px] text-cream/60">{tile.description}</div>
+              </Link>
             ))}
           </div>
         </div>

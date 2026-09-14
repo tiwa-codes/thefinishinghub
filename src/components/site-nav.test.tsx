@@ -134,17 +134,26 @@ describe("SiteNav", () => {
     expect(screen.getByRole("link", { name: /^Contemporary/ })).toHaveAttribute("href", "/styles/contemporary");
   });
 
-  it("opens the Design Resources dropdown with its four columns", () => {
+  it("opens the Design Resources dropdown as a 2x2 grid of 4 editorial image tiles", () => {
     renderNav();
     const designResourcesLink = screen.getByRole("link", { name: /^Design Resources/ });
     fireEvent.click(designResourcesLink);
-    expect(screen.getByText("Discover")).toBeInTheDocument();
-    expect(screen.getByText("Buying Guides")).toBeInTheDocument();
-    expect(screen.getByText("Care & Installation")).toBeInTheDocument();
-    expect(screen.getByText("About")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "How to Choose Tiles" })).toHaveAttribute(
+
+    const dropdown = within(screen.getByText("Gallery").closest("div")!.parentElement!.parentElement!);
+    const tileLinks = [
+      dropdown.getByRole("link", { name: /Gallery/ }),
+      dropdown.getByRole("link", { name: /Design Services/ }),
+      dropdown.getByRole("link", { name: /Our Showroom/ }),
+      dropdown.getByRole("link", { name: /Trade Program/ }),
+    ];
+    expect(tileLinks).toHaveLength(4);
+    tileLinks.forEach((link) => {
+      expect(link.querySelector("img")).toBeInTheDocument();
+    });
+
+    expect(dropdown.getByRole("link", { name: /Trade Program/ })).toHaveAttribute(
       "href",
-      "/resources/how-to-choose-tiles",
+      "/trade/apply",
     );
   });
 });

@@ -12,11 +12,15 @@ const FIXTURE: NewArrivalProductCard[] = [
     variantId: "variant-1",
     categoryLabel: "Bedroom",
     name: "Kano Upholstered Storage Bed",
+    collection: null,
     spec: "Faux leather, gas-lift storage",
     priceKobo: 54000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Kano Upholstered Storage Bed",
+    secondaryImageUrl: null,
+    isNew: false,
+    isBestseller: false,
   },
   {
     id: "product-2",
@@ -24,11 +28,15 @@ const FIXTURE: NewArrivalProductCard[] = [
     variantId: "variant-2",
     categoryLabel: "Lighting",
     name: "Gudu Brass Pendant",
+    collection: null,
     spec: "Aged brass, dimmable",
     priceKobo: 14500000,
     requiresQuote: false,
     imageUrl: null,
     imageAlt: "Gudu Brass Pendant",
+    secondaryImageUrl: null,
+    isNew: false,
+    isBestseller: false,
   },
 ];
 
@@ -46,8 +54,8 @@ describe("NewArrivalsGrid", () => {
   it("renders each product's name, category, spec and price", () => {
     renderGrid();
     expect(screen.getByText("Kano Upholstered Storage Bed")).toBeInTheDocument();
-    expect(screen.getByText("Bedroom")).toBeInTheDocument();
-    expect(screen.getByText("Faux leather, gas-lift storage")).toBeInTheDocument();
+    expect(screen.getByText(/Bedroom/)).toBeInTheDocument();
+    expect(screen.getByText(/Faux leather, gas-lift storage/)).toBeInTheDocument();
     expect(screen.getByText("₦540,000")).toBeInTheDocument();
   });
 
@@ -87,5 +95,28 @@ describe("NewArrivalsGrid", () => {
     renderGrid([{ ...FIXTURE[0], requiresQuote: true, priceKobo: null }]);
     expect(screen.getByText("Request a Quote")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add" })).toBeNull();
+  });
+
+  it("shows a NEW badge for recent products", () => {
+    renderGrid([{ ...FIXTURE[0], isNew: true }]);
+    expect(screen.getByText("New")).toBeInTheDocument();
+    expect(screen.queryByText("Bestseller")).toBeNull();
+  });
+
+  it("shows a BESTSELLER badge when is_bestseller is true, taking priority over NEW", () => {
+    renderGrid([{ ...FIXTURE[0], isNew: true, isBestseller: true }]);
+    expect(screen.getByText("Bestseller")).toBeInTheDocument();
+    expect(screen.queryByText("New")).toBeNull();
+  });
+
+  it("shows no badge when neither new nor bestseller", () => {
+    renderGrid([{ ...FIXTURE[0], isNew: false, isBestseller: false }]);
+    expect(screen.queryByText("New")).toBeNull();
+    expect(screen.queryByText("Bestseller")).toBeNull();
+  });
+
+  it("renders the collection name as the primary line when set, falling back to the product name", () => {
+    renderGrid([{ ...FIXTURE[0], collection: "Positano Collection" }]);
+    expect(screen.getByText("Positano Collection")).toBeInTheDocument();
   });
 });

@@ -3,16 +3,23 @@ import { render, within } from "@testing-library/react";
 import Home from "@/app/page";
 import { CartProvider } from "@/lib/cart-context";
 
-// NewArrivalsSection, SiteNavSection, and SiteFooterSection are all async
-// Server Components that query Supabase — RTL/jsdom's plain client
-// renderer can't await a Promise-returning component (that's RSC-runtime
-// machinery Next.js provides, not something @testing-library/react
-// reproduces), so they're stubbed out here. Their real content is covered
-// by dedicated tests instead: new-arrivals-grid.test.tsx,
+// NewArrivalsSection, GetInspired, FavouriteCollections, SiteNavSection,
+// and SiteFooterSection are all async Server Components that query
+// Supabase — RTL/jsdom's plain client renderer can't await a
+// Promise-returning component (that's RSC-runtime machinery Next.js
+// provides, not something @testing-library/react reproduces), so they're
+// stubbed out here. Their real content is covered by dedicated tests
+// instead: new-arrivals-grid.test.tsx, looks-row.test.tsx,
 // site-nav.test.tsx, site-footer.test.tsx (all rendering the real
 // presentational component with fixture props).
 vi.mock("@/components/home/new-arrivals-section", () => ({
   NewArrivalsSection: () => <section>New arrivals (stubbed in tests)</section>,
+}));
+vi.mock("@/components/home/get-inspired", () => ({
+  GetInspired: () => <section>Get Inspired (stubbed in tests)</section>,
+}));
+vi.mock("@/components/home/favourite-collections", () => ({
+  FavouriteCollections: () => <section>Favourite Collections (stubbed in tests)</section>,
 }));
 vi.mock("@/components/site-nav-section", () => ({
   SiteNavSection: () => <div>Nav (stubbed in tests)</div>,

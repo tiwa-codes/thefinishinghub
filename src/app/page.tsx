@@ -4,7 +4,9 @@ import { Hero } from "@/components/home/hero";
 import { ShopByStyle } from "@/components/home/shop-by-style";
 import { NewArrivalsSection } from "@/components/home/new-arrivals-section";
 import { FinishedRoom } from "@/components/home/finished-room";
+import { GetInspired } from "@/components/home/get-inspired";
 import { FeaturedCategories } from "@/components/home/featured-categories";
+import { FavouriteCollections } from "@/components/home/favourite-collections";
 import { InteriorDesign } from "@/components/home/interior-design";
 import { ShowroomCta } from "@/components/home/showroom-cta";
 import { ReassuranceStrip } from "@/components/home/reassurance-strip";
@@ -24,7 +26,9 @@ export default function Home() {
       <ShopByStyle />
       <NewArrivalsSection />
       <FinishedRoom />
+      <GetInspired />
       <FeaturedCategories />
+      <FavouriteCollections />
       <InteriorDesign />
       <ShowroomCta />
       <ReassuranceStrip />

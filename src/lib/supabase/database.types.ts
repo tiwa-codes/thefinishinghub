@@ -119,6 +119,116 @@ export type Database = {
           },
         ]
       }
+      collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          image_url: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
+      look_products: {
+        Row: {
+          display_order: number
+          id: string
+          look_id: string
+          product_id: string
+        }
+        Insert: {
+          display_order?: number
+          id?: string
+          look_id: string
+          product_id: string
+        }
+        Update: {
+          display_order?: number
+          id?: string
+          look_id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "look_products_look_id_fkey"
+            columns: ["look_id"]
+            isOneToOne: false
+            referencedRelation: "looks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "look_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      looks: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          image_url: string
+          is_featured: boolean
+          slug: string
+          style_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          is_featured?: boolean
+          slug: string
+          style_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          is_featured?: boolean
+          slug?: string
+          style_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "looks_style_id_fkey"
+            columns: ["style_id"]
+            isOneToOne: false
+            referencedRelation: "styles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           created_at: string
@@ -356,6 +466,7 @@ export type Database = {
           features: Json | null
           id: string
           is_atelier: boolean
+          is_bestseller: boolean
           is_showroom_display: boolean
           lead_time_days: number | null
           manufacturer: string | null
@@ -383,6 +494,7 @@ export type Database = {
           features?: Json | null
           id?: string
           is_atelier?: boolean
+          is_bestseller?: boolean
           is_showroom_display?: boolean
           lead_time_days?: number | null
           manufacturer?: string | null
@@ -410,6 +522,7 @@ export type Database = {
           features?: Json | null
           id?: string
           is_atelier?: boolean
+          is_bestseller?: boolean
           is_showroom_display?: boolean
           lead_time_days?: number | null
           manufacturer?: string | null

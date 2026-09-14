@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
 import { ShowroomCta } from "@/components/home/showroom-cta";
@@ -111,6 +112,35 @@ function toCard(row: ProductRow): StyleProductCard {
   };
 }
 
+type MoodboardRow = { image_url: string; slug: string };
+
+async function getMoodboard(styleId: string) {
+  const supabase = createPublicClient();
+  // The task's literal query only selects image_url, but the moodboard
+  // links each image to /looks/[slug] — slug has to come along for that.
+  const { data } = await supabase
+    .from("looks")
+    .select("image_url, slug")
+    .eq("style_id", styleId)
+    .order("display_order")
+    .limit(4)
+    .returns<MoodboardRow[]>();
+  return data ?? [];
+}
+
+type OtherStyleRow = { name: string; slug: string };
+
+async function getOtherStyles(currentStyleId: string) {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("styles")
+    .select("name, slug")
+    .neq("id", currentStyleId)
+    .order("display_order")
+    .returns<OtherStyleRow[]>();
+  return data ?? [];
+}
+
 export async function generateStaticParams() {
   const supabase = createPublicClient();
   const { data } = await supabase.from("styles").select("slug").returns<{ slug: string }[]>();
@@ -146,6 +176,8 @@ export default async function StyleDetailPage({
   const usingFallback = styleProducts.length === 0;
   const products = usingFallback ? await getFallbackProducts() : styleProducts;
   const cards = products.map(toCard);
+  const moodboard = await getMoodboard(style.id);
+  const otherStyles = await getOtherStyles(style.id);
 
   return (
     <div className="bg-cream font-sans text-ink antialiased">
@@ -192,6 +224,31 @@ export default async function StyleDetailPage({
         </section>
       )}
 
+      {/* Moodboard — purely atmospheric, no captions */}
+      {moodboard.length > 0 && (
+        <section className="bg-cream px-5 pb-14 lg:px-10 lg:pb-20">
+          <div className="mx-auto grid max-w-[1440px] grid-cols-2 gap-3 lg:gap-4">
+            {moodboard.map((item, i) => (
+              <Link
+                key={item.slug + i}
+                href={`/looks/${item.slug}`}
+                className="relative block aspect-square overflow-hidden rounded-[6px]"
+              >
+                <Image
+                  src={item.image_url}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                  placeholder="blur"
+                  blurDataURL={UNSPLASH_BLUR_DATA_URL}
+                  className="object-cover"
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Products grid */}
       <section className="bg-cream px-5 pb-16 lg:px-10 lg:pb-24">
         <div className="mx-auto max-w-[1440px]">
@@ -210,6 +267,36 @@ export default async function StyleDetailPage({
           )}
         </div>
       </section>
+
+      {/* Explore more styles */}
+      {otherStyles.length > 0 && (
+        <section className="bg-cream px-5 pb-16 text-center lg:px-10">
+          <div className="mb-4 text-xs uppercase tracking-[0.2em] text-ink/50">
+            Explore more styles
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+            {otherStyles.map((other) => {
+              const words = other.name.split(" ");
+              const [first, ...rest] = words;
+              return (
+                <Link
+                  key={other.slug}
+                  href={`/styles/${other.slug}`}
+                  className="font-serif text-xl text-ink no-underline hover:text-forest"
+                >
+                  {rest.length > 0 ? (
+                    <>
+                      {first} <em className="italic">{rest.join(" ")}</em>
+                    </>
+                  ) : (
+                    <em className="italic">{first}</em>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <ShowroomCta />
       <SiteFooterSection />

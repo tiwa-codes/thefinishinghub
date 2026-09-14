@@ -130,30 +130,41 @@ async function getParentCategory(parentId: string) {
   return data ?? null;
 }
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 type RelatedRow = {
   id: string;
   slug: string;
   name: string;
   short_description: string | null;
+  created_at: string;
+  collection: string | null;
+  is_bestseller: boolean;
   categories: { name: string } | null;
   public_product_variants: { id: string; price_kobo: number | null; is_default: boolean | null; requires_quote: boolean | null }[];
-  product_images: { url: string; alt_text: string | null; is_primary: boolean }[];
+  product_images: { url: string; alt_text: string | null; is_primary: boolean; display_order: number }[];
 };
 
 function toCard(row: RelatedRow): NewArrivalProductCard {
   const variant = row.public_product_variants.find((v) => v.is_default) ?? row.public_product_variants[0];
   const primaryImage = row.product_images.find((img) => img.is_primary) ?? row.product_images[0] ?? null;
+  const secondaryImage =
+    row.product_images.find((img) => !img.is_primary && img.display_order === 2) ?? null;
   return {
     id: row.id,
     slug: row.slug,
     variantId: variant?.id ?? "",
     categoryLabel: row.categories?.name ?? "",
     name: row.name,
+    collection: row.collection,
     spec: row.short_description,
     priceKobo: variant?.price_kobo ?? null,
     requiresQuote: variant?.requires_quote ?? false,
     imageUrl: primaryImage?.url ?? null,
     imageAlt: primaryImage?.alt_text ?? row.name,
+    secondaryImageUrl: secondaryImage?.url ?? null,
+    isNew: Date.now() - new Date(row.created_at).getTime() < THIRTY_DAYS_MS,
+    isBestseller: row.is_bestseller,
   };
 }
 
@@ -162,9 +173,12 @@ const RELATED_SELECT = `
   slug,
   name,
   short_description,
+  created_at,
+  collection,
+  is_bestseller,
   categories ( name ),
   public_product_variants!inner ( id, price_kobo, is_default, requires_quote ),
-  product_images ( url, alt_text, is_primary )
+  product_images ( url, alt_text, is_primary, display_order )
 `;
 
 async function getRelated(categoryId: string | undefined, excludeId: string) {

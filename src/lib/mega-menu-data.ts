@@ -3,6 +3,7 @@
 // a later pass can replace this with a live query without changing the
 // shape components consume.
 import { hrefForSubcategorySlug } from "@/lib/subcategory-hrefs";
+import { unsplashUrl } from "@/lib/unsplash";
 
 export type MegaMenuLink = { name: string; slug: string; href: string };
 
@@ -112,36 +113,50 @@ export const SHOP_BY_STYLE: ShopByStyle[] = [
   { name: "Contemporary", slug: "contemporary" },
 ];
 
-export type ResourceColumn = { title: string; links: { name: string; href: string }[] };
+export type ResourceTile = {
+  key: string;
+  title: string;
+  description: string;
+  href: string;
+  imageSrc?: string;
+  imageId?: string;
+};
 
-export const DESIGN_RESOURCE_COLUMNS: ResourceColumn[] = [
+// Replaces the old 4-column text layout with 4 editorial image tiles
+// (Edward Martin pattern). Trade Program's image was sourced fresh for
+// this ("luxury office meeting room") and verified by direct fetch before
+// use; the rest reuse ids already vetted elsewhere in this codebase.
+export const DESIGN_RESOURCE_TILES: ResourceTile[] = [
   {
-    title: "Discover",
-    links: [
-      { name: "Style Guides", href: "/resources/style-guides" },
-      { name: "Room Inspiration", href: "/resources/room-inspiration" },
-    ],
+    key: "gallery",
+    title: "Gallery",
+    description: "Room scenes and project inspiration",
+    href: "/gallery",
+    imageSrc: "/images/editorial-full-room-scene.jpg",
   },
   {
-    title: "Buying Guides",
-    links: [
-      { name: "How to Choose Tiles", href: "/resources/how-to-choose-tiles" },
-      { name: "How to Choose Furniture", href: "/resources/how-to-choose-furniture" },
-      { name: "How to Choose Sanitaryware", href: "/resources/how-to-choose-sanitaryware" },
-    ],
+    key: "interior-design",
+    title: "Design Services",
+    description: "From first idea to finished space",
+    href: "/interior-design",
+    imageId: "1616486338812-3dadae4b4ace",
   },
   {
-    title: "Care & Installation",
-    links: [
-      { name: "Care & Maintenance", href: "/resources/care-maintenance" },
-      { name: "Installation Guides", href: "/resources/installation-guides" },
-    ],
+    key: "showroom",
+    title: "Our Showroom",
+    description: "See every piece in person in Abuja",
+    href: "/#showroom",
+    imageId: "1621293954908-907159247fc8",
   },
   {
-    title: "About",
-    links: [
-      { name: "About Our Products", href: "/resources/about-our-products" },
-      { name: "Our Showroom", href: "/resources/our-showroom" },
-    ],
+    key: "trade",
+    title: "Trade Program",
+    description: "Members-only pricing for professionals",
+    href: "/trade/apply",
+    imageId: "1517502884422-41eaead166d4",
   },
 ];
+
+export function resourceTileImageUrl(tile: ResourceTile): string {
+  return tile.imageSrc ?? unsplashUrl(tile.imageId!, 500);
+}
