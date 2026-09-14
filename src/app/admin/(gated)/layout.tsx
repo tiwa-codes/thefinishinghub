@@ -8,11 +8,14 @@ const NAV_LINKS = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/products", label: "Products" },
+  { href: "/admin/looks", label: "Looks" },
+  { href: "/admin/collections", label: "Collections" },
   { href: "/admin/orders", label: "Orders" },
   { href: "/admin/quotes", label: "Quotes" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/trade-accounts", label: "Trade Accounts" },
   { href: "/admin/reports", label: "Reports" },
+  { href: "/admin/settings", label: "Settings" },
 ];
 
 export default async function AdminGatedLayout({
