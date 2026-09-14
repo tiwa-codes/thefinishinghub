@@ -10,12 +10,12 @@ const ITEMS: CartLineItem[] = [
   {
     cartItemId: "cart-item-1",
     productSlug: "kano-upholstered-storage-bed",
-    name: "Kano Upholstered Storage Bed",
+    name: "Milano Upholstered Storage Bed",
     config: "",
     quantity: 1,
     unitPriceKobo: 54000000,
     imageUrl: "/images/bed-taupe.jpg",
-    imageAlt: "Kano Upholstered Storage Bed",
+    imageAlt: "Milano Upholstered Storage Bed",
   },
   {
     cartItemId: "cart-item-2",
@@ -77,7 +77,7 @@ describe("CartView — empty state", () => {
 describe("CartView — line items", () => {
   it("renders each real line item with name, quantity, unit price and line total", () => {
     renderCart();
-    expect(screen.getByText("Kano Upholstered Storage Bed")).toBeInTheDocument();
+    expect(screen.getByText("Milano Upholstered Storage Bed")).toBeInTheDocument();
     expect(screen.getByText("Gudu Brass Pendant")).toBeInTheDocument();
     // qty 2 x ₦145,000 = ₦290,000 line total for the pendant
     expect(screen.getByText("₦290,000")).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe("CartView — line items", () => {
   it("links each line item to its real product page", () => {
     renderCart();
     expect(
-      screen.getByRole("link", { name: "Kano Upholstered Storage Bed" }),
+      screen.getByRole("link", { name: "Milano Upholstered Storage Bed" }),
     ).toHaveAttribute("href", "/products/kano-upholstered-storage-bed");
   });
 
@@ -108,7 +108,7 @@ describe("CartView — quantity + totals", () => {
     expect(screen.getAllByText("₦830,000")).toHaveLength(2); // Subtotal + Total
 
     const increase = screen.getByRole("button", {
-      name: "Increase quantity of Kano Upholstered Storage Bed",
+      name: "Increase quantity of Milano Upholstered Storage Bed",
     });
     await waitFor(() => expect(increase).not.toBeDisabled());
     fireEvent.click(increase);
@@ -131,7 +131,7 @@ describe("CartView — quantity + totals", () => {
   it("never decreases quantity below 1", async () => {
     renderCart();
     const decrease = screen.getByRole("button", {
-      name: "Decrease quantity of Kano Upholstered Storage Bed",
+      name: "Decrease quantity of Milano Upholstered Storage Bed",
     });
     await waitFor(() => expect(decrease).not.toBeDisabled());
     fireEvent.click(decrease);
@@ -142,7 +142,7 @@ describe("CartView — quantity + totals", () => {
   it("disables the quantity and remove controls until the anonymous cart session is ready", () => {
     renderCart();
     expect(
-      screen.getByRole("button", { name: "Increase quantity of Kano Upholstered Storage Bed" }),
+      screen.getByRole("button", { name: "Increase quantity of Milano Upholstered Storage Bed" }),
     ).toBeDisabled();
     expect(screen.getAllByRole("button", { name: "Remove" })[0]).toBeDisabled();
   });
@@ -156,7 +156,7 @@ describe("CartView — remove", () => {
     fireEvent.click(removeButtons[1]); // Gudu Brass Pendant, qty 2
 
     await waitFor(() => expect(screen.queryByText("Gudu Brass Pendant")).toBeNull());
-    expect(screen.getByText("Kano Upholstered Storage Bed")).toBeInTheDocument();
+    expect(screen.getByText("Milano Upholstered Storage Bed")).toBeInTheDocument();
     await waitFor(() => {
       const deleted = fromMock.mock.results
         .map((r) => r.value)

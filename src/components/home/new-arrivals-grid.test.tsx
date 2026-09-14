@@ -11,13 +11,13 @@ const FIXTURE: NewArrivalProductCard[] = [
     slug: "kano-upholstered-storage-bed",
     variantId: "variant-1",
     categoryLabel: "Bedroom",
-    name: "Kano Upholstered Storage Bed",
+    name: "Milano Upholstered Storage Bed",
     collection: null,
     spec: "Faux leather, gas-lift storage",
     priceKobo: 54000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
-    imageAlt: "Kano Upholstered Storage Bed",
+    imageAlt: "Milano Upholstered Storage Bed",
     secondaryImageUrl: null,
     isNew: false,
     isBestseller: false,
@@ -53,7 +53,7 @@ function renderGrid(products: NewArrivalProductCard[] = FIXTURE) {
 describe("NewArrivalsGrid", () => {
   it("renders each product's name, category, spec and price", () => {
     renderGrid();
-    expect(screen.getByText("Kano Upholstered Storage Bed")).toBeInTheDocument();
+    expect(screen.getByText("Milano Upholstered Storage Bed")).toBeInTheDocument();
     expect(screen.getByText(/Bedroom/)).toBeInTheDocument();
     expect(screen.getByText(/Faux leather, gas-lift storage/)).toBeInTheDocument();
     expect(screen.getByText("₦540,000")).toBeInTheDocument();

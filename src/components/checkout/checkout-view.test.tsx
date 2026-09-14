@@ -10,12 +10,12 @@ const ITEMS: CartLineItem[] = [
   {
     cartItemId: "cart-item-1",
     productSlug: "kano-upholstered-storage-bed",
-    name: "Kano Upholstered Storage Bed",
+    name: "Milano Upholstered Storage Bed",
     config: "",
     quantity: 1,
     unitPriceKobo: 54000000,
     imageUrl: null,
-    imageAlt: "Kano Upholstered Storage Bed",
+    imageAlt: "Milano Upholstered Storage Bed",
   },
 ];
 
@@ -84,7 +84,7 @@ describe("CheckoutView — anonymous session", () => {
   it("still shows the real cart contents alongside the gate, so nothing looks lost", async () => {
     renderCheckout();
     await screen.findByText("Sign in to check out");
-    expect(screen.getByText("Kano Upholstered Storage Bed")).toBeInTheDocument();
+    expect(screen.getByText("Milano Upholstered Storage Bed")).toBeInTheDocument();
   });
 });
 

@@ -11,16 +11,16 @@ import type { NewArrivalProductCard } from "@/components/home/new-arrivals-grid"
 const BREADCRUMB = [
   { label: "Home", href: "/" },
   { label: "Furniture", href: "/furniture" },
-  { label: "Kano Upholstered Storage Bed" },
+  { label: "Milano Upholstered Storage Bed" },
 ];
 
 const SINGLE_IMAGE: GalleryImage[] = [
-  { url: "/images/bed-taupe.jpg", alt: "Kano Upholstered Storage Bed" },
+  { url: "/images/bed-taupe.jpg", alt: "Milano Upholstered Storage Bed" },
 ];
 
 const MULTI_IMAGE: GalleryImage[] = [
-  { url: "/images/bed-taupe.jpg", alt: "Kano bed, front" },
-  { url: "/images/bed-grey-wing.jpg", alt: "Kano bed, side" },
+  { url: "/images/bed-taupe.jpg", alt: "Milano bed, front" },
+  { url: "/images/bed-grey-wing.jpg", alt: "Milano bed, side" },
 ];
 
 const SINGLE_VARIANT: ProductVariant[] = [
@@ -62,16 +62,16 @@ const MULTI_VARIANT: ProductVariant[] = [
 const RELATED: NewArrivalProductCard[] = [
   {
     id: "product-2",
-    slug: "asaba-bed",
+    slug: "venezia-bed",
     variantId: "variant-3",
     categoryLabel: "Dining",
-    name: "Asaba Bed",
+    name: "Venezia Bed",
     collection: null,
     spec: null,
     priceKobo: 39000000,
     requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
-    imageAlt: "Asaba Bed",
+    imageAlt: "Venezia Bed",
     secondaryImageUrl: null,
     isNew: false,
     isBestseller: false,
@@ -87,7 +87,7 @@ function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> 
           breadcrumb={BREADCRUMB}
           categoryName="Bedroom"
           styleName={null}
-          name="Kano Upholstered Storage Bed"
+          name="Milano Upholstered Storage Bed"
           description="Faux leather upholstered bed frame with gas-lift storage."
           warrantyYears={null}
           origin={null}
@@ -100,7 +100,7 @@ function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> 
           features={null}
           manufacturer={null}
           collection={null}
-          productSlug="kano-upholstered-storage-bed"
+          productSlug="milano-upholstered-storage-bed"
           images={SINGLE_IMAGE}
           variants={SINGLE_VARIANT}
           defaultVariantId="variant-1"
@@ -120,13 +120,13 @@ describe("ProductDetailView", () => {
       "href",
       "/furniture",
     );
-    expect(screen.getAllByText("Kano Upholstered Storage Bed").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Milano Upholstered Storage Bed").length).toBeGreaterThan(0);
   });
 
   it("renders name, price, category and description", () => {
     renderView();
     expect(
-      screen.getByRole("heading", { name: "Kano Upholstered Storage Bed" }),
+      screen.getByRole("heading", { name: "Milano Upholstered Storage Bed" }),
     ).toBeInTheDocument();
     expect(screen.getByText("₦540,000")).toBeInTheDocument();
     expect(screen.getByText("Bedroom")).toBeInTheDocument();
@@ -217,10 +217,10 @@ describe("ProductDetailView", () => {
   it("renders real related products with working product links, not fabricated ones", () => {
     renderView();
     expect(screen.getByText("You might also like")).toBeInTheDocument();
-    expect(screen.getByText("Asaba Bed")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Asaba Bed/ })).toHaveAttribute(
+    expect(screen.getByText("Venezia Bed")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Venezia Bed/ })).toHaveAttribute(
       "href",
-      "/products/asaba-bed",
+      "/products/venezia-bed",
     );
   });
 
@@ -326,7 +326,7 @@ describe("ProductDetailView", () => {
   });
 
   it("renders the share section with WhatsApp and email links", () => {
-    renderView({ productSlug: "kano-upholstered-storage-bed" });
+    renderView({ productSlug: "milano-upholstered-storage-bed" });
     expect(screen.getByText("Share this piece:")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Share on WhatsApp" })).toHaveAttribute(
       "href",
