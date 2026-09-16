@@ -1,8 +1,25 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+// Isolates the one place this page can crash on missing config (a bad
+// service-role key env var) from everything else — the dashboard's own
+// queries below assume a working client and shouldn't need their own
+// try/catch. Logs the real cause to Vercel's function logs (createAdminClient
+// throws a descriptive message, not the generic "supabaseKey is required.")
+// before sending the visitor to a page that still renders instead of a
+// crashed one.
+function getAdminClientOrRedirect() {
+  try {
+    return createAdminClient();
+  } catch (error) {
+    console.error("Admin dashboard: could not create the admin Supabase client.", error);
+    redirect("/admin/login?error=config");
+  }
+}
+
 export default async function AdminOverviewPage() {
-  const supabase = createAdminClient();
+  const supabase = getAdminClientOrRedirect();
 
   const [{ count: publishedCount }, { count: orderCount }, { data: products }] =
     await Promise.all([

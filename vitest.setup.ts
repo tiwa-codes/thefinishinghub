@@ -10,7 +10,7 @@ import {
   signUpMock,
   resetPasswordForEmailMock,
 } from "@/test/supabase-mock";
-import { routerPushMock, pathnameMock } from "@/test/navigation-mock";
+import { routerPushMock, pathnameMock, searchParamsMock } from "@/test/navigation-mock";
 
 // Every test that renders <CartProvider> (SiteNav, Home) triggers its
 // mount effect, which otherwise calls the real Supabase project — slow,
@@ -51,6 +51,7 @@ vi.mock("next/navigation", () => ({
     refresh: vi.fn(),
   }),
   usePathname: () => pathnameMock(),
+  useSearchParams: () => searchParamsMock(),
 }));
 
 beforeEach(() => {
@@ -64,4 +65,5 @@ beforeEach(() => {
   resetPasswordForEmailMock.mockClear();
   routerPushMock.mockClear();
   pathnameMock.mockClear();
+  searchParamsMock.mockClear();
 });

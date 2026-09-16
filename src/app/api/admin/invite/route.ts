@@ -30,7 +30,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A valid email is required." }, { status: 400 });
   }
 
-  const admin = createAdminClient();
+  let admin;
+  try {
+    admin = createAdminClient();
+  } catch (error) {
+    console.error("POST /api/admin/invite: could not create the admin Supabase client.", error);
+    return NextResponse.json(
+      { error: "Server misconfiguration — the admin service is temporarily unavailable." },
+      { status: 500 },
+    );
+  }
+
   const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(
     email.trim(),
   );

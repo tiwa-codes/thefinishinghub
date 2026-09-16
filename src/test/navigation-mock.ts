@@ -6,3 +6,4 @@ import { vi } from "vitest";
 // useRouter()/usePathname() would otherwise crash on render in tests.
 export const routerPushMock = vi.fn();
 export const pathnameMock = vi.fn(() => "/furniture/living");
+export const searchParamsMock = vi.fn(() => new URLSearchParams());

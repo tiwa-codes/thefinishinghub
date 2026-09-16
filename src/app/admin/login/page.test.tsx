@@ -1,6 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { signInWithPasswordMock } from "@/test/supabase-mock";
+import { searchParamsMock } from "@/test/navigation-mock";
 import AdminLoginPage from "./page";
 
 function fillAndSubmit(email: string, password: string) {
@@ -63,5 +64,20 @@ describe("AdminLoginPage", () => {
     render(<AdminLoginPage />);
     fillAndSubmit("staff@thefinishinghub.com", "correct-password");
     expect(screen.getByRole("button", { name: "Signing in…" })).toBeDisabled();
+  });
+
+  it("shows a server-configuration message when redirected here with ?error=config", () => {
+    searchParamsMock.mockReturnValueOnce(new URLSearchParams("error=config"));
+    render(<AdminLoginPage />);
+    expect(
+      screen.getByText(/temporarily unavailable due to a server configuration issue/),
+    ).toBeInTheDocument();
+  });
+
+  it("shows no configuration message on a normal visit", () => {
+    render(<AdminLoginPage />);
+    expect(
+      screen.queryByText(/temporarily unavailable due to a server configuration issue/),
+    ).toBeNull();
   });
 });

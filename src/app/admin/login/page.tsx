@@ -1,9 +1,23 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
+// useSearchParams() opts the tree under it out of static rendering unless
+// wrapped in Suspense — without this, `next build` fails prerendering this
+// page ("should be wrapped in a suspense boundary").
 export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginForm />
+    </Suspense>
+  );
+}
+
+function AdminLoginForm() {
+  const searchParams = useSearchParams();
+  const hasConfigError = searchParams.get("error") === "config";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "pending" | "error">("idle");
@@ -37,6 +51,13 @@ export default function AdminLoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+          {hasConfigError && (
+            <p className="rounded-[2px] border border-[#b3261e]/30 bg-[#b3261e]/5 px-3.5 py-3 text-[13px] text-[#b3261e]">
+              The admin panel is temporarily unavailable due to a server
+              configuration issue. Please try again shortly or contact
+              support.
+            </p>
+          )}
           <div>
             <label
               htmlFor="email"
