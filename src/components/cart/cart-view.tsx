@@ -236,7 +236,7 @@ export function CartView({
             </div>
             <div>
               Questions?{" "}
-              <Link href="#" className="text-forest">
+              <Link href="/trade/apply" className="text-forest">
                 Speak to the trade desk
               </Link>
             </div>

@@ -71,6 +71,7 @@ export function ProductDetailView({
   productId,
   breadcrumb,
   categoryName,
+  categorySlug,
   styleName,
   name,
   description,
@@ -94,6 +95,7 @@ export function ProductDetailView({
   productId: string;
   breadcrumb: BreadcrumbCrumb[];
   categoryName: string;
+  categorySlug: string | null;
   styleName: string | null;
   name: string;
   description: string | null;
@@ -169,6 +171,13 @@ export function ProductDetailView({
 
   const hasFeatures = Array.isArray(features) && features.length > 0;
   const leadTimeLabel = leadTimeDays != null ? `${leadTimeDays} days` : "4–6 weeks";
+
+  const deliveryCopy =
+    categorySlug === "furniture"
+      ? `Standard lead time for furniture is ${leadTimeLabel} from order confirmation.`
+      : categorySlug === "tiles-wall-finishes" || categorySlug === "sanitaryware-bath"
+        ? `Standard lead time is ${leadTimeLabel} from order confirmation. Tile orders are sold by the square metre — our team will confirm exact quantities before fulfilment.`
+        : `Standard lead time is ${leadTimeLabel} from order confirmation.`;
 
   return (
     <>
@@ -367,9 +376,8 @@ export function ProductDetailView({
       {/* Section D — Delivery & Lead Time (always rendered) */}
       <DividedSection heading="Delivery">
         <p className="mb-3 max-w-2xl text-[15px] leading-[1.8] text-[#4a4339]">
-          We deliver nationwide across Nigeria. Standard lead time for furniture is{" "}
-          {leadTimeLabel} from order confirmation. White-glove delivery and installation is
-          available in Abuja — contact us to arrange.
+          We deliver nationwide across Nigeria. {deliveryCopy} White-glove delivery and
+          installation is available in Abuja — contact us to arrange.
         </p>
         <p className="text-sm text-[#8a8073]">
           Questions? Call {SHOWROOM_PHONE_DISPLAY} or visit the showroom.

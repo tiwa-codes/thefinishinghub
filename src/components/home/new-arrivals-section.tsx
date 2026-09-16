@@ -97,7 +97,7 @@ export async function NewArrivalsSection() {
             </h2>
           </div>
           <Link
-            href="#"
+            href="/furniture/all"
             className="border-b border-gold pb-[3px] text-[13px] font-medium tracking-wide text-forest no-underline"
           >
             View all products

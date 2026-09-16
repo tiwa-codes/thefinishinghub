@@ -5,9 +5,9 @@ import { SiteFooterSection } from "@/components/site-footer-section";
 import { ProductDetailView } from "@/components/product-detail/product-detail-view";
 import type { GalleryImage } from "@/components/product-detail/product-gallery";
 import type { ProductVariant } from "@/components/product-detail/variant-selector";
-import type { NewArrivalProductCard } from "@/components/home/new-arrivals-grid";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { BreadcrumbCrumb } from "@/components/listing/listing-breadcrumb";
+import { getRelated } from "@/lib/related-products";
 
 // ISR, same reasoning as every other page: cookie-free client, so this
 // stays eligible for static generation with a revalidation window.
@@ -130,98 +130,6 @@ async function getParentCategory(parentId: string) {
   return data ?? null;
 }
 
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
-type RelatedRow = {
-  id: string;
-  slug: string;
-  name: string;
-  short_description: string | null;
-  created_at: string;
-  collection: string | null;
-  is_bestseller: boolean;
-  categories: { name: string } | null;
-  public_product_variants: { id: string; price_kobo: number | null; is_default: boolean | null; requires_quote: boolean | null }[];
-  product_images: { url: string; alt_text: string | null; is_primary: boolean; display_order: number }[];
-};
-
-function toCard(row: RelatedRow): NewArrivalProductCard {
-  const variant = row.public_product_variants.find((v) => v.is_default) ?? row.public_product_variants[0];
-  const primaryImage = row.product_images.find((img) => img.is_primary) ?? row.product_images[0] ?? null;
-  const secondaryImage =
-    row.product_images.find((img) => !img.is_primary && img.display_order === 2) ?? null;
-  return {
-    id: row.id,
-    slug: row.slug,
-    variantId: variant?.id ?? "",
-    categoryLabel: row.categories?.name ?? "",
-    name: row.name,
-    collection: row.collection,
-    spec: row.short_description,
-    priceKobo: variant?.price_kobo ?? null,
-    requiresQuote: variant?.requires_quote ?? false,
-    imageUrl: primaryImage?.url ?? null,
-    imageAlt: primaryImage?.alt_text ?? row.name,
-    secondaryImageUrl: secondaryImage?.url ?? null,
-    isNew: Date.now() - new Date(row.created_at).getTime() < THIRTY_DAYS_MS,
-    isBestseller: row.is_bestseller,
-  };
-}
-
-const RELATED_SELECT = `
-  id,
-  slug,
-  name,
-  short_description,
-  created_at,
-  collection,
-  is_bestseller,
-  categories ( name ),
-  public_product_variants!inner ( id, price_kobo, is_default, requires_quote ),
-  product_images ( url, alt_text, is_primary, display_order )
-`;
-
-async function getRelated(categoryId: string | undefined, excludeId: string) {
-  const supabase = createPublicClient();
-  const results: RelatedRow[] = [];
-
-  if (categoryId) {
-    const { data } = await supabase
-      .from("products")
-      .select(RELATED_SELECT)
-      .eq("status", "published")
-      .eq("category_id", categoryId)
-      .eq("public_product_variants.is_default", true)
-      .neq("id", excludeId)
-      .order("created_at", { ascending: false })
-      .limit(4)
-      .returns<RelatedRow[]>();
-    results.push(...(data ?? []));
-  }
-
-  if (results.length < 4) {
-    const { data } = await supabase
-      .from("products")
-      .select(RELATED_SELECT)
-      .eq("status", "published")
-      .eq("public_product_variants.is_default", true)
-      .neq("id", excludeId)
-      .order("created_at", { ascending: false })
-      // Over-fetch since some of these may duplicate the category-first
-      // results above and get filtered out by the existingIds check below.
-      .limit(4 + results.length)
-      .returns<RelatedRow[]>();
-
-    const existingIds = new Set(results.map((r) => r.id));
-    for (const row of data ?? []) {
-      if (results.length >= 4) break;
-      if (!existingIds.has(row.id)) results.push(row);
-    }
-  }
-
-  return results.slice(0, 4).map(toCard);
-}
-
 export async function generateStaticParams() {
   const supabase = createPublicClient();
   const { data } = await supabase
@@ -295,6 +203,7 @@ export default async function ProductDetailPage({
   const defaultVariant = variants.find((v) => v.isDefault) ?? variants[0];
 
   const related = await getRelated(product.categories?.id, product.id);
+  const topLevelCategorySlug = parentCategory?.slug ?? product.categories?.slug ?? null;
 
   return (
     <div className="bg-cream font-sans text-ink antialiased">
@@ -303,6 +212,7 @@ export default async function ProductDetailPage({
         productId={product.id}
         breadcrumb={breadcrumb}
         categoryName={product.categories?.name ?? ""}
+        categorySlug={topLevelCategorySlug}
         styleName={product.styles?.name ?? null}
         name={product.name}
         description={product.description}

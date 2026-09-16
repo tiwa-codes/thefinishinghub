@@ -86,6 +86,7 @@ function renderView(overrides: Partial<Parameters<typeof ProductDetailView>[0]> 
           productId="product-1"
           breadcrumb={BREADCRUMB}
           categoryName="Bedroom"
+          categorySlug="furniture"
           styleName={null}
           name="Milano Upholstered Storage Bed"
           description="Faux leather upholstered bed frame with gas-lift storage."
@@ -234,6 +235,24 @@ describe("ProductDetailView", () => {
       variants: [{ ...SINGLE_VARIANT[0], priceKobo: null }],
     });
     expect(screen.getByText("Price on request")).toBeInTheDocument();
+  });
+
+  it("shows furniture-specific delivery copy for a furniture product", () => {
+    renderView({ categorySlug: "furniture", leadTimeDays: 21 });
+    expect(screen.getByText(/Standard lead time for furniture is 21 days/)).toBeInTheDocument();
+  });
+
+  it("shows tile-specific delivery copy mentioning square-metre quantities for tiles", () => {
+    renderView({ categorySlug: "tiles-wall-finishes", leadTimeDays: 10 });
+    expect(
+      screen.getByText(/Standard lead time is 10 days from order confirmation\. Tile orders are sold by the square metre/),
+    ).toBeInTheDocument();
+  });
+
+  it("falls back to generic delivery copy for an unrecognized category", () => {
+    renderView({ categorySlug: "kitchens", leadTimeDays: 14 });
+    expect(screen.getByText(/Standard lead time is 14 days from order confirmation\./)).toBeInTheDocument();
+    expect(screen.queryByText(/square metre/)).toBeNull();
   });
 
   it("shows the showroom editorial banner with the real phone number", () => {

@@ -5,7 +5,7 @@ import type { CategoryNode } from "@/lib/categories";
 
 const SHOP_CATEGORIES: Pick<CategoryNode, "id" | "slug" | "name" | "href">[] = [
   { id: "cat-furniture", slug: "furniture", name: "Furniture & Furnishings", href: "/furniture" },
-  { id: "cat-tiles", slug: "tiles-wall-finishes", name: "Tiles & Wall Finishes", href: "#" },
+  { id: "cat-tiles", slug: "tiles-wall-finishes", name: "Tiles & Wall Finishes", href: "/tiles-wall-finishes" },
 ];
 
 describe("SiteFooter", () => {
@@ -38,7 +38,15 @@ describe("SiteFooter", () => {
       "href",
       "/#design-services",
     );
-    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/#projects");
+    // No dedicated Projects page yet — falls back to the showroom section
+    // rather than a dead #projects anchor.
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/#showroom");
     expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/#showroom");
+  });
+
+  it("has no remaining dead '#' links", () => {
+    render(<SiteFooter shopCategories={SHOP_CATEGORIES} />);
+    const hrefs = screen.getAllByRole("link").map((link) => link.getAttribute("href"));
+    expect(hrefs).not.toContain("#");
   });
 });

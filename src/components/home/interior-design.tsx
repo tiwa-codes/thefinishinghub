@@ -4,7 +4,7 @@ import { UNSPLASH_BLUR_DATA_URL, unsplashUrl } from "@/lib/unsplash";
 
 export function InteriorDesign() {
   return (
-    <section className="bg-forest text-cream">
+    <section id="design-services" className="bg-forest text-cream">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-10 px-6 py-14 lg:grid-cols-2 lg:gap-16 lg:px-16 lg:py-24">
         <div className="flex flex-col justify-center">
           <div className="mb-5 text-xs uppercase tracking-[0.25em] text-gold-bright">

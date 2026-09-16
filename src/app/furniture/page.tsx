@@ -34,7 +34,7 @@ export default async function FurniturePage() {
         heroDescription="Sofas, beds, dining and office pieces. Shop by the room you're building."
         heroImageSrc="/images/editorial-full-room-scene.jpg"
         heroImageAlt={title}
-        subcategoriesTitle="Shop Furniture by room"
+        subcategoriesTitle="Shop Furniture by type"
         subcategories={subcategories}
         featuredTitle={`Featured pieces from ${title}`}
         viewAllHref="/furniture/all"

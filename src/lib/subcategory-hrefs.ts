@@ -1,13 +1,16 @@
-// Neither subcategory nor top-level category pages follow a predictable
-// slug->path rule reliable enough to build a URL blindly (subcategory
-// nesting varies and drops the "furniture-" prefix; a top-level category
-// could be renamed or removed without its slug changing in lockstep), so
-// built ones — of both kinds — are listed explicitly here. Anything not
-// listed stays "#" until it exists, rather than linking to a path that
-// might 404. Exported so every place that needs a category link (nav,
-// footer, /furniture's tiles, product breadcrumbs, the homepage's Shop by
-// Room tiles) reads the same single source instead of keeping its own
-// copy that can drift out of sync.
+// Subcategory slugs in the categories table were seeded inconsistently —
+// some carry a redundant top-level prefix (furniture-sofas, tiles-floor,
+// sanitary-basins-sinks), others already read clean (showers-panels,
+// baths-jacuzzis, toilets-bidets). Rather than rename the stored slugs
+// (a live-data migration touching every product-catalog subcategory),
+// this maps each one to the clean, human-typeable URL segment the
+// /[categorySlug]/[subcategorySlug] route actually uses — a bidirectional
+// lookup table, same "explicit list, no blind rule" spirit as the
+// original href allowlist this file used to hold.
+//
+// Every subcategory in the catalog is listed here — the dynamic
+// subcategory route (src/app/[categorySlug]/[subcategorySlug]/page.tsx)
+// covers all of them now, so nothing needs to degrade to "#" anymore.
 //
 // Deliberately dependency-free (no React, no Supabase): lib/categories.ts
 // pulls in React's cache() at module scope for getCategoryTree(), which
@@ -15,29 +18,84 @@
 // component that Vitest/RTL renders directly (not just server pages)
 // crashes with "cache is not a function". Anything that only needs href
 // resolution should import from here instead.
-//
-// File is named for the subcategory map specifically (the older, more
-// heavily-used export) — kept as-is rather than renamed to avoid
-// unrelated import churn across nav/footer/category-page/test files.
-export const BUILT_SUBCATEGORY_HREFS: Record<string, string> = {
-  "furniture-bedroom": "/furniture/bedroom",
-  "furniture-sofas": "/furniture/sofas",
-  "furniture-beds-bedroom-sets": "/furniture/beds-bedroom-sets",
-  "furniture-wardrobes-dressers": "/furniture/wardrobes-dressers",
-  "furniture-dining-tables-chairs": "/furniture/dining-tables-chairs",
-  "furniture-coffee-side-tables": "/furniture/coffee-side-tables",
-  "furniture-office-seating": "/furniture/office-seating",
-  "furniture-office-desks-suites": "/furniture/office-desks-suites",
-  "furniture-conference-tables": "/furniture/conference-tables",
-  "furniture-outdoor": "/furniture/outdoor",
-  "furniture-accent-occasional": "/furniture/accent-occasional",
-  "showers-panels": "/sanitaryware-bath/shower",
-  "baths-jacuzzis": "/sanitaryware-bath/bathtub",
-  "toilets-bidets": "/sanitaryware-bath/toilet",
+export const CLEAN_TO_REAL_SUBCATEGORY_SLUG: Record<string, string> = {
+  sofas: "furniture-sofas",
+  "beds-bedroom-sets": "furniture-beds-bedroom-sets",
+  "wardrobes-dressers": "furniture-wardrobes-dressers",
+  "dining-tables-chairs": "furniture-dining-tables-chairs",
+  "coffee-side-tables": "furniture-coffee-side-tables",
+  "office-seating": "furniture-office-seating",
+  "office-desks-suites": "furniture-office-desks-suites",
+  "conference-tables": "furniture-conference-tables",
+  "outdoor-furniture": "furniture-outdoor",
+  "accent-occasional": "furniture-accent-occasional",
+
+  "floor-tiles": "tiles-floor",
+  "wall-tiles": "tiles-wall",
+  "large-format-tiles": "tiles-large-format",
+  "mosaic-tiles": "tiles-mosaic",
+  "paving-pavers": "tiles-paving-pavers",
+  "trims-edging": "tiles-trims-edging",
+
+  "basins-sinks": "sanitary-basins-sinks",
+  vanities: "sanitary-vanities",
+  "bathroom-accessories": "sanitary-bathroom-accessories",
+  "faucets-mixers": "sanitary-faucets-mixers",
+  "plumbing-accessories": "sanitary-plumbing-accessories",
+  "showers-panels": "showers-panels",
+  "baths-jacuzzis": "baths-jacuzzis",
+  "toilets-bidets": "toilets-bidets",
+
+  "security-doors": "doors-security",
+  "pine-wood-doors": "doors-pine-wood",
+  "wpc-pvc-doors": "doors-wpc-pvc",
+  "glass-sliding-doors": "doors-glass-sliding",
+  "smart-locks-door-handles": "doors-smart-locks",
+
+  "indoor-lighting": "lighting-indoor",
+  "outdoor-lighting": "lighting-outdoor",
+  "chandeliers-statement-lights": "lighting-chandeliers",
+  "led-strip-mood-lighting": "lighting-led-strip",
+  "smart-switches-automation": "lighting-smart-switches",
+
+  "cabinets-islands": "kitchens-cabinets-islands",
+  "kitchen-faucets-sinks": "kitchens-faucets-sinks",
+  "countertops-surfaces": "kitchens-countertops",
+  "storage-organizers": "kitchens-storage",
+
+  "garden-furniture": "outdoor-garden-furniture",
+  "outdoor-flooring-paving": "outdoor-flooring-paving",
+  "planters-pots": "outdoor-planters-pots",
+  "water-features-decor": "outdoor-water-features",
+  "garden-lighting": "outdoor-garden-lighting",
+
+  mirrors: "decor-mirrors",
+  rugs: "decor-rugs",
+  "wall-decor": "decor-wall-decor",
+  pillows: "decor-pillows",
+  "decorative-objects": "decor-decorative-objects",
 };
 
-export function hrefForSubcategorySlug(slug: string): string {
-  return BUILT_SUBCATEGORY_HREFS[slug] ?? "#";
+const REAL_TO_CLEAN_SUBCATEGORY_SLUG: Record<string, string> = Object.fromEntries(
+  Object.entries(CLEAN_TO_REAL_SUBCATEGORY_SLUG).map(([clean, real]) => [real, clean]),
+);
+
+// DB row -> URL segment. Falls back to the stored slug itself for
+// anything not in the table above (there shouldn't be any, but a new
+// subcategory added straight in the DB should still get a working link
+// rather than silently degrading to "#").
+export function cleanSubcategorySlug(realSlug: string): string {
+  return REAL_TO_CLEAN_SUBCATEGORY_SLUG[realSlug] ?? realSlug;
+}
+
+// URL segment -> DB row. Same fallback reasoning in reverse, for resolving
+// an incoming request.
+export function realSubcategorySlug(cleanSlug: string): string {
+  return CLEAN_TO_REAL_SUBCATEGORY_SLUG[cleanSlug] ?? cleanSlug;
+}
+
+export function hrefForSubcategorySlug(topLevelSlug: string, realSlug: string): string {
+  return `/${topLevelSlug}/${cleanSubcategorySlug(realSlug)}`;
 }
 
 // Every top-level category is currently built (all 5), but this stays an

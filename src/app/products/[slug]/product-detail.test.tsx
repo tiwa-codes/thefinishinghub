@@ -34,6 +34,7 @@ function renderProduct(overrides: Partial<Parameters<typeof ProductDetailView>[0
             { label: "Positano Sofa" },
           ]}
           categoryName="Sofas"
+          categorySlug="furniture"
           styleName={null}
           name="Positano Sofa"
           description={null}

@@ -457,6 +457,7 @@ export type Database = {
       }
       products: {
         Row: {
+          attributes: Json | null
           care_instructions: string | null
           category_id: string
           collection: string | null
@@ -485,6 +486,7 @@ export type Database = {
           weight_kg: number | null
         }
         Insert: {
+          attributes?: Json | null
           care_instructions?: string | null
           category_id: string
           collection?: string | null
@@ -513,6 +515,7 @@ export type Database = {
           weight_kg?: number | null
         }
         Update: {
+          attributes?: Json | null
           care_instructions?: string | null
           category_id?: string
           collection?: string | null

@@ -24,7 +24,6 @@ export type TopLevelCategory = CategoryNode & {
 // dependency-free so it's safe to import from components RTL renders
 // directly; see that file for why).
 export {
-  BUILT_SUBCATEGORY_HREFS,
   hrefForSubcategorySlug,
   BUILT_TOP_LEVEL_HREFS,
   hrefForTopLevelSlug,
@@ -77,7 +76,7 @@ export const getCategoryTree = cache(async (): Promise<TopLevelCategory[]> => {
         slug: sub.slug,
         name: sub.name,
         navLabel: sub.nav_label ?? sub.name,
-        href: hrefForSubcategorySlug(sub.slug),
+        href: hrefForSubcategorySlug(cat.slug, sub.slug),
       })),
   }));
 });

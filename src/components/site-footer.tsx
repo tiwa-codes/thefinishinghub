@@ -12,25 +12,29 @@ const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
     title: "Studio",
     links: [
       { label: "Interior Design", href: "/#design-services" },
-      { label: "Projects", href: "/#projects" },
-      { label: "About", href: "#" },
+      // No dedicated projects/about pages yet — the showroom section is
+      // the closest live destination until those exist.
+      { label: "Projects", href: "/#showroom" },
+      { label: "About", href: "/#showroom" },
     ],
   },
   {
     title: "Help",
     links: [
-      { label: "Delivery", href: "#" },
-      { label: "Returns", href: "#" },
-      { label: "Track order", href: "#" },
+      // No delivery/returns policy pages yet — same temporary showroom
+      // fallback as Projects/About above.
+      { label: "Delivery", href: "/#showroom" },
+      { label: "Returns", href: "/#showroom" },
+      { label: "Track order", href: "/track-order" },
       { label: "Contact", href: "/#showroom" },
     ],
   },
   {
     title: "Trade",
     links: [
-      { label: "Trade pricing", href: "#" },
-      { label: "Trade desk", href: "#" },
-      { label: "For designers", href: "#" },
+      { label: "Trade pricing", href: "/trade/apply" },
+      { label: "Trade desk", href: "/trade/apply" },
+      { label: "For designers", href: "/trade/apply" },
       { label: "Apply", href: "/trade/apply" },
     ],
   },
@@ -49,7 +53,7 @@ export function SiteFooter({
       title: "Shop",
       links: [
         ...shopCategories.map((cat) => ({ label: cat.name, href: cat.href })),
-        { label: "New arrivals", href: "#" },
+        { label: "New arrivals", href: "/#new-arrivals" },
       ],
     },
     ...STATIC_FOOTER_COLUMNS,
@@ -72,13 +76,13 @@ export function SiteFooter({
               categories under one roof in Abuja, delivered nationwide.
             </p>
             <div className="flex gap-[18px] text-xs tracking-wide">
-              <Link href="#" className="hover:text-gold-bright">
+              <Link href="https://www.instagram.com/" className="hover:text-gold-bright">
                 Instagram
               </Link>
-              <Link href="#" className="hover:text-gold-bright">
+              <Link href="https://www.facebook.com/" className="hover:text-gold-bright">
                 Facebook
               </Link>
-              <Link href="#" className="hover:text-gold-bright">
+              <Link href="https://www.linkedin.com/" className="hover:text-gold-bright">
                 LinkedIn
               </Link>
             </div>
@@ -141,13 +145,13 @@ export function SiteFooter({
             reserved.
           </span>
           <div className="flex gap-[22px]">
-            <Link href="#" className="hover:text-[#cdd5cc]">
+            <Link href="/#showroom" className="hover:text-[#cdd5cc]">
               Privacy
             </Link>
-            <Link href="#" className="hover:text-[#cdd5cc]">
+            <Link href="/#showroom" className="hover:text-[#cdd5cc]">
               Terms
             </Link>
-            <Link href="#" className="hover:text-[#cdd5cc]">
+            <Link href="/#showroom" className="hover:text-[#cdd5cc]">
               Delivery &amp; Returns
             </Link>
           </div>

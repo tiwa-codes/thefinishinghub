@@ -41,7 +41,7 @@ const REASSURANCE_ITEMS = [
   {
     Icon: GlobeIcon,
     heading: "Authentic Origins",
-    description: "Italian, French, and NBH-crafted pieces, certified and verified",
+    description: "Italian, French, and internationally sourced pieces, certified and verified",
   },
   {
     Icon: PhoneIcon,

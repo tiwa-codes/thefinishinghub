@@ -229,7 +229,7 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
             <UserIcon />
           </Link>
 
-          <Link href="#" aria-label="Wishlist" className="flex cursor-pointer items-center text-cream hover:text-gold-bright">
+          <Link href="/account" aria-label="Wishlist" className="flex cursor-pointer items-center text-cream hover:text-gold-bright">
             <HeartIcon />
           </Link>
 

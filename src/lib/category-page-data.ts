@@ -73,7 +73,7 @@ export async function getCategoryPageData(
   const subcategories: SubcategoryTile[] = (subcategoryRows ?? []).map((cat) => ({
     slug: cat.slug,
     name: cat.name,
-    href: hrefForSubcategorySlug(cat.slug),
+    href: hrefForSubcategorySlug(topLevelSlug, cat.slug),
     imageSrc: subcategoryImages[cat.slug],
   }));
 
