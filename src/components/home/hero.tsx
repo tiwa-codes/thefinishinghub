@@ -17,7 +17,8 @@ const HERO_SLIDES = [
     id: "brand",
     kicker: "FURNITURE · FINISHING · INTERIORS",
     headline: "Furniture, Finishes, and Interiors for the Finished Home.",
-    subline: "Five categories under one roof in Abuja. Delivered nationwide.",
+    subline:
+      "Furniture, tiles, lighting, sanitaryware, doors, kitchens, outdoor and decor — all under one roof in Abuja. Delivered nationwide.",
     ctaLabel: "Shop the collection",
     href: "/furniture",
     // Local file (already in the repo), not Unsplash — the original

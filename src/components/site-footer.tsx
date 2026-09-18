@@ -69,17 +69,18 @@ export function SiteFooter({
               className="-ml-1.5 h-16 w-auto lg:h-24"
             />
             <p className="my-[18px] max-w-[300px] text-sm leading-[1.7] text-[#a9b3a8]">
-              Furniture, tiles, lighting, sanitaryware and doors — five
-              categories under one roof in Abuja, delivered nationwide.
+              Furniture, tiles, lighting, sanitaryware, doors, kitchens,
+              outdoor and decor — under one roof in Abuja, delivered
+              nationwide.
             </p>
             <div className="flex gap-[18px] text-xs tracking-wide">
-              <Link href="https://www.instagram.com/" className="hover:text-gold-bright">
+              <Link href="https://www.instagram.com/thefinishinghubng" className="hover:text-gold-bright">
                 Instagram
               </Link>
-              <Link href="https://www.facebook.com/" className="hover:text-gold-bright">
+              <Link href="https://www.facebook.com/thefinishinghubng" className="hover:text-gold-bright">
                 Facebook
               </Link>
-              <Link href="https://www.linkedin.com/" className="hover:text-gold-bright">
+              <Link href="https://www.linkedin.com/company/thefinishinghubng" className="hover:text-gold-bright">
                 LinkedIn
               </Link>
             </div>
