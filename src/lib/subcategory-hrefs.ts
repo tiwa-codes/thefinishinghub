@@ -109,6 +109,9 @@ export const BUILT_TOP_LEVEL_HREFS: Record<string, string> = {
   lighting: "/lighting",
   "sanitaryware-bath": "/sanitaryware-bath",
   "doors-windows-joinery": "/doors-windows-joinery",
+  kitchens: "/kitchens",
+  outdoor: "/outdoor",
+  decor: "/decor",
 };
 
 export function hrefForTopLevelSlug(slug: string): string {

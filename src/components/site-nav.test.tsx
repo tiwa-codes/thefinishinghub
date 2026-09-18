@@ -85,6 +85,27 @@ describe("SiteNav", () => {
     expect(accountLinks).toHaveLength(1);
   });
 
+  it("renders a Wishlist icon between Account and Cart, linking to /wishlist", () => {
+    renderNav();
+    const wishlist = screen.getByRole("link", { name: "Wishlist" });
+    expect(wishlist).toHaveAttribute("href", "/wishlist");
+    expect(wishlist.querySelector("svg")).toBeInTheDocument();
+  });
+
+  it("shows an outlined (unfilled) heart on first render, before the localStorage check runs", () => {
+    renderNav();
+    const heart = screen.getByRole("link", { name: "Wishlist" }).querySelector("svg");
+    expect(heart).toHaveAttribute("fill", "none");
+  });
+
+  it("shows a filled gold heart once localStorage has wishlist items", () => {
+    window.localStorage.setItem("tfh_wishlist", JSON.stringify(["product-1"]));
+    renderNav();
+    const heart = screen.getByRole("link", { name: "Wishlist" }).querySelector("svg");
+    expect(heart).toHaveAttribute("fill", "currentColor");
+    window.localStorage.removeItem("tfh_wishlist");
+  });
+
   it("opens the mega-menu with real subcategory names on click, and only one dropdown is open at a time", () => {
     renderNav();
     const furnitureLink = screen.getByRole("link", { name: /^Furniture/ });

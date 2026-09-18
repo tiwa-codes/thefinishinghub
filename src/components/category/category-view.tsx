@@ -1,6 +1,7 @@
 import { CategoryHero } from "./category-hero";
 import { SubcategoryTiles, type SubcategoryTile } from "./subcategory-tiles";
 import { FeaturedProductsGrid, type FeaturedProduct } from "./featured-products-grid";
+import { ComingSoonBand } from "./coming-soon-band";
 import { BookADesignerBand } from "./book-a-designer-band";
 
 // Shared by every top-level category page. Subcategory tiles only render
@@ -18,6 +19,7 @@ export function CategoryView({
   products,
   designerTitle,
   designerDescription,
+  comingSoon = false,
 }: {
   title: string;
   heroDescription: string;
@@ -33,6 +35,12 @@ export function CategoryView({
   products: FeaturedProduct[];
   designerTitle: string;
   designerDescription: string;
+  // A category with no published products yet (Kitchens, Outdoor, Decor)
+  // gets a real "Coming Soon" state instead of the generic "no products"
+  // line — and its subcategory tiles are suppressed too, since those
+  // subcategories don't have their own listing pages built yet and would
+  // otherwise be fresh dead links right after fixing the last batch.
+  comingSoon?: boolean;
 }) {
   return (
     <>
@@ -42,18 +50,22 @@ export function CategoryView({
         imageSrc={heroImageSrc}
         imageAlt={heroImageAlt}
       />
-      {subcategories.length > 0 && (
+      {!comingSoon && subcategories.length > 0 && (
         <SubcategoryTiles
           title={subcategoriesTitle ?? `Shop ${title} by type`}
           subcategories={subcategories}
         />
       )}
-      <FeaturedProductsGrid
-        title={featuredTitle}
-        viewAllHref={viewAllHref}
-        viewAllLabel={`View all ${title.toLowerCase()}`}
-        products={products}
-      />
+      {comingSoon ? (
+        <ComingSoonBand categoryName={title} />
+      ) : (
+        <FeaturedProductsGrid
+          title={featuredTitle}
+          viewAllHref={viewAllHref}
+          viewAllLabel={`View all ${title.toLowerCase()}`}
+          products={products}
+        />
+      )}
       <BookADesignerBand title={designerTitle} description={designerDescription} />
     </>
   );

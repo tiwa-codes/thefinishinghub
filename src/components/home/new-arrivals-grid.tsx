@@ -28,8 +28,14 @@ export type NewArrivalProductCard = {
 // applies in both places.
 export function NewArrivalsGrid({
   products,
+  onRemove,
 }: {
   products: NewArrivalProductCard[];
+  // Wishlist-only affordance — a filled heart button that removes the
+  // card. Omitted everywhere else (New Arrivals, Related Products), so
+  // this stays the one shared card component rather than a separate
+  // wishlist-specific fork of it.
+  onRemove?: (productId: string) => void;
 }) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -78,6 +84,21 @@ export function NewArrivalsGrid({
                 </span>
               ) : null}
             </div>
+            {onRemove && (
+              <button
+                type="button"
+                aria-label={`Remove ${product.name} from wishlist`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onRemove(product.id);
+                }}
+                className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gold hover:bg-white"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                  <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
+                </svg>
+              </button>
+            )}
             <div className="px-5 pb-[22px] pt-[18px]">
               <div className="mb-1 font-serif text-lg leading-tight text-ink">
                 {product.collection || product.name}

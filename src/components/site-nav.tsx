@@ -16,6 +16,7 @@ import {
   SHOP_BY_STYLE,
 } from "@/lib/mega-menu-data";
 import { UNSPLASH_BLUR_DATA_URL } from "@/lib/unsplash";
+import { getWishlistIds } from "@/lib/wishlist";
 
 const SCROLL_THRESHOLD = 60;
 
@@ -51,6 +52,27 @@ function BagIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M6 8h12l1 13H5L6 8Z"></path>
       <path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+    </svg>
+  );
+}
+
+// filled=false (outlined, SSR default) vs filled=true (gold, once the
+// client-side localStorage check finds items) — same hand-written-SVG
+// convention as every other nav icon here.
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
     </svg>
   );
 }
@@ -93,6 +115,9 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileAccordion, setMobileAccordion] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  // Starts false (outlined heart) so SSR and the first client render
+  // match exactly — the real localStorage check only runs after mount.
+  const [hasWishlistItems, setHasWishlistItems] = useState(false);
 
   const headerRef = useRef<HTMLElement | null>(null);
 
@@ -103,6 +128,10 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setHasWishlistItems(getWishlistIds().length > 0);
   }, []);
 
   // Click-to-open dropdowns: clicking outside the nav, or Escape, closes
@@ -219,6 +248,14 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
           <Link href="/account" aria-label="Account" className="flex cursor-pointer items-center text-cream hover:text-gold-bright">
             <UserIcon />
+          </Link>
+
+          <Link
+            href="/wishlist"
+            aria-label="Wishlist"
+            className={`flex cursor-pointer items-center hover:text-gold-bright ${hasWishlistItems ? "text-gold" : "text-cream"}`}
+          >
+            <HeartIcon filled={hasWishlistItems} />
           </Link>
 
           <Link href="/cart" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} className="relative flex cursor-pointer items-center text-cream hover:text-gold-bright">

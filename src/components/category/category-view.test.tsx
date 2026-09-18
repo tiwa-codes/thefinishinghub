@@ -116,6 +116,36 @@ describe("CategoryView — featured products", () => {
   });
 });
 
+describe("CategoryView — coming soon", () => {
+  it("shows a Coming Soon state with the real category name instead of the generic empty message", () => {
+    renderView({ comingSoon: true, products: [] });
+    expect(screen.getByText("Coming Soon")).toBeInTheDocument();
+    expect(
+      screen.getByText(/We're adding Sanitarywares & Bath Accessories to our showroom/),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("No published products in this category yet."),
+    ).toBeNull();
+  });
+
+  it("shows Visit the Showroom and Call us CTAs", () => {
+    renderView({ comingSoon: true, products: [] });
+    expect(screen.getByRole("link", { name: "Visit the Showroom" })).toHaveAttribute(
+      "href",
+      "/#showroom",
+    );
+    expect(screen.getByRole("link", { name: /Call us/ })).toHaveAttribute(
+      "href",
+      "tel:+2348033117302",
+    );
+  });
+
+  it("suppresses subcategory tiles in the coming-soon state", () => {
+    renderView({ comingSoon: true, products: [] });
+    expect(screen.queryByText("Shower")).toBeNull();
+  });
+});
+
 describe("CategoryView — book a designer", () => {
   it("renders the designer CTA pointing back at the homepage showroom section", () => {
     renderView();

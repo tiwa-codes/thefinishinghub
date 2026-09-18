@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { CartProvider } from "@/lib/cart-context";
 import { TradeAccountProvider } from "@/lib/trade-account-context";
@@ -118,5 +118,26 @@ describe("NewArrivalsGrid", () => {
   it("renders the collection name as the primary line when set, falling back to the product name", () => {
     renderGrid([{ ...FIXTURE[0], collection: "Positano Collection" }]);
     expect(screen.getByText("Positano Collection")).toBeInTheDocument();
+  });
+
+  it("omits the remove-from-wishlist button when onRemove isn't given", () => {
+    renderGrid([FIXTURE[0]]);
+    expect(screen.queryByRole("button", { name: /Remove .* from wishlist/ })).toBeNull();
+  });
+
+  it("shows a remove-from-wishlist button that calls onRemove with the product id, without navigating", () => {
+    const onRemove = vi.fn();
+    render(
+      <CartProvider>
+        <TradeAccountProvider>
+          <NewArrivalsGrid products={[FIXTURE[0]]} onRemove={onRemove} />
+        </TradeAccountProvider>
+      </CartProvider>,
+    );
+    const button = screen.getByRole("button", {
+      name: "Remove Milano Upholstered Storage Bed from wishlist",
+    });
+    fireEvent.click(button);
+    expect(onRemove).toHaveBeenCalledWith("product-1");
   });
 });
