@@ -11,20 +11,17 @@ const STATIC_FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Studio",
     links: [
-      { label: "Interior Design", href: "/#design-services" },
-      // No dedicated projects/about pages yet — the showroom section is
-      // the closest live destination until those exist.
-      { label: "Projects", href: "/#showroom" },
-      { label: "About", href: "/#showroom" },
+      { label: "Interior Design", href: "/interior-design" },
+      { label: "Projects", href: "/gallery" },
+      { label: "About", href: "/about" },
     ],
   },
   {
     title: "Help",
     links: [
-      // No delivery/returns policy pages yet — same temporary showroom
-      // fallback as Projects/About above.
-      { label: "Delivery", href: "/#showroom" },
-      { label: "Returns", href: "/#showroom" },
+      // /terms covers both delivery and returns policy.
+      { label: "Delivery", href: "/terms" },
+      { label: "Returns", href: "/terms" },
       { label: "Track order", href: "/track-order" },
       { label: "Contact", href: "/#showroom" },
     ],
@@ -145,13 +142,13 @@ export function SiteFooter({
             reserved.
           </span>
           <div className="flex gap-[22px]">
-            <Link href="/#showroom" className="hover:text-[#cdd5cc]">
+            <Link href="/privacy" className="hover:text-[#cdd5cc]">
               Privacy
             </Link>
-            <Link href="/#showroom" className="hover:text-[#cdd5cc]">
+            <Link href="/terms" className="hover:text-[#cdd5cc]">
               Terms
             </Link>
-            <Link href="/#showroom" className="hover:text-[#cdd5cc]">
+            <Link href="/terms" className="hover:text-[#cdd5cc]">
               Delivery &amp; Returns
             </Link>
           </div>

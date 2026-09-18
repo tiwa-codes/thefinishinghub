@@ -11,6 +11,8 @@ const NAV_LINKS = [
   { href: "/admin/looks", label: "Looks" },
   { href: "/admin/collections", label: "Collections" },
   { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/design-enquiries", label: "Design Enquiries" },
+  { href: "/admin/trade-applications", label: "Trade Applications" },
   { href: "/admin/quotes", label: "Quotes" },
   { href: "/admin/customers", label: "Customers" },
   { href: "/admin/trade-accounts", label: "Trade Accounts" },

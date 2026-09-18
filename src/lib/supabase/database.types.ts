@@ -149,6 +149,39 @@ export type Database = {
         }
         Relationships: []
       }
+      design_enquiries: {
+        Row: {
+          budget_range: string | null
+          created_at: string
+          description: string | null
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          project_type: string
+        }
+        Insert: {
+          budget_range?: string | null
+          created_at?: string
+          description?: string | null
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          project_type: string
+        }
+        Update: {
+          budget_range?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          project_type?: string
+        }
+        Relationships: []
+      }
       look_products: {
         Row: {
           display_order: number
@@ -744,6 +777,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trade_applications: {
+        Row: {
+          budget_range: string | null
+          business_type: string
+          company_name: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          referral_source: string | null
+          years_in_business: string | null
+        }
+        Insert: {
+          budget_range?: string | null
+          business_type: string
+          company_name: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          referral_source?: string | null
+          years_in_business?: string | null
+        }
+        Update: {
+          budget_range?: string | null
+          business_type?: string
+          company_name?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          referral_source?: string | null
+          years_in_business?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {

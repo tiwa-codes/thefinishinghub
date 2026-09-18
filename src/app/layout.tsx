@@ -28,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "The Finishing Hub — Furniture, Finishes & Interiors in Abuja",
   description:
-    "Furniture, tiles, lighting, sanitaryware and doors — five categories under one roof in Abuja, delivered nationwide.",
+    "Furniture, tiles, lighting, sanitaryware, doors, kitchens, outdoor and decor — under one roof in Abuja. Delivered nationwide.",
 };
 
 export default function RootLayout({

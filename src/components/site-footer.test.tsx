@@ -32,16 +32,25 @@ describe("SiteFooter", () => {
     expect(screen.getByText("New arrivals")).toBeInTheDocument();
   });
 
-  it("links Interior Design, Projects and Contact to their real homepage sections", () => {
+  it("links Interior Design, Projects, About and Contact to their real pages", () => {
     render(<SiteFooter shopCategories={SHOP_CATEGORIES} />);
     expect(screen.getByRole("link", { name: "Interior Design" })).toHaveAttribute(
       "href",
-      "/#design-services",
+      "/interior-design",
     );
-    // No dedicated Projects page yet — falls back to the showroom section
-    // rather than a dead #projects anchor.
-    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/#showroom");
+    expect(screen.getByRole("link", { name: "Projects" })).toHaveAttribute("href", "/gallery");
+    expect(screen.getByRole("link", { name: "About" })).toHaveAttribute("href", "/about");
     expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/#showroom");
+  });
+
+  it("links Privacy and Terms to their real policy pages", () => {
+    render(<SiteFooter shopCategories={SHOP_CATEGORIES} />);
+    expect(screen.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
+    expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms");
+    expect(screen.getByRole("link", { name: "Delivery & Returns" })).toHaveAttribute(
+      "href",
+      "/terms",
+    );
   });
 
   it("has no remaining dead '#' links", () => {
