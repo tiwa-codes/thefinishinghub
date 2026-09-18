@@ -23,6 +23,11 @@ const nextConfig = {
     // listing rather than a specific subcategory page.
     return [
       {
+        source: "/trade",
+        destination: "/trade/apply",
+        permanent: true,
+      },
+      {
         source: "/furniture/living",
         destination: "/furniture",
         permanent: true,
