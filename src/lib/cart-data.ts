@@ -74,19 +74,26 @@ export async function getCartItems(
   const rows = data ?? [];
   const variantIds = Array.from(new Set(rows.map((row) => row.product_variants.id)));
 
-  const priceByVariantId = new Map<string, number>();
+  // public_product_variants nulls price_kobo (and carries requires_quote)
+  // for a quote-only product — a variant genuinely missing from this map
+  // (not merely priced null) means it dropped out of the discount-aware
+  // view entirely (e.g. its product went unpublished mid-session), which
+  // is the only case that should fall back to the raw table's price.
+  const priceByVariantId = new Map<string, number | null>();
+  const requiresQuoteByVariantId = new Map<string, boolean>();
   if (variantIds.length > 0) {
     const { data: discountAwareVariants, error: priceError } = await supabase
       .from("public_product_variants")
-      .select("id, price_kobo")
+      .select("id, price_kobo, requires_quote")
       .in("id", variantIds)
-      .returns<{ id: string; price_kobo: number | null }[]>();
+      .returns<{ id: string; price_kobo: number | null; requires_quote: boolean | null }[]>();
 
     if (priceError) {
       console.error("Failed to load discount-aware cart prices:", priceError.message);
     } else {
       for (const v of discountAwareVariants ?? []) {
-        if (v.price_kobo != null) priceByVariantId.set(v.id, v.price_kobo);
+        priceByVariantId.set(v.id, v.price_kobo);
+        requiresQuoteByVariantId.set(v.id, v.requires_quote ?? false);
       }
     }
   }
@@ -99,6 +106,7 @@ export async function getCartItems(
       product.product_images[0] ??
       null;
     const config = [variant.finish, variant.color, variant.size].filter(Boolean).join(" · ");
+    const requiresQuote = requiresQuoteByVariantId.get(variant.id) ?? false;
 
     return {
       cartItemId: row.id,
@@ -106,7 +114,10 @@ export async function getCartItems(
       name: product.name,
       config,
       quantity: row.quantity,
-      unitPriceKobo: priceByVariantId.get(variant.id) ?? variant.price_kobo,
+      unitPriceKobo: requiresQuote
+        ? null
+        : (priceByVariantId.get(variant.id) ?? variant.price_kobo),
+      requiresQuote,
       imageUrl: primaryImage?.url ?? null,
       imageAlt: primaryImage?.alt_text ?? product.name,
     };

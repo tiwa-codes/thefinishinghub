@@ -5,11 +5,12 @@
 // is signaled by an empty array/all-zero result, which the page decides
 // how to render — these functions don't know about UI.
 
-// Only paid + fulfilled orders represent real revenue — pending_payment
-// hasn't been collected yet, cancelled never will be. Shared by every
-// revenue-based metric below so "which statuses count as revenue" is
-// defined in exactly one place.
-const REVENUE_STATUSES = ["paid", "fulfilled"];
+// Any order that's actually been paid for represents real revenue,
+// regardless of how far along fulfilment is — pending_payment hasn't been
+// collected yet, cancelled never will be. Shared by every revenue-based
+// metric below so "which statuses count as revenue" is defined in exactly
+// one place.
+const REVENUE_STATUSES = ["paid", "processing", "shipped", "delivered"];
 
 export function isRevenueStatus(status: string): boolean {
   return REVENUE_STATUSES.includes(status);
@@ -86,7 +87,14 @@ export function computeRevenueOverTime(orders: ReportOrderRow[]): RevenueOverTim
   return { granularity, buckets };
 }
 
-const ALL_ORDER_STATUSES = ["pending_payment", "paid", "fulfilled", "cancelled"];
+const ALL_ORDER_STATUSES = [
+  "pending_payment",
+  "paid",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+];
 
 export function computeOrderStatusBreakdown(orders: ReportOrderRow[]): StatusCount[] {
   const counts = new Map(ALL_ORDER_STATUSES.map((s) => [s, 0]));

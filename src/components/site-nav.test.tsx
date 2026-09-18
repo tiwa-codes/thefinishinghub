@@ -73,11 +73,16 @@ describe("SiteNav", () => {
     expect(screen.getByRole("link", { name: "Trade Program" })).toHaveAttribute("href", "/trade/apply");
   });
 
-  it("renders account, wishlist, and cart icon links, with a cart count badge when the cart has items", () => {
+  it("renders account and cart icon links, with a cart count badge when the cart has items", () => {
     renderNav();
     expect(screen.getByRole("link", { name: "Account" })).toHaveAttribute("href", "/account");
-    expect(screen.getByRole("link", { name: "Wishlist" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Cart, 0 items/ })).toBeInTheDocument();
+  });
+
+  it("has no duplicate /account links in the icon cluster", () => {
+    renderNav();
+    const accountLinks = screen.getAllByRole("link").filter((link) => link.getAttribute("href") === "/account");
+    expect(accountLinks).toHaveLength(1);
   });
 
   it("opens the mega-menu with real subcategory names on click, and only one dropdown is open at a time", () => {

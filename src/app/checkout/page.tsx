@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { SiteNavSection } from "@/components/site-nav-section";
 import { SiteFooterSection } from "@/components/site-footer-section";
 import { CheckoutView } from "@/components/checkout/checkout-view";
@@ -29,6 +30,15 @@ async function getInitialCheckoutData(): Promise<{
 
 export default async function CheckoutPage() {
   const { items, email } = await getInitialCheckoutData();
+
+  // Nothing to check out — either a genuinely empty cart, or a cart made
+  // up entirely of quote-only items (create_order rejects any cart
+  // containing one at all, so there's no valid path forward here without
+  // going back to remove it first).
+  const hasPriceableItem = items.some((item) => !item.requiresQuote && item.unitPriceKobo != null);
+  if (items.length === 0 || !hasPriceableItem) {
+    redirect("/cart");
+  }
 
   return (
     <div className="bg-cream font-sans text-ink antialiased">

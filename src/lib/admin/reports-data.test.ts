@@ -34,9 +34,11 @@ function item(overrides: Partial<ReportOrderItemRow> = {}): ReportOrderItemRow {
 }
 
 describe("isRevenueStatus", () => {
-  it("treats paid and fulfilled as revenue", () => {
+  it("treats paid and every post-payment fulfilment stage as revenue", () => {
     expect(isRevenueStatus("paid")).toBe(true);
-    expect(isRevenueStatus("fulfilled")).toBe(true);
+    expect(isRevenueStatus("processing")).toBe(true);
+    expect(isRevenueStatus("shipped")).toBe(true);
+    expect(isRevenueStatus("delivered")).toBe(true);
   });
 
   it("treats pending_payment and cancelled as not revenue", () => {
@@ -56,7 +58,7 @@ describe("computeRevenueOverTime", () => {
   it("buckets by day and sums same-day orders, excluding non-revenue orders", () => {
     const result = computeRevenueOverTime([
       order({ status: "paid", total_kobo: 100000, created_at: "2026-08-10T09:00:00Z" }),
-      order({ status: "fulfilled", total_kobo: 50000, created_at: "2026-08-10T18:00:00Z" }),
+      order({ status: "delivered", total_kobo: 50000, created_at: "2026-08-10T18:00:00Z" }),
       order({ status: "paid", total_kobo: 200000, created_at: "2026-08-11T09:00:00Z" }),
       order({ status: "pending_payment", total_kobo: 999999, created_at: "2026-08-10T09:00:00Z" }),
     ]);
@@ -88,11 +90,13 @@ describe("computeRevenueOverTime", () => {
 });
 
 describe("computeOrderStatusBreakdown", () => {
-  it("returns all four statuses at zero — not an empty array — when there are no orders", () => {
+  it("returns all six statuses at zero — not an empty array — when there are no orders", () => {
     expect(computeOrderStatusBreakdown([])).toEqual([
       { status: "pending_payment", count: 0 },
       { status: "paid", count: 0 },
-      { status: "fulfilled", count: 0 },
+      { status: "processing", count: 0 },
+      { status: "shipped", count: 0 },
+      { status: "delivered", count: 0 },
       { status: "cancelled", count: 0 },
     ]);
   });
@@ -107,7 +111,9 @@ describe("computeOrderStatusBreakdown", () => {
     expect(result).toEqual([
       { status: "pending_payment", count: 1 },
       { status: "paid", count: 2 },
-      { status: "fulfilled", count: 0 },
+      { status: "processing", count: 0 },
+      { status: "shipped", count: 0 },
+      { status: "delivered", count: 0 },
       { status: "cancelled", count: 1 },
     ]);
   });
@@ -187,7 +193,7 @@ describe("computeTradeVsRetailSplit", () => {
     const result = computeTradeVsRetailSplit(
       [
         order({ user_id: "trade-user", total_kobo: 160000, status: "paid" }),
-        order({ user_id: "retail-user", total_kobo: 200000, status: "fulfilled" }),
+        order({ user_id: "retail-user", total_kobo: 200000, status: "delivered" }),
         order({ user_id: "trade-user", total_kobo: 999999, status: "pending_payment" }),
       ],
       tradeIds,

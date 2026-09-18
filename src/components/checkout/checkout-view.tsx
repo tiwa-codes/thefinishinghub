@@ -27,7 +27,10 @@ function friendlyOrderError(message: string): string {
 }
 
 function OrderSummary({ items }: { items: CartLineItem[] }) {
-  const subtotalKobo = items.reduce((sum, it) => sum + it.unitPriceKobo * it.quantity, 0);
+  const subtotalKobo = items.reduce(
+    (sum, it) => sum + (it.requiresQuote || it.unitPriceKobo == null ? 0 : it.unitPriceKobo * it.quantity),
+    0,
+  );
 
   return (
     <div className="border border-[#ddd5c4] bg-white px-[30px] py-8 lg:sticky lg:top-6">
@@ -41,7 +44,11 @@ function OrderSummary({ items }: { items: CartLineItem[] }) {
               <span className="text-[#8a8073]"> × {item.quantity}</span>
             </span>
             <span className="whitespace-nowrap text-[#6b6155]">
-              <Price kobo={item.unitPriceKobo * item.quantity} alreadyDiscounted hideLabel />
+              {item.requiresQuote || item.unitPriceKobo == null ? (
+                "Price on request"
+              ) : (
+                <Price kobo={item.unitPriceKobo * item.quantity} alreadyDiscounted hideLabel />
+              )}
             </span>
           </div>
         ))}

@@ -99,7 +99,7 @@ export default async function AdminReportsPage() {
       <div className="mb-8 font-serif text-2xl text-ink">Reports</div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <ReportCard title="Revenue over time" subtitle="Paid + fulfilled orders, all-time">
+        <ReportCard title="Revenue over time" subtitle="Paid, processing, shipped & delivered orders, all-time">
           {hasRevenue ? (
             <DateBarList revenueOverTime={revenueOverTime} />
           ) : (
@@ -121,7 +121,7 @@ export default async function AdminReportsPage() {
           )}
         </ReportCard>
 
-        <ReportCard title="Top products by revenue" subtitle="Paid + fulfilled orders, all-time">
+        <ReportCard title="Top products by revenue" subtitle="Paid, processing, shipped & delivered orders, all-time">
           {hasTopProducts ? (
             <BarList
               rows={topProducts.map((p) => ({ label: p.name, value: p.kobo }))}
@@ -132,7 +132,7 @@ export default async function AdminReportsPage() {
           )}
         </ReportCard>
 
-        <ReportCard title="Revenue by category" subtitle="Paid + fulfilled orders, all-time">
+        <ReportCard title="Revenue by category" subtitle="Paid, processing, shipped & delivered orders, all-time">
           {hasCategoryRevenue ? (
             <BarList
               rows={revenueByCategory.map((c) => ({ label: c.name, value: c.kobo }))}
@@ -143,7 +143,7 @@ export default async function AdminReportsPage() {
           )}
         </ReportCard>
 
-        <ReportCard title="Trade vs. retail revenue" subtitle="Paid + fulfilled orders, all-time">
+        <ReportCard title="Trade vs. retail revenue" subtitle="Paid, processing, shipped & delivered orders, all-time">
           {hasTradeRevenue ? (
             <BarList
               rows={[

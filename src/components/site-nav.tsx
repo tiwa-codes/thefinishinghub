@@ -33,14 +33,6 @@ function ChevronDownIcon({ className = "" }: { className?: string }) {
   );
 }
 
-function HeartIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
-    </svg>
-  );
-}
-
 // lucide-react isn't a dependency here (nothing in this codebase uses it —
 // every nav icon is a hand-written inline SVG, matching the "no new
 // dependencies" constraint), so this mirrors lucide's "User" glyph by hand
@@ -227,10 +219,6 @@ export function SiteNav({ categories }: { categories: TopLevelCategory[] }) {
 
           <Link href="/account" aria-label="Account" className="flex cursor-pointer items-center text-cream hover:text-gold-bright">
             <UserIcon />
-          </Link>
-
-          <Link href="/account" aria-label="Wishlist" className="flex cursor-pointer items-center text-cream hover:text-gold-bright">
-            <HeartIcon />
           </Link>
 
           <Link href="/cart" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} className="relative flex cursor-pointer items-center text-cream hover:text-gold-bright">

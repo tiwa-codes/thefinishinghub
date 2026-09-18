@@ -14,6 +14,7 @@ const ITEMS: CartLineItem[] = [
     config: "",
     quantity: 1,
     unitPriceKobo: 54000000,
+    requiresQuote: false,
     imageUrl: "/images/bed-taupe.jpg",
     imageAlt: "Milano Upholstered Storage Bed",
   },
@@ -24,6 +25,7 @@ const ITEMS: CartLineItem[] = [
     config: "Aged Brass",
     quantity: 2,
     unitPriceKobo: 14500000,
+    requiresQuote: false,
     imageUrl: null,
     imageAlt: "Gudu Brass Pendant",
   },
@@ -56,13 +58,16 @@ describe("CartView — empty state", () => {
   it("shows an honest empty-cart message and real links, not a bare blank page", () => {
     renderCart([]);
     expect(screen.getByText("Your cart is empty.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Shop the collection" })).toHaveAttribute(
+    expect(
+      screen.getByText("Browse our furniture, tiles and sanitaryware collections."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Shop Furniture" })).toHaveAttribute(
       "href",
-      "/#categories",
+      "/furniture",
     );
-    expect(screen.getByRole("link", { name: "Book a visit" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Explore Looks" })).toHaveAttribute(
       "href",
-      "/#showroom",
+      "/styles",
     );
   });
 
@@ -175,6 +180,54 @@ describe("CartView — remove", () => {
   });
 });
 
+describe("CartView — quote items", () => {
+  const QUOTE_ITEM: CartLineItem = {
+    cartItemId: "cart-item-3",
+    productSlug: "bespoke-dining-suite",
+    name: "Bespoke Dining Suite",
+    config: "",
+    quantity: 1,
+    unitPriceKobo: null,
+    requiresQuote: true,
+    imageUrl: null,
+    imageAlt: "Bespoke Dining Suite",
+  };
+
+  it("shows 'Price on request' instead of a price for a requires_quote line item", () => {
+    renderCart([QUOTE_ITEM]);
+    expect(screen.getByText("Price on request")).toBeInTheDocument();
+  });
+
+  it("shows the amber quote banner with a WhatsApp link when a quote item is present alongside priced items", () => {
+    renderCart([...ITEMS, QUOTE_ITEM]);
+    expect(screen.getByText(/Some items in your cart require a quote/)).toBeInTheDocument();
+    const whatsapp = screen.getByRole("link", { name: "Request a quote via WhatsApp" });
+    expect(whatsapp).toHaveAttribute("href", expect.stringContaining("wa.me/2348033117302"));
+    expect(whatsapp).toHaveAttribute("target", "_blank");
+  });
+
+  it("omits the quote banner when no cart items require a quote", () => {
+    renderCart();
+    expect(screen.queryByText(/Some items in your cart require a quote/)).toBeNull();
+  });
+
+  it("excludes quote items from the subtotal and still enables checkout when priced items remain", () => {
+    renderCart([...ITEMS, QUOTE_ITEM]);
+    // Subtotal unchanged at 830,000 — the quote item contributes nothing
+    expect(screen.getAllByText("₦830,000").length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: "Proceed to Checkout" })).toHaveAttribute(
+      "href",
+      "/checkout",
+    );
+  });
+
+  it("disables Proceed to Checkout when every item in the cart requires a quote", () => {
+    renderCart([QUOTE_ITEM]);
+    expect(screen.queryByRole("link", { name: "Proceed to Checkout" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Proceed to Checkout" })).toBeDisabled();
+  });
+});
+
 describe("CartView — suggestions and honesty guards", () => {
   it("renders real suggested products with working links", () => {
     renderCart();
@@ -195,11 +248,11 @@ describe("CartView — suggestions and honesty guards", () => {
     expect(screen.queryByText("₦18,500")).toBeNull();
   });
 
-  it("links Proceed to Checkout to the real checkout page, with a note that online payment is available", () => {
+  it("links Proceed to Checkout to the real checkout page, with a Paystack security reassurance", () => {
     renderCart();
     const checkout = screen.getByRole("link", { name: "Proceed to Checkout" });
     expect(checkout).toHaveAttribute("href", "/checkout");
-    expect(screen.getByText(/Pay securely online with Paystack/)).toBeInTheDocument();
+    expect(screen.getByText("Secure checkout powered by Paystack")).toBeInTheDocument();
   });
 
   it("never claims a specific delivery cost (e.g. free/Abuja) that isn't backed by real data", () => {

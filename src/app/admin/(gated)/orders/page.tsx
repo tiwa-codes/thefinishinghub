@@ -4,7 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatNaira } from "@/lib/format";
-import { ORDER_STATUS_LABELS } from "@/lib/order-status";
+import {
+  ORDER_STATUS_LABELS,
+  ORDER_STATUS_BADGE_CLASS,
+  ORDER_STATUSES,
+  nextStatusOptions,
+} from "@/lib/order-status";
 
 type OrderListRow = {
   id: string;
@@ -16,20 +21,15 @@ type OrderListRow = {
   created_at: string;
 };
 
-const STATUS_FILTERS = ["all", "pending_payment", "paid", "fulfilled", "cancelled"];
-
-const STATUS_BADGE_CLASS: Record<string, string> = {
-  pending_payment: "bg-[#f0ece1] text-[#8a8073]",
-  paid: "bg-[#e4ede7] text-forest",
-  fulfilled: "bg-[#e4ede7] text-forest",
-  cancelled: "bg-[#f5e6e4] text-[#b3261e]",
-};
+const STATUS_FILTERS = ["all", ...ORDER_STATUSES];
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<OrderListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<{ id: string; message: string } | null>(null);
 
   useEffect(() => {
     // Admin convenience only (e.g. a "Pending" tile elsewhere linking here
@@ -61,6 +61,23 @@ export default function AdminOrdersPage() {
   useEffect(() => {
     load();
   }, [statusFilter, load]);
+
+  async function changeStatus(order: OrderListRow, next: string) {
+    setUpdatingId(order.id);
+    setRowError(null);
+    const res = await fetch(`/api/admin/orders/${order.id}/status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: next }),
+    });
+    const body = await res.json().catch(() => ({}));
+    setUpdatingId(null);
+    if (!res.ok) {
+      setRowError({ id: order.id, message: body.error ?? "Could not update status." });
+      return;
+    }
+    setOrders((prev) => prev.map((o) => (o.id === order.id ? { ...o, status: next } : o)));
+  }
 
   const filtered = orders.filter((o) => {
     if (statusFilter !== "all" && o.status !== statusFilter) return false;
@@ -122,45 +139,76 @@ export default function AdminOrdersPage() {
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Total</th>
               <th className="px-4 py-3 font-medium">Date</th>
+              <th className="px-4 py-3 font-medium">Update status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#eee7d8]">
-            {filtered.map((o) => (
-              <tr key={o.id} className="hover:bg-cream">
-                <td className="px-4 py-3">
-                  <Link
-                    href={`/admin/orders/${o.id}`}
-                    className="font-mono text-ink hover:text-forest hover:underline"
-                  >
-                    {o.order_number}
-                  </Link>
-                </td>
-                <td className="px-4 py-3 text-[#6b6155]">
-                  <div className="text-ink">{o.customer_name}</div>
-                  <div className="text-xs text-[#8a8073]">{o.customer_email}</div>
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-[2px] px-2 py-0.5 text-xs ${
-                      STATUS_BADGE_CLASS[o.status] ?? "bg-[#f0ece1] text-[#8a8073]"
-                    }`}
-                  >
-                    {ORDER_STATUS_LABELS[o.status] ?? o.status}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-[#6b6155]">{formatNaira(o.total_kobo)}</td>
-                <td className="px-4 py-3 text-[#6b6155]">
-                  {new Date(o.created_at).toLocaleDateString("en-NG", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </td>
-              </tr>
-            ))}
+            {filtered.map((o) => {
+              const options = nextStatusOptions(o.status);
+              return (
+                <tr key={o.id} className="hover:bg-cream">
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/orders/${o.id}`}
+                      className="font-mono text-ink hover:text-forest hover:underline"
+                    >
+                      {o.order_number}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-3 text-[#6b6155]">
+                    <div className="text-ink">{o.customer_name}</div>
+                    <div className="text-xs text-[#8a8073]">{o.customer_email}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-[2px] px-2 py-0.5 text-xs ${
+                        ORDER_STATUS_BADGE_CLASS[o.status] ?? "bg-[#f0ece1] text-[#8a8073]"
+                      }`}
+                    >
+                      {ORDER_STATUS_LABELS[o.status] ?? o.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-[#6b6155]">{formatNaira(o.total_kobo)}</td>
+                  <td className="px-4 py-3 text-[#6b6155]">
+                    {new Date(o.created_at).toLocaleDateString("en-NG", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </td>
+                  <td className="px-4 py-3">
+                    {options.length > 0 ? (
+                      <select
+                        aria-label={`Update status for order ${o.order_number}`}
+                        value=""
+                        disabled={updatingId === o.id}
+                        onChange={(e) => {
+                          if (e.target.value) changeStatus(o, e.target.value);
+                        }}
+                        className="rounded-[2px] border border-[#cfc6b6] px-2 py-1.5 text-xs text-ink outline-none focus:border-forest disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <option value="">
+                          {updatingId === o.id ? "Saving…" : "Change to…"}
+                        </option>
+                        {options.map((s) => (
+                          <option key={s} value={s}>
+                            {ORDER_STATUS_LABELS[s]}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-xs text-[#8a8073]">—</span>
+                    )}
+                    {rowError?.id === o.id && (
+                      <div className="mt-1 text-xs text-[#b3261e]">{rowError.message}</div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-[#8a8073]">
+                <td colSpan={6} className="px-4 py-8 text-center text-[#8a8073]">
                   No orders match.
                 </td>
               </tr>

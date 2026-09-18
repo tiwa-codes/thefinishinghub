@@ -14,10 +14,22 @@ export type CartLineItem = {
   name: string;
   config: string;
   quantity: number;
-  unitPriceKobo: number;
+  unitPriceKobo: number | null;
+  requiresQuote: boolean;
   imageUrl: string | null;
   imageAlt: string;
 };
+
+const SHOWROOM_WHATSAPP = "https://wa.me/2348033117302";
+
+function LockIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+      <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+    </svg>
+  );
+}
 
 export function CartView({
   initialItems,
@@ -49,27 +61,30 @@ export function CartView({
       <section className="mx-auto max-w-[640px] px-5 py-[120px] text-center lg:py-[160px]">
         <h1 className="mb-3 font-serif text-3xl font-normal text-ink">Your cart is empty.</h1>
         <p className="mb-[34px] text-[15px] text-[#6b6155]">
-          Browse the collection or book a showroom visit to see pieces in person.
+          Browse our furniture, tiles and sanitaryware collections.
         </p>
         <div className="flex flex-wrap justify-center gap-3.5">
           <Link
-            href="/#categories"
+            href="/furniture"
             className="rounded-[2px] bg-gold px-7 py-[15px] text-sm font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
           >
-            Shop the collection
+            Shop Furniture
           </Link>
           <Link
-            href="/#showroom"
+            href="/styles"
             className="rounded-[2px] border border-forest px-7 py-[15px] text-sm font-semibold tracking-wide text-forest no-underline hover:bg-forest hover:text-cream"
           >
-            Book a visit
+            Explore Looks
           </Link>
         </div>
       </section>
     );
   }
 
-  const subtotalKobo = items.reduce((sum, it) => sum + it.unitPriceKobo * it.quantity, 0);
+  const pricedItems = items.filter((it) => !it.requiresQuote && it.unitPriceKobo != null);
+  const hasQuoteItems = items.some((it) => it.requiresQuote);
+  const subtotalKobo = pricedItems.reduce((sum, it) => sum + it.unitPriceKobo! * it.quantity, 0);
+  const canCheckout = pricedItems.length > 0;
 
   return (
     <>
@@ -142,14 +157,42 @@ export function CartView({
                 </div>
               </div>
 
-              <div className="hidden whitespace-nowrap font-serif text-sm text-[#6b6155] sm:block">
-                <Price kobo={item.unitPriceKobo} alreadyDiscounted hideLabel />
-              </div>
-              <div className="col-span-2 whitespace-nowrap text-right font-serif text-base text-forest sm:col-span-1">
-                <Price kobo={item.unitPriceKobo * item.quantity} alreadyDiscounted />
-              </div>
+              {item.requiresQuote || item.unitPriceKobo == null ? (
+                <div className="col-span-2 whitespace-nowrap text-right font-serif text-sm text-[#8a8073] sm:col-span-2">
+                  Price on request
+                </div>
+              ) : (
+                <>
+                  <div className="hidden whitespace-nowrap font-serif text-sm text-[#6b6155] sm:block">
+                    <Price kobo={item.unitPriceKobo} alreadyDiscounted hideLabel />
+                  </div>
+                  <div className="col-span-2 whitespace-nowrap text-right font-serif text-base text-forest sm:col-span-1">
+                    <Price kobo={item.unitPriceKobo * item.quantity} alreadyDiscounted />
+                  </div>
+                </>
+              )}
             </div>
           ))}
+
+          {hasQuoteItems && (
+            <div className="mt-6 rounded-[2px] border border-[#e0b84c]/50 bg-[#fbf3dd] px-5 py-4 text-sm leading-[1.6] text-[#5c4a12]">
+              Some items in your cart require a quote. Our team will be in touch
+              about these — you can proceed to checkout for the remaining items
+              or request a quote for everything via WhatsApp.
+              <div className="mt-2">
+                <a
+                  href={`${SHOWROOM_WHATSAPP}?text=${encodeURIComponent(
+                    "Hi, I'd like a quote for the items in my cart.",
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-forest underline"
+                >
+                  Request a quote via WhatsApp
+                </a>
+              </div>
+            </div>
+          )}
 
           {suggestions.length > 0 && (
             <div className="mt-14">
@@ -223,23 +266,25 @@ export function CartView({
               <Price kobo={subtotalKobo} alreadyDiscounted />
             </span>
           </div>
-          <Link
-            href="/checkout"
-            className="mb-[18px] block w-full rounded-[2px] bg-gold px-4 py-4 text-center font-sans text-sm font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
-          >
-            Proceed to Checkout
-          </Link>
-          <div className="text-center text-[12.5px] leading-[1.8] text-[#8a8073]">
-            <div>
-              Pay securely online with Paystack, or call +234 (0) 803 311 7302 to
-              arrange payment.
-            </div>
-            <div>
-              Questions?{" "}
-              <Link href="/trade/apply" className="text-forest">
-                Speak to the trade desk
-              </Link>
-            </div>
+          {canCheckout ? (
+            <Link
+              href="/checkout"
+              className="mb-[18px] block w-full rounded-[2px] bg-gold px-4 py-4 text-center font-sans text-sm font-semibold tracking-wide text-forest no-underline hover:bg-gold-bright"
+            >
+              Proceed to Checkout
+            </Link>
+          ) : (
+            <button
+              type="button"
+              disabled
+              className="mb-[18px] block w-full cursor-not-allowed rounded-[2px] bg-gold px-4 py-4 text-center font-sans text-sm font-semibold tracking-wide text-forest opacity-50"
+            >
+              Proceed to Checkout
+            </button>
+          )}
+          <div className="flex items-center justify-center gap-1.5 text-center text-[12.5px] leading-[1.8] text-[#8a8073]">
+            <LockIcon />
+            <span>Secure checkout powered by Paystack</span>
           </div>
         </div>
       </section>

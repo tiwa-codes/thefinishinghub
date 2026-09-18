@@ -14,6 +14,7 @@ const ITEMS: CartLineItem[] = [
     config: "",
     quantity: 1,
     unitPriceKobo: 54000000,
+    requiresQuote: false,
     imageUrl: null,
     imageAlt: "Milano Upholstered Storage Bed",
   },

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatNaira } from "@/lib/format";
-import { ORDER_STATUS_LABELS } from "@/lib/order-status";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_BADGE_CLASS, nextStatusOptions } from "@/lib/order-status";
 
 type OrderItem = {
   id: string;
@@ -30,24 +30,6 @@ type OrderDetail = {
   created_at: string;
   order_items: OrderItem[];
 };
-
-// Only the transitions the "staff update order status" RLS policy
-// actually allows (with check: status in ('fulfilled', 'cancelled')) —
-// never offer an action here that the database would reject anyway.
-// Staff can't mark something paid through this UI or the policy behind
-// it; that's confirmPayment()'s alone.
-function availableActions(status: string): { label: string; next: "fulfilled" | "cancelled" }[] {
-  if (status === "paid") {
-    return [
-      { label: "Mark Fulfilled", next: "fulfilled" },
-      { label: "Mark Cancelled", next: "cancelled" },
-    ];
-  }
-  if (status === "pending_payment") {
-    return [{ label: "Mark Cancelled", next: "cancelled" }];
-  }
-  return [];
-}
 
 export default function AdminOrderDetailPage() {
   const params = useParams<{ id: string }>();
@@ -84,13 +66,17 @@ export default function AdminOrderDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orderId]);
 
-  async function updateStatus(next: "fulfilled" | "cancelled") {
+  async function updateStatus(next: string) {
     setUpdating(next);
     setErrorMessage(null);
-    const supabase = createClient();
-    const { error } = await supabase.from("orders").update({ status: next }).eq("id", orderId);
-    if (error) {
-      setErrorMessage(error.message);
+    const res = await fetch(`/api/admin/orders/${orderId}/status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: next }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setErrorMessage(body.error ?? "Could not update status.");
       setUpdating(null);
       return;
     }
@@ -105,7 +91,7 @@ export default function AdminOrderDetailPage() {
     return <p className="text-sm text-[#8a8073]">Loading…</p>;
   }
 
-  const actions = availableActions(order.status);
+  const statusOptions = nextStatusOptions(order.status);
 
   return (
     <div className="max-w-[760px]">
@@ -142,7 +128,13 @@ export default function AdminOrderDetailPage() {
           <div className="mb-1 text-xs uppercase tracking-[0.06em] text-[#8a8073]">
             Order status
           </div>
-          <div className="text-sm text-ink">{ORDER_STATUS_LABELS[order.status] ?? order.status}</div>
+          <span
+            className={`inline-block rounded-[2px] px-2 py-0.5 text-xs ${
+              ORDER_STATUS_BADGE_CLASS[order.status] ?? "bg-[#f0ece1] text-[#8a8073]"
+            }`}
+          >
+            {ORDER_STATUS_LABELS[order.status] ?? order.status}
+          </span>
         </div>
         <div>
           <div className="mb-1 text-xs uppercase tracking-[0.06em] text-[#8a8073]">
@@ -188,19 +180,27 @@ export default function AdminOrderDetailPage() {
         </div>
       </div>
 
-      {actions.length > 0 && (
-        <div className="flex items-center gap-3">
-          {actions.map((action) => (
-            <button
-              key={action.next}
-              type="button"
-              disabled={updating !== null}
-              onClick={() => updateStatus(action.next)}
-              className="rounded-[2px] bg-forest px-4 py-2.5 text-sm font-medium text-cream hover:bg-deep-forest disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {updating === action.next ? "Saving…" : action.label}
-            </button>
-          ))}
+      {statusOptions.length > 0 && (
+        <div>
+          <label htmlFor="order-status-select" className="mb-1.5 block text-xs uppercase tracking-[0.06em] text-[#8a8073]">
+            Update status
+          </label>
+          <select
+            id="order-status-select"
+            value=""
+            disabled={updating !== null}
+            onChange={(e) => {
+              if (e.target.value) updateStatus(e.target.value);
+            }}
+            className="rounded-[2px] border border-[#cfc6b6] px-3 py-2 text-sm text-ink outline-none focus:border-forest disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <option value="">{updating ? "Saving…" : "Change to…"}</option>
+            {statusOptions.map((s) => (
+              <option key={s} value={s}>
+                {ORDER_STATUS_LABELS[s]}
+              </option>
+            ))}
+          </select>
         </div>
       )}
       {errorMessage && <p className="mt-3 text-sm text-[#b3261e]">{errorMessage}</p>}
