@@ -16,7 +16,10 @@ const HERO_SLIDES = [
   {
     id: "brand",
     kicker: "FURNITURE · FINISHING · INTERIORS",
-    headline: "Furniture, Finishes & Interiors for Your Home, Office and Outdoor Spaces.",
+    headline: "Furniture, Finishing & Beyond, for Your Home, Office and Outdoor Spaces.",
+    // Rendered uppercase via the Tailwind class (source stays sentence case
+    // for screen readers and SEO).
+    uppercaseHeadline: true,
     subline:
       "Furniture, tiles, lighting, sanitaryware, doors, kitchens, outdoor and decor — all under one roof in Abuja. Nationwide delivery.",
     ctaLabel: "Shop the collection",
@@ -98,14 +101,14 @@ export function Hero() {
             }}
           />
           <div className="relative z-10 flex h-full items-end px-5 pb-16 lg:px-10 lg:pb-24">
-            <div className="max-w-[620px]">
+            <div className="max-w-[620px] lg:max-w-[880px]">
               <div className="mb-4 text-xs uppercase tracking-[0.25em] text-gold-bright">
                 {slide.kicker}
               </div>
               <h1
-                className={`text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[56px] lg:leading-[1.08] ${
+                className={`text-balance font-serif text-[24px] font-normal leading-[1.2] text-cream lg:text-[36px] lg:leading-[1.15] ${
                   slide.subline ? "mb-4" : "mb-7"
-                }`}
+                } ${"uppercaseHeadline" in slide && slide.uppercaseHeadline ? "uppercase tracking-[0.02em]" : ""}`}
               >
                 {slide.headline}
               </h1>
