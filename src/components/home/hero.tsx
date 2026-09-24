@@ -16,7 +16,7 @@ const HERO_SLIDES = [
   {
     id: "brand",
     kicker: "FURNITURE · FINISHING · INTERIORS",
-    headline: "Furniture, Finishing & Beyond, for Your Home, Office and Outdoor Spaces.",
+    headline: "Furniture, Finishings & Beyond, for Your Home, Office and Outdoor Spaces.",
     // Rendered uppercase via the Tailwind class (source stays sentence case
     // for screen readers and SEO).
     uppercaseHeadline: true,
