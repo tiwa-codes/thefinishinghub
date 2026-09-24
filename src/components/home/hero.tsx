@@ -17,9 +17,6 @@ const HERO_SLIDES = [
     id: "brand",
     kicker: "FURNITURE · FINISHING · INTERIORS",
     headline: "Furniture, Finishes & Interiors for Your Home, Office and Outdoor Spaces.",
-    // Rendered uppercase via the Tailwind class (not typed in caps) so
-    // screen readers and search engines still see normal sentence case.
-    uppercaseHeadline: true,
     subline:
       "Furniture, tiles, lighting, sanitaryware, doors, kitchens, outdoor and decor — all under one roof in Abuja. Nationwide delivery.",
     ctaLabel: "Shop the collection",
@@ -108,7 +105,7 @@ export function Hero() {
               <h1
                 className={`text-balance font-serif text-[32px] font-normal leading-[1.15] text-cream lg:text-[56px] lg:leading-[1.08] ${
                   slide.subline ? "mb-4" : "mb-7"
-                } ${"uppercaseHeadline" in slide && slide.uppercaseHeadline ? "uppercase" : ""}`}
+                }`}
               >
                 {slide.headline}
               </h1>

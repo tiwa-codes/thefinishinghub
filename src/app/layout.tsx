@@ -29,6 +29,10 @@ export const metadata: Metadata = {
   title: "The Finishing Hub — Furniture, Finishes & Interiors in Abuja",
   description:
     "Furniture, tiles, lighting, sanitaryware, doors, kitchens, outdoor and decor — under one roof in Abuja. Delivered nationwide.",
+  icons: {
+    icon: "/images/tfh-monogram.png",
+    apple: "/images/tfh-monogram.png",
+  },
 };
 
 export default function RootLayout({
